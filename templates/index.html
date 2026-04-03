@@ -3,163 +3,193 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Climate Transition · EaR Engine</title>
+  <title>EaR Engine — Climate Transition Risk</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
+    :root{--bg:#080c10;--bg1:#0c1118;--bg2:#111820;--bg3:#161e28;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--text:#f0f4f8;--text2:#8da0b3;--text3:#4a6070;--accent:#00d4ff;--green:#00e676;--red:#ff4757;--amber:#ffb300;--purple:#9c6fff}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0d1117;--bg-sub:#080d14;--bg-card:#0f172a;--bg-row:#111827;--bg-input:#1e293b;--bg-track:#1a1f2e;--border:#1e293b;--border-mid:#2d3f55;--text:#ffffff;--text-mid:#e2e8f0;--text-dim:#94a3b8;--accent:#38bdf8;--accent-bg:#0f172a;--live:#22c55e}
-    body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh}
-    header{background:var(--bg-sub);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;justify-content:space-between;align-items:center}
-    .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase}
-    .logo span{color:var(--accent)}
-    .header-meta{font-size:11px;color:var(--text-dim);display:flex;gap:16px;align-items:center}
-    .live-dot{width:6px;height:6px;border-radius:50%;background:var(--live);display:inline-block;margin-right:5px;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-    .page{max-width:1280px;margin:0 auto;padding:24px}
-    .two-col{display:grid;grid-template-columns:300px 1fr;gap:20px}
-    @media(max-width:900px){.two-col{grid-template-columns:1fr}}
-    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px}
-    .card-title{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px}
-    .scen-grid{display:flex;flex-direction:column;gap:6px}
-    .scen-btn{background:none;border:1px solid var(--border);border-radius:5px;cursor:pointer;padding:8px 12px;font-family:inherit;font-size:12px;font-weight:500;color:var(--text-dim);text-align:left;transition:all .15s;display:flex;justify-content:space-between;align-items:center}
-    .scen-btn:hover{border-color:var(--border-mid);color:var(--text-mid)}
-    .scen-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
-    .scen-temp{font-family:'DM Mono',monospace;font-size:10px;opacity:.7}
-    .scen-desc{margin-top:12px;padding:10px 12px;background:var(--bg-input);border-radius:6px;font-size:11px;color:var(--text-dim);line-height:1.6;border-left:2px solid var(--accent)}
-    .slider-label{display:flex;justify-content:space-between;margin-bottom:6px}
-    .slider-label span{font-size:11px;color:var(--text-dim)}
-    .slider-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent);font-weight:500}
-    input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin-bottom:10px}
-    .custom-label{font-size:11px;color:var(--text-dim);display:block;margin-bottom:6px}
-    input[type=number]{background:var(--bg-input);border:1px solid var(--border-mid);border-radius:4px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:5px 8px;width:100%}
+    body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+    header{position:sticky;top:0;z-index:100;background:rgba(8,12,16,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;letter-spacing:.15em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+    .logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:breathe 3s ease-in-out infinite}
+    @keyframes breathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+    .logo-sub{color:var(--accent);font-size:11px;font-weight:400;letter-spacing:.1em;margin-left:4px}
+    .header-pills{display:flex;gap:8px;align-items:center}
+    .pill{font-size:10px;font-weight:500;letter-spacing:.08em;padding:4px 10px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);background:var(--bg2)}
+    .pill.live{border-color:rgba(0,230,118,.3);color:var(--green);background:rgba(0,230,118,.08)}
+    .pill.live::before{content:'●';margin-right:5px;font-size:8px;animation:breathe 2s infinite}
+    .page{max-width:1400px;margin:0 auto;padding:24px;position:relative;z-index:1}
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start}
+    @media(max-width:960px){.layout{grid-template-columns:1fr}}
+    .panel{background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
+    .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.3),transparent)}
+    .panel-title{font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .panel-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .scen-list{display:flex;flex-direction:column;gap:6px}
+    .scen-btn{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:10px 14px;font-family:inherit;font-size:12px;font-weight:500;color:var(--text2);text-align:left;transition:all .2s;display:flex;justify-content:space-between;align-items:center}
+    .scen-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+    .scen-btn.active{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.4);color:var(--accent)}
+    .scen-right{text-align:right}
+    .scen-price{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);display:block}
+    .scen-temp{font-size:10px;color:var(--text3)}
+    .scen-btn.active .scen-price,.scen-btn.active .scen-temp{color:var(--accent);opacity:.7}
+    .scen-desc{margin-top:12px;padding:10px 12px;background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.1);border-radius:6px;font-size:11px;color:var(--text2);line-height:1.7}
+    .slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .slider-header label{font-size:11px;color:var(--text2)}
+    .slider-value{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--accent)}
+    input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bg3);outline:none;margin-bottom:16px}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 10px rgba(0,212,255,.5)}
+    .input-label{font-size:11px;color:var(--text2);display:block;margin-bottom:6px}
+    input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 12px}
     input[type=number]:focus{outline:1px solid var(--accent)}
-    .upload-label{font-size:11px;color:var(--text-dim);display:block;margin-bottom:6px}
-    .upload-row{display:flex;gap:8px}
-    .upload-row input[type=file]{flex:1;font-size:11px;color:var(--text-dim);background:var(--bg-input);border:1px solid var(--border);border-radius:4px;padding:4px 8px}
-    input[type=file]::file-selector-button{background:var(--bg-input);border:1px solid var(--border-mid);border-radius:3px;color:var(--text-dim);font-family:inherit;font-size:11px;padding:3px 10px;cursor:pointer;margin-right:8px}
+    .upload-row{display:flex;gap:8px;margin-top:6px}
+    .upload-row input[type=file]{flex:1;font-size:10px;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:6px 10px}
+    input[type=file]::file-selector-button{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--text2);font-family:inherit;font-size:10px;padding:3px 8px;cursor:pointer;margin-right:8px}
     input[type=file]::file-selector-button:hover{border-color:var(--accent);color:var(--accent)}
-    .btn-sm{background:var(--bg-input);border:1px solid var(--border-mid);border-radius:4px;color:var(--text-dim);font-family:inherit;font-size:11px;padding:4px 10px;cursor:pointer;white-space:nowrap}
-    .btn-sm:hover{border-color:var(--accent);color:var(--accent)}
-    .upload-ok{font-size:10px;color:var(--live);margin-top:5px}
-    .upload-err{font-size:10px;color:#ef4444;margin-top:5px}
-    .run-btn{width:100%;background:linear-gradient(135deg,#0ea5e9,#6366f1);border:none;border-radius:6px;cursor:pointer;padding:11px 22px;font-family:inherit;font-size:13px;color:white;letter-spacing:.02em;font-weight:600;transition:opacity .2s}
-    .run-btn:hover{opacity:.88}
-    .run-btn:disabled{opacity:.4;cursor:not-allowed}
-    .formula{background:var(--bg-input);border-radius:6px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);line-height:2.1;margin-top:14px}
-    .formula .hi{color:var(--accent)}
-    .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-    @media(max-width:700px){.metrics-grid{grid-template-columns:repeat(2,1fr)}}
-    .metric{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
-    .metric-label{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
-    .metric-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:700}
-    .metric-val.red{color:#ef4444}.metric-val.green{color:#22c55e}.metric-val.accent{color:var(--accent)}
-    .metric-sub{font-size:10px;color:var(--text-dim);margin-top:3px}
-    .gauge-wrap{display:flex;justify-content:center;margin:4px 0 8px}
-    .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;gap:0}
-    .tab-btn{background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;padding:8px 16px;transition:all .15s;color:var(--text-dim)}
+    .btn-xs{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-family:inherit;font-size:11px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .15s}
+    .btn-xs:hover{border-color:var(--accent);color:var(--accent)}
+    .upload-ok{font-size:10px;color:var(--green);margin-top:6px}
+    .upload-err{font-size:10px;color:var(--red);margin-top:6px}
+    .run-btn{width:100%;margin-top:4px;background:linear-gradient(135deg,#00aaff,#0066cc);border:none;border-radius:8px;cursor:pointer;padding:13px;font-family:inherit;font-size:13px;font-weight:600;color:white;letter-spacing:.05em;text-transform:uppercase;transition:all .2s;position:relative;overflow:hidden}
+    .run-btn:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(0,150,255,.3)}
+    .run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+    .formula{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);line-height:2.2;margin-top:4px}
+    .formula .op{color:var(--accent);margin:0 4px}
+    .formula .hi{color:var(--text2)}
+    .formula .result{color:var(--accent);font-weight:600}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+    @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
+    .metric{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden}
+    .metric::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.2),transparent)}
+    .metric-label{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+    .metric-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:500;line-height:1;margin-bottom:4px}
+    .metric-val.red{color:var(--red)}.metric-val.green{color:var(--green)}.metric-val.accent{color:var(--accent)}
+    .metric-sub{font-size:10px;color:var(--text3)}
+    .gauge-panel{margin-bottom:14px}
+    .gauge-wrap{display:flex;justify-content:center;padding:8px 0}
+    .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px}
+    .tab-btn{background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;padding:10px 18px;color:var(--text3);letter-spacing:.03em;transition:all .15s}
     .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-    .tab-btn:hover:not(.active){color:var(--text-mid)}
+    .tab-btn:hover:not(.active){color:var(--text2)}
     table{width:100%;border-collapse:collapse;font-size:12px}
-    th{text-align:left;padding:8px 10px;font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border)}
-    td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
-    tr:hover td{background:var(--bg-row)}
-    .ticker{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);font-weight:500}
-    .co{color:var(--text-mid);font-size:12px}
-    .scope3{font-size:9px;color:#f97316;display:block;margin-top:1px}
-    .tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:9px;font-weight:600;letter-spacing:.05em;border:1px solid}
-    .tag-Energy{color:#ef4444;border-color:#ef444440;background:#ef444412}
-    .tag-Materials{color:#f97316;border-color:#f9731640;background:#f9731612}
-    .tag-Industrials{color:#eab308;border-color:#eab30840;background:#eab30812}
-    .tag-Healthcare{color:#3b82f6;border-color:#3b82f640;background:#3b82f612}
-    .tag-Financials{color:#8b5cf6;border-color:#8b5cf640;background:#8b5cf612}
-    .tag-Consumer{color:#22c55e;border-color:#22c55e40;background:#22c55e12}
-    .tag-Utilities{color:#06b6d4;border-color:#06b6d440;background:#06b6d412}
-    .bar-wrap{display:flex;align-items:center;gap:8px}
-    .bar-bg{flex:1;background:var(--bg-track);border-radius:3px;height:6px;overflow:hidden}
-    .bar-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-    .bar-val{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;min-width:44px;text-align:right}
-    .dir-inc{color:#22c55e;font-weight:600;font-family:'DM Mono',monospace;font-size:10px}
-    .dir-red{color:#ef4444;font-weight:600;font-family:'DM Mono',monospace;font-size:10px}
-    .dir-hld{color:var(--text-dim);font-family:'DM Mono',monospace;font-size:10px}
-    .dpos{color:#22c55e;font-family:'DM Mono',monospace;font-size:11px}
-    .dneg{color:#ef4444;font-family:'DM Mono',monospace;font-size:11px}
-    .mono{font-family:'DM Mono',monospace;font-size:11px}
-    .ai-lbl{display:inline-block;background:#1e293b;color:var(--accent);font-size:9px;font-weight:600;letter-spacing:.1em;padding:3px 9px;border-radius:3px;margin-bottom:12px;border:1px solid var(--border-mid)}
-    .memo-text{font-size:13px;line-height:1.8;color:var(--text-mid);white-space:pre-wrap}
-    .disclaimer{font-size:10px;color:var(--text-dim);margin-top:14px;font-style:italic;line-height:1.6;border-top:1px solid var(--border);padding-top:10px}
-    .loading{display:none;text-align:center;padding:60px 20px}
+    th{text-align:left;padding:8px 12px;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
+    td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+    tr:hover td{background:rgba(255,255,255,.02)}
+    .ticker{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:500}
+    .co{color:var(--text);font-size:12px}
+    .scope3{font-size:9px;color:var(--amber);display:block;margin-top:2px}
+    .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)}
+    .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:.06em;border:1px solid}
+    .tag-Energy{color:#ff6b6b;border-color:rgba(255,107,107,.3);background:rgba(255,107,107,.08)}
+    .tag-Materials{color:#ffa94d;border-color:rgba(255,169,77,.3);background:rgba(255,169,77,.08)}
+    .tag-Industrials{color:#ffe066;border-color:rgba(255,224,102,.3);background:rgba(255,224,102,.08)}
+    .tag-Healthcare{color:#74c0fc;border-color:rgba(116,192,252,.3);background:rgba(116,192,252,.08)}
+    .tag-Financials{color:#b197fc;border-color:rgba(177,151,252,.3);background:rgba(177,151,252,.08)}
+    .tag-Consumer{color:#69db7c;border-color:rgba(105,219,124,.3);background:rgba(105,219,124,.08)}
+    .tag-Utilities{color:#38d9a9;border-color:rgba(56,217,169,.3);background:rgba(56,217,169,.08)}
+    .bar-wrap{display:flex;align-items:center;gap:10px}
+    .bar-bg{flex:1;background:var(--bg3);border-radius:2px;height:5px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+    .bar-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;min-width:46px;text-align:right}
+    .dir-inc{color:var(--green);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em}
+    .dir-red{color:var(--red);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em}
+    .dir-hld{color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px}
+    .dpos{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:11px}
+    .dneg{color:var(--red);font-family:'JetBrains Mono',monospace;font-size:11px}
+    .wf-wrap{overflow-x:auto;padding:8px 0}
+    .ai-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:20px;padding:4px 12px;font-size:9px;font-weight:600;letter-spacing:.12em;color:var(--accent);margin-bottom:16px}
+    .ai-badge::before{content:'◆';font-size:7px}
+    .memo-body{font-family:'Instrument Serif',Georgia,serif;font-size:15px;line-height:1.9;color:var(--text2);white-space:pre-wrap}
+    .disclaimer{font-size:10px;color:var(--text3);margin-top:16px;padding-top:14px;border-top:1px solid var(--border);line-height:1.7;font-style:italic}
+    .loading{display:none;text-align:center;padding:80px 20px}
     .loading.visible{display:block}
-    .spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+    .spinner{width:36px;height:36px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .loading p{font-size:12px;color:var(--text-dim)}
-    .err-box{display:none;background:#1f0a0a;border:1px solid #ef444440;border-radius:6px;padding:14px;color:#ef4444;font-size:12px;margin-bottom:16px}
+    .loading p{font-size:12px;color:var(--text3);letter-spacing:.05em}
+    .err-box{display:none;background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.3);border-radius:8px;padding:14px 16px;color:var(--red);font-size:12px;margin-bottom:14px}
     .err-box.visible{display:block}
     .results{display:none}
-    .results.visible{display:block}
-    footer{text-align:center;padding:32px 20px;font-size:10px;color:var(--text-dim);border-top:1px solid var(--border);margin-top:40px;letter-spacing:.03em;line-height:2}
+    .results.visible{display:block;animation:fadeUp .3s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;text-align:center;color:var(--text3)}
+    .placeholder-icon{font-size:40px;margin-bottom:16px;opacity:.3}
+    .placeholder h3{font-size:14px;font-weight:500;color:var(--text2);margin-bottom:8px}
+    .placeholder p{font-size:12px;line-height:1.7;max-width:300px}
+    .placeholder strong{color:var(--accent)}
+    footer{text-align:center;padding:32px 20px;font-size:10px;color:var(--text3);border-top:1px solid var(--border);margin-top:40px;letter-spacing:.05em;line-height:2.2;position:relative;z-index:1}
   </style>
 </head>
 <body>
 <header>
-  <div class="logo">CLIMATE TRANSITION<span>·</span>EaR ENGINE</div>
-  <div class="header-meta">
-    <span><span class="live-dot"></span>Live</span>
-    <span>NGFS Phase V · Nov 2024</span>
-    <span>BoE CBES Validated</span>
-    <span>Stirling Solvers · CFA AI Challenge 2026</span>
+  <div class="logo">
+    <span class="logo-dot"></span>
+    <span>EaR ENGINE</span>
+    <span class="logo-sub">CLIMATE TRANSITION RISK</span>
+  </div>
+  <div class="header-pills">
+    <span class="pill live">Live</span>
+    <span class="pill">NGFS Phase V</span>
+    <span class="pill">BoE CBES Validated</span>
+    <span class="pill">Stirling Solvers 2026</span>
   </div>
 </header>
 
 <div class="page">
-  <div class="two-col">
+  <div class="layout">
     <div>
-      <div class="card">
-        <div class="card-title">Scenario</div>
-        <div class="scen-grid">
+      <div class="panel">
+        <div class="panel-title">Scenario</div>
+        <div class="scen-list">
           {% for id, s in scenarios.items() %}
           <button class="scen-btn {% if id == 'netzero' %}active{% endif %}"
-                  data-id="{{ id }}"
-                  onclick="selectScenario('{{ id }}', this)">
+                  data-id="{{ id }}" onclick="selectScenario('{{ id }}', this)">
             <span>{{ s.label }}</span>
-            <span class="scen-temp">{{ s.temp }} · £{{ s.carbon_price }}/t</span>
+            <span class="scen-right">
+              <span class="scen-price">£{{ s.carbon_price }}/t</span>
+              <span class="scen-temp">{{ s.temp }}</span>
+            </span>
           </button>
           {% endfor %}
         </div>
         <div class="scen-desc" id="scen-desc">{{ scenarios.netzero.description }}</div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Controls</div>
-        <div class="slider-label"><span>Turnover Limit</span><span class="slider-val" id="tv">25%</span></div>
+      <div class="panel">
+        <div class="panel-title">Controls</div>
+        <div class="slider-header">
+          <label>Turnover Limit</label>
+          <span class="slider-value" id="tv">25%</span>
+        </div>
         <input type="range" id="turnover-slider" min="5" max="100" step="5" value="25" oninput="document.getElementById('tv').textContent=this.value+'%'">
-        <label class="custom-label">Custom carbon price override (£/t) — leave blank for scenario default</label>
-        <input type="number" id="custom-carbon" placeholder="e.g. 150" min="1" max="1000">
+        <label class="input-label">Custom carbon price override (£/t)</label>
+        <input type="number" id="custom-carbon" placeholder="Leave blank for scenario default" min="1" max="1000">
       </div>
 
-      <div class="card">
-        <div class="card-title">Portfolio</div>
-        <label class="upload-label">Upload CSV or use default 15 FTSE 100 holdings</label>
+      <div class="panel">
+        <div class="panel-title">Portfolio</div>
+        <label class="input-label">Upload CSV or use default 15 FTSE 100 holdings</label>
         <div class="upload-row">
           <input type="file" id="pf" accept=".csv">
-          <button class="btn-sm" onclick="uploadPortfolio()">Upload</button>
-          <button class="btn-sm" onclick="resetPortfolio()">Reset</button>
+          <button class="btn-xs" onclick="uploadPortfolio()">Upload</button>
+          <button class="btn-xs" onclick="resetPortfolio()">Reset</button>
         </div>
         <div id="upload-status"></div>
-        <div style="margin-top:8px;font-size:10px;color:var(--text-dim)">Required: ticker, name, sector, weight, emissions_intensity, ebitda_margin, pass_through</div>
+        <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.8">Required: ticker · name · sector · weight<br>emissions_intensity · ebitda_margin · pass_through</div>
       </div>
 
       <button class="run-btn" id="run-btn" onclick="runAnalysis()">Run Analysis</button>
 
-      <div class="card">
-        <div class="card-title">EaR Formula Chain</div>
+      <div class="panel" style="margin-top:12px">
+        <div class="panel-title">Formula Chain</div>
         <div class="formula">
-          emissions_intensity × Δcarbon / 1000<br>
-          + subsidy + energy + BCA impacts<br>
-          × (1 − pass_through_rate)<br>
-          ÷ EBITDA margin<br>
-          × 0.75 tax/leverage adj.<br>
-          = <span class="hi">EPS at Risk</span> (capped 95%)
+          <span class="hi">emissions_intensity</span><span class="op">×</span>Δcarbon / 1000<br>
+          <span class="op">+</span>subsidy<span class="op">+</span>energy<span class="op">+</span>BCA impacts<br>
+          <span class="op">×</span>(1<span class="op">−</span>pass_through_rate)<br>
+          <span class="op">÷</span>EBITDA margin<br>
+          <span class="op">×</span>0.75 tax/leverage adj.<br>
+          <span class="op">=</span><span class="result">EPS at Risk</span> (capped 95%)
         </div>
       </div>
     </div>
@@ -167,49 +197,39 @@
     <div>
       <div class="loading" id="loading"><div class="spinner"></div><p>Running climate risk analysis...</p></div>
       <div class="err-box" id="err-box"></div>
-
-      <div id="placeholder" class="card" style="text-align:center;padding:60px 20px">
-        <div style="font-size:11px;color:var(--text-dim);line-height:2">
-          Select a scenario and click <strong style="color:var(--accent)">Run Analysis</strong><br>
-          to generate portfolio-level Earnings-at-Risk figures<br>and rebalancing recommendations.
-        </div>
+      <div id="placeholder" class="panel placeholder">
+        <div class="placeholder-icon">◈</div>
+        <h3>Select a scenario and run analysis</h3>
+        <p>Generate portfolio-level <strong>Earnings-at-Risk</strong> figures and rebalancing recommendations across NGFS Phase V climate scenarios.</p>
       </div>
 
       <div class="results" id="results">
-        <div class="metrics-grid">
+        <div class="metrics">
           <div class="metric"><div class="metric-label">Portfolio EaR</div><div class="metric-val red" id="m1">—</div><div class="metric-sub" id="m1s">on £100m fund</div></div>
-          <div class="metric"><div class="metric-label">Optimised EaR</div><div class="metric-val green" id="m2">—</div><div class="metric-sub" id="m2s">on £100m fund</div></div>
+          <div class="metric"><div class="metric-label">Optimised EaR</div><div class="metric-val green" id="m2">—</div><div class="metric-sub" id="m2s">after rebalancing</div></div>
           <div class="metric"><div class="metric-label">EaR Reduction</div><div class="metric-val green" id="m3">—</div><div class="metric-sub" id="m3s">saving on £100m</div></div>
           <div class="metric"><div class="metric-label">Turnover Applied</div><div class="metric-val accent" id="m4">—</div><div class="metric-sub">within your limit</div></div>
         </div>
 
-        <div class="card">
-          <div class="card-title">Portfolio EaR Gauge</div>
-          <div class="gauge-wrap"><svg id="gauge" width="260" height="130" viewBox="0 0 260 130"></svg></div>
+        <div class="panel gauge-panel">
+          <div class="panel-title">Risk Gauge</div>
+          <div class="gauge-wrap"><svg id="gauge" width="280" height="140" viewBox="0 0 280 140"></svg></div>
         </div>
 
-        <div class="card">
+        <div class="panel">
           <div class="tabs">
             <button class="tab-btn active" onclick="showTab('h',this)">Holdings EaR</button>
             <button class="tab-btn" onclick="showTab('t',this)">Rebalancing</button>
             <button class="tab-btn" onclick="showTab('w',this)">Waterfall</button>
             <button class="tab-btn" onclick="showTab('m',this)">AI Memo</button>
           </div>
-          <div id="tab-h">
-            <table><thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Weight</th><th>EPS at Risk</th><th>EaR Contrib.</th></tr></thead>
-            <tbody id="htb"></tbody></table>
-          </div>
-          <div id="tab-t" style="display:none">
-            <table><thead><tr><th>Ticker</th><th>Company</th><th>Action</th><th>From</th><th>To</th><th>Change</th></tr></thead>
-            <tbody id="ttb"></tbody></table>
-          </div>
-          <div id="tab-w" style="display:none;overflow-x:auto">
-            <canvas id="wf" height="260"></canvas>
-          </div>
+          <div id="tab-h"><table><thead><tr><th>Ticker</th><th>Company</th><th>Sector</th><th>Weight</th><th>EPS at Risk</th><th>EaR Contrib.</th></tr></thead><tbody id="htb"></tbody></table></div>
+          <div id="tab-t" style="display:none"><table><thead><tr><th>Ticker</th><th>Company</th><th>Action</th><th>From</th><th>To</th><th>Change</th></tr></thead><tbody id="ttb"></tbody></table></div>
+          <div id="tab-w" style="display:none"><div class="wf-wrap"><canvas id="wf" height="260"></canvas></div></div>
           <div id="tab-m" style="display:none">
-            <div class="ai-lbl">AI-ASSISTED — NOT INVESTMENT ADVICE</div>
-            <div class="memo-text" id="memo">—</div>
-            <div class="disclaimer">Generated by Claude Sonnet (Anthropic) from deterministic model outputs only. No numerical values are produced or modified by AI. Not investment advice. Financial sector holdings may understate risk due to Scope 3 exclusion.</div>
+            <div class="ai-badge">AI-ASSISTED — NOT INVESTMENT ADVICE</div>
+            <div class="memo-body" id="memo">—</div>
+            <div class="disclaimer">Generated by Claude Sonnet (Anthropic) from deterministic model outputs only. No numerical values are produced or modified by AI. Not investment advice. Financial sector holdings may understate risk due to Scope 3 financed emissions exclusion.</div>
           </div>
         </div>
       </div>
@@ -220,147 +240,131 @@
 <footer>
   Stirling Solvers · University of Stirling · CFA Institute AI Investment Challenge 2026<br>
   NGFS Phase V Scenarios (Nov 2024) · BoE CBES 2021 Cross-Validated · Fabra &amp; Reguant (2014) Pass-Through Rates<br>
-  Not investment advice · MIT Licence
+  Not investment advice · MIT Licence · <a href="https://github.com/1yr1c/ear-engine" style="color:var(--accent);text-decoration:none">GitHub</a>
 </footer>
 
 <script>
 const SCENARIOS = {{ scenarios | tojson }};
-const SC = {Energy:"#ef4444",Materials:"#f97316",Industrials:"#eab308",Healthcare:"#3b82f6",Financials:"#8b5cf6",Consumer:"#22c55e",Utilities:"#06b6d4"};
-const rc = v => v>25?"#ef4444":v>12?"#f97316":v>5?"#eab308":"#22c55e";
-let sel = "netzero", custPort = null;
+const SC={Energy:"#ff6b6b",Materials:"#ffa94d",Industrials:"#ffe066",Healthcare:"#74c0fc",Financials:"#b197fc",Consumer:"#69db7c",Utilities:"#38d9a9"};
+const rc=v=>v>25?"#ff4757":v>12?"#ffa94d":v>5?"#ffe066":"#00e676";
+let sel="netzero",custPort=null,wfData=[];
 
-function selectScenario(id, btn) {
-  sel = id;
+function selectScenario(id,btn){
+  sel=id;
   document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-  document.getElementById("scen-desc").textContent = SCENARIOS[id]?.description || "";
+  document.getElementById("scen-desc").textContent=SCENARIOS[id]?.description||"";
 }
 
-function showTab(name, btn) {
+function showTab(name,btn){
   ["h","t","w","m"].forEach(t=>document.getElementById("tab-"+t).style.display=t===name?"":"none");
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-  if(name==="w") setTimeout(drawWF, 50);
+  if(name==="w")setTimeout(drawWF,50);
 }
 
-function drawGauge(val, max) {
-  const svg = document.getElementById("gauge");
-  const cx=130, cy=115, r=90;
-  const pct = Math.min(val/max,1);
-  const col = rc(val);
-  const segs = [{s:0,e:.33,c:"#22c55e"},{s:.33,e:.60,c:"#eab308"},{s:.60,e:.80,c:"#f97316"},{s:.80,e:1,c:"#ef4444"}];
-  let h = "";
+function drawGauge(val,max){
+  const svg=document.getElementById("gauge");
+  const cx=140,cy=125,r=100;
+  const pct=Math.min(val/max,1),col=rc(val);
+  const segs=[{s:0,e:.33,c:"#00e676"},{s:.33,e:.60,c:"#ffe066"},{s:.60,e:.80,c:"#ffa94d"},{s:.80,e:1,c:"#ff4757"}];
+  let h="";
   segs.forEach(sg=>{
-    const a1=Math.PI+sg.s*Math.PI, a2=Math.PI+sg.e*Math.PI;
-    h+=`<path d="M${cx+r*Math.cos(a1)} ${cy+r*Math.sin(a1)} A${r} ${r} 0 0 1 ${cx+r*Math.cos(a2)} ${cy+r*Math.sin(a2)}" fill="none" stroke="${sg.c}" stroke-width="10" opacity=".2"/>`;
+    const a1=Math.PI+sg.s*Math.PI,a2=Math.PI+sg.e*Math.PI;
+    h+=`<path d="M${cx+r*Math.cos(a1)} ${cy+r*Math.sin(a1)} A${r} ${r} 0 0 1 ${cx+r*Math.cos(a2)} ${cy+r*Math.sin(a2)}" fill="none" stroke="${sg.c}" stroke-width="12" opacity=".18"/>`;
   });
-  const ang = Math.PI + pct*Math.PI;
-  const nx = cx+r*Math.cos(ang), ny = cy+r*Math.sin(ang);
-  const lA = pct>.5?1:0;
-  const x1=cx+r*Math.cos(Math.PI), y1=cy+r*Math.sin(Math.PI);
-  h+=`<path d="M${x1} ${y1} A${r} ${r} 0 ${lA} 1 ${nx} ${ny}" fill="none" stroke="${col}" stroke-width="10" stroke-linecap="round"/>`;
-  const nr=r-14; h+=`<line x1="${cx}" y1="${cy}" x2="${cx+nr*Math.cos(ang)}" y2="${cy+nr*Math.sin(ang)}" stroke="${col}" stroke-width="2" stroke-linecap="round"/>`;
-  h+=`<circle cx="${cx}" cy="${cy}" r="5" fill="${col}"/>`;
-  h+=`<text x="${cx}" y="${cy-16}" text-anchor="middle" fill="${col}" font-size="18" font-weight="700" font-family="'DM Mono',monospace">${val.toFixed(1)}%</text>`;
-  h+=`<text x="${cx}" y="${cy-2}" text-anchor="middle" fill="#64748b" font-size="9" font-family="'DM Mono',monospace">PORTFOLIO EaR</text>`;
-  svg.innerHTML = h;
+  const ang=Math.PI+pct*Math.PI,nx=cx+r*Math.cos(ang),ny=cy+r*Math.sin(ang),lA=pct>.5?1:0;
+  const x1=cx+r*Math.cos(Math.PI),y1=cy+r*Math.sin(Math.PI);
+  h+=`<path d="M${x1} ${y1} A${r} ${r} 0 ${lA} 1 ${nx} ${ny}" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round"/>`;
+  const nr=r-18;
+  h+=`<line x1="${cx}" y1="${cy}" x2="${cx+nr*Math.cos(ang)}" y2="${cy+nr*Math.sin(ang)}" stroke="${col}" stroke-width="2" stroke-linecap="round"/>`;
+  h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${col}" opacity=".8"/><circle cx="${cx}" cy="${cy}" r="3" fill="#080c10"/>`;
+  h+=`<text x="${cx}" y="${cy-22}" text-anchor="middle" fill="${col}" font-size="22" font-weight="600" font-family="'JetBrains Mono',monospace">${val.toFixed(1)}%</text>`;
+  h+=`<text x="${cx}" y="${cy-6}" text-anchor="middle" fill="rgba(255,255,255,.2)" font-size="9" font-family="'Space Grotesk',sans-serif" letter-spacing="2">PORTFOLIO EaR</text>`;
+  svg.innerHTML=h;
 }
 
-let wfData = [];
-function drawWF() {
-  const c = document.getElementById("wf");
-  if (!c || !wfData.length) return;
-  c.width = c.parentElement.offsetWidth || 600;
-  const ctx = c.getContext("2d");
-  const W=c.width, H=260, n=wfData.length;
-  const bw = Math.max(20, Math.floor((W-80)/n)-4);
-  const maxV = Math.max(...wfData.map(h=>h.eps_impact*100));
-  const scale = (H-50)/(maxV||1);
+function drawWF(){
+  const c=document.getElementById("wf");
+  if(!c||!wfData.length)return;
+  c.width=c.parentElement.offsetWidth||700;
+  const ctx=c.getContext("2d"),W=c.width,H=260,n=wfData.length;
+  const bw=Math.max(22,Math.floor((W-80)/n)-6);
+  const sorted=[...wfData].sort((a,b)=>b.eps_impact-a.eps_impact);
+  const maxV=Math.max(...sorted.map(h=>h.eps_impact*100));
+  const scale=(H-55)/(maxV||1);
   ctx.clearRect(0,0,W,H);
-  wfData.sort((a,b)=>b.eps_impact-a.eps_impact).forEach((h,i)=>{
-    const x=40+i*(bw+4), val=h.eps_impact*100, bh=Math.max(2,val*scale), y=H-30-bh;
-    ctx.fillStyle = SC[h.sector]||"#64748b";
-    ctx.globalAlpha = 0.85;
-    ctx.beginPath(); ctx.roundRect(x,y,bw,bh,2); ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = SC[h.sector]||"#64748b";
-    ctx.font = "9px 'DM Mono',monospace";
-    ctx.textAlign = "center";
-    ctx.fillText(h.ticker, x+bw/2, H-12);
-    if (val > 2) ctx.fillText(val.toFixed(0)+"%", x+bw/2, y-4);
+  sorted.forEach((h,i)=>{
+    const x=40+i*(bw+6),val=h.eps_impact*100,bh=Math.max(3,val*scale),y=H-32-bh,col=SC[h.sector]||"#64748b";
+    ctx.globalAlpha=.85;ctx.fillStyle=col;
+    ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,bw,bh,3);else ctx.rect(x,y,bw,bh);ctx.fill();
+    ctx.globalAlpha=1;ctx.fillStyle="rgba(255,255,255,.3)";
+    ctx.font="9px 'JetBrains Mono'";ctx.textAlign="center";ctx.fillText(h.ticker,x+bw/2,H-14);
+    if(val>1.5){ctx.fillStyle=col;ctx.font="8px 'JetBrains Mono'";ctx.fillText(val.toFixed(0)+"%",x+bw/2,y-5);}
   });
 }
 
-async function runAnalysis() {
-  const btn = document.getElementById("run-btn");
-  btn.disabled = true;
+async function runAnalysis(){
+  const btn=document.getElementById("run-btn");btn.disabled=true;
   document.getElementById("loading").classList.add("visible");
   document.getElementById("results").classList.remove("visible");
-  document.getElementById("placeholder").style.display = "none";
+  document.getElementById("placeholder").style.display="none";
   document.getElementById("err-box").classList.remove("visible");
-  const turn = parseInt(document.getElementById("turnover-slider").value)/100;
-  const cc = document.getElementById("custom-carbon").value;
-  const body = {scenario_id:sel, turnover_limit:turn};
-  if (custPort) body.portfolio = custPort;
-  if (cc) body.custom_carbon = parseInt(cc);
-  try {
-    const r = await fetch("/analyse",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-    const d = await r.json();
-    if (d.error) throw new Error(d.error);
+  const turn=parseInt(document.getElementById("turnover-slider").value)/100;
+  const cc=document.getElementById("custom-carbon").value;
+  const body={scenario_id:sel,turnover_limit:turn};
+  if(custPort)body.portfolio=custPort;
+  if(cc)body.custom_carbon=parseInt(cc);
+  try{
+    const r=await fetch("/analyse",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.error)throw new Error(d.error);
     render(d);
-  } catch(e) {
-    const eb = document.getElementById("err-box");
-    eb.textContent = "Error: "+e.message;
-    eb.classList.add("visible");
+  }catch(e){
+    const eb=document.getElementById("err-box");eb.textContent="Error: "+e.message;eb.classList.add("visible");
     document.getElementById("placeholder").style.display="";
-  } finally {
-    document.getElementById("loading").classList.remove("visible");
-    btn.disabled = false;
-  }
+  }finally{document.getElementById("loading").classList.remove("visible");btn.disabled=false;}
 }
 
-function render(data) {
-  const o=(data.original.portfolio_ear*100), p=(data.optimised.portfolio_ear*100);
-  document.getElementById("m1").textContent = o.toFixed(1)+"%";
-  document.getElementById("m2").textContent = p.toFixed(1)+"%";
-  document.getElementById("m3").textContent = data.ear_reduction_pct.toFixed(1)+"%";
-  document.getElementById("m4").textContent = (data.actual_turnover*100).toFixed(1)+"%";
-  document.getElementById("m1s").textContent = "£"+o.toFixed(2)+"m on £100m";
-  document.getElementById("m2s").textContent = "£"+p.toFixed(2)+"m on £100m";
-  document.getElementById("m3s").textContent = "£"+(data.ear_reduction*100).toFixed(2)+"m saving";
-  drawGauge(o, Math.max(30, Math.ceil(o*1.4/5)*5));
-  const sorted = [...data.original.holdings].sort((a,b)=>b.eps_impact-a.eps_impact);
-  const mx = Math.max(...sorted.map(h=>h.eps_impact));
-  document.getElementById("htb").innerHTML = sorted.map(h=>{
-    const eps=(h.eps_impact*100).toFixed(1), ear=(h.ear*100).toFixed(2);
-    const col=rc(parseFloat(eps)), pct=mx>0?h.eps_impact/mx*100:0;
+function render(data){
+  const o=data.original.portfolio_ear*100,p=data.optimised.portfolio_ear*100;
+  document.getElementById("m1").textContent=o.toFixed(1)+"%";
+  document.getElementById("m2").textContent=p.toFixed(1)+"%";
+  document.getElementById("m3").textContent=data.ear_reduction_pct.toFixed(1)+"%";
+  document.getElementById("m4").textContent=(data.actual_turnover*100).toFixed(1)+"%";
+  document.getElementById("m1s").textContent="£"+o.toFixed(2)+"m on £100m";
+  document.getElementById("m2s").textContent="£"+p.toFixed(2)+"m on £100m";
+  document.getElementById("m3s").textContent="£"+(data.ear_reduction*100).toFixed(2)+"m saving";
+  drawGauge(o,Math.max(30,Math.ceil(o*1.4/5)*5));
+  const sorted=[...data.original.holdings].sort((a,b)=>b.eps_impact-a.eps_impact);
+  const mx=Math.max(...sorted.map(h=>h.eps_impact));
+  document.getElementById("htb").innerHTML=sorted.map(h=>{
+    const eps=(h.eps_impact*100).toFixed(1),ear=(h.ear*100).toFixed(2),col=rc(parseFloat(eps)),pct=mx>0?h.eps_impact/mx*100:0;
     const s3=h.scope3_flag?`<span class="scope3">⚠ Scope 3 excluded</span>`:"";
-    return `<tr><td class="ticker">${h.ticker}</td><td><span class="co">${h.name}</span>${s3}</td><td><span class="tag tag-${h.sector}">${h.sector}</span></td><td class="mono">${(h.weight*100).toFixed(1)}%</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="bar-val" style="color:${col}">${eps}%</span></div></td><td class="mono" style="color:var(--text-dim)">${ear}%</td></tr>`;
+    return `<tr><td class="ticker">${h.ticker}</td><td><span class="co">${h.name}</span>${s3}</td><td><span class="tag tag-${h.sector}">${h.sector}</span></td><td class="mono">${(h.weight*100).toFixed(1)}%</td><td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="bar-val" style="color:${col}">${eps}%</span></div></td><td class="mono" style="color:var(--text3)">${ear}%</td></tr>`;
   }).join("");
-  document.getElementById("ttb").innerHTML = [...data.trades].sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta)).map(t=>{
+  document.getElementById("ttb").innerHTML=[...data.trades].sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta)).map(t=>{
     const dc=t.direction==="INCREASE"?"dir-inc":t.direction==="REDUCE"?"dir-red":"dir-hld";
     const dClass=t.delta>0?"dpos":t.delta<0?"dneg":"";
     const delta=(t.delta>0?"+":"")+(t.delta*100).toFixed(1)+"pp";
     return `<tr><td class="ticker">${t.ticker}</td><td class="co">${t.name}</td><td class="${dc}">${t.direction}</td><td class="mono">${(t.weight_from*100).toFixed(1)}%</td><td class="mono">${(t.weight_to*100).toFixed(1)}%</td><td class="${dClass}">${delta}</td></tr>`;
   }).join("");
-  wfData = data.original.holdings;
-  document.getElementById("memo").textContent = data.memo || "Memo unavailable.";
+  wfData=data.original.holdings;
+  document.getElementById("memo").textContent=data.memo||"Memo unavailable.";
   document.getElementById("results").classList.add("visible");
   document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
-async function uploadPortfolio() {
-  const file=document.getElementById("pf").files[0];
-  const st=document.getElementById("upload-status");
-  if(!file){st.textContent="No file selected.";st.className="upload-err";return}
-  const form=new FormData(); form.append("file",file);
+async function uploadPortfolio(){
+  const file=document.getElementById("pf").files[0],st=document.getElementById("upload-status");
+  if(!file){st.textContent="No file selected.";st.className="upload-err";return;}
+  const form=new FormData();form.append("file",file);
   try{
     const r=await fetch("/upload",{method:"POST",body:form});
     const d=await r.json();
-    if(d.error) throw new Error(d.error);
-    custPort=d.portfolio;
-    st.textContent="✓ Loaded "+d.count+" holdings";st.className="upload-ok";
-  }catch(e){st.textContent="Error: "+e.message;st.className="upload-err"}
+    if(d.error)throw new Error(d.error);
+    custPort=d.portfolio;st.textContent="✓ Loaded "+d.count+" holdings";st.className="upload-ok";
+  }catch(e){st.textContent="Error: "+e.message;st.className="upload-err";}
 }
 function resetPortfolio(){
   custPort=null;document.getElementById("pf").value="";
