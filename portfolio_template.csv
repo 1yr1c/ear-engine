@@ -1,0 +1,16 @@
+ticker,name,sector,weight,emissions_intensity,ebitda_margin,pass_through,beta,source
+SHEL,Shell plc,Energy,0.117,0.180,0.182,0.35,1.10,Shell Sustainability Report 2023
+BP,BP plc,Energy,0.064,0.162,0.148,0.30,1.05,BP ESG Datasheet 2023
+GLEN,Glencore plc,Materials,0.057,0.227,0.098,0.15,1.30,Glencore Sustainability Report 2023
+RIO,Rio Tinto plc,Materials,0.054,0.603,0.420,0.20,0.95,Rio Tinto Climate Report 2023
+AAL,Anglo American plc,Materials,0.031,0.567,0.320,0.18,1.20,Anglo American ESG Report 2023
+BA.,BAE Systems plc,Industrials,0.079,0.015,0.115,0.65,0.70,BAE Systems ESG Data 2023
+RR.,Rolls-Royce Holdings,Industrials,0.069,0.060,0.092,0.60,1.40,Rolls-Royce ESG Report 2023
+AZN,AstraZeneca plc,Healthcare,0.113,0.018,0.320,0.85,0.50,AstraZeneca ESG Data Summary 2023
+GSK,GSK plc,Healthcare,0.054,0.030,0.300,0.80,0.55,GSK ESG Performance Report 2023
+HSBA,HSBC Holdings plc,Financials,0.093,0.010,0.360,0.92,1.00,HSBC ESG Report 2023
+BARC,Barclays plc,Financials,0.060,0.004,0.280,0.90,1.15,Barclays TCFD Report 2023
+LLOY,Lloyds Banking Group,Financials,0.046,0.003,0.310,0.93,1.10,Lloyds ESG Report 2023
+ULVR,Unilever plc,Consumer,0.071,0.025,0.172,0.70,0.60,Unilever Annual Report 2023
+BATS,British American Tobacco,Consumer,0.043,0.104,0.430,0.75,0.45,BAT ESG Report 2023
+NG.,National Grid plc,Utilities,0.049,0.476,0.380,0.85,0.40,National Grid ESG Data 2023
