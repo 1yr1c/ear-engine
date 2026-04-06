@@ -282,9 +282,14 @@ def _run_hmm(df_raw):
 def run_scipy_optimiser(portfolio, turnover_limit=0.25):
     """
     scipy SLSQP portfolio optimiser.
-    Minimises: LAMBDA_EAR * portfolio_EaR + LAMBDA_VOL * portfolio_variance
+    Minimises: LAMBDA_EAR * portfolio_EaR + LAMBDA_VOL * w' * COV * w
     Subject to: weights sum to 1, all weights >= MIN_WEIGHT,
                 actual turnover <= turnover_limit (enforced via bisection)
+
+    Covariance matrix is built from each holding's beta and idiosyncratic
+    EaR contribution — diagonal plus a market factor term from betas.
+    This distributes rebalancing across holdings rather than concentrating
+    into a single low-EaR stock.
 
     Args:
         portfolio: list of holding dicts — must have 'weight', 'eps_impact', 'beta'
@@ -297,15 +302,33 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
     n    = len(portfolio)
     w0   = np.array([h["weight"]     for h in portfolio])
     ear  = np.array([h["eps_impact"] for h in portfolio])
-    beta = np.array([h["beta"]       for h in portfolio])
+    beta = np.array([h["beta"]       for h in portfolio]).reshape(-1, 1)
+
+    # ── Covariance matrix ────────────────────────────────────────────────────
+    # Single-factor model: Cov = beta * beta' * sigma_m^2 + diag(sigma_e^2)
+    # sigma_m = assumed market vol (20% annualised is standard)
+    # sigma_e = idiosyncratic vol estimated from EaR — high EaR holdings
+    #           are treated as having higher idiosyncratic risk, which
+    #           penalises over-concentration into any single stock
+    SIGMA_M = 0.20
+    sigma_e = np.maximum(ear * 0.5, 0.05)  # idiosyncratic vol floor at 5%
+
+    cov_market = (SIGMA_M ** 2) * (beta @ beta.T)
+    cov_idio   = np.diag(sigma_e ** 2)
+    COV        = cov_market + cov_idio
 
     def objective(w):
         portfolio_ear = float(np.dot(w, ear))
-        portfolio_var = float(np.dot(w, beta) ** 2) / 4.0
+        portfolio_var = float(w @ COV @ w)
         return LAMBDA_EAR * portfolio_ear + LAMBDA_VOL * portfolio_var
 
+    # Individual weight cap: no single position > 3x its original weight
+    # or 20% absolute — prevents degenerate concentration
+    max_weights = np.minimum(w0 * 3.0, 0.20)
+    max_weights = np.maximum(max_weights, MIN_WEIGHT * 2)
+    bounds = [(MIN_WEIGHT, float(mx)) for mx in max_weights]
+
     constraints = [{"type": "eq", "fun": lambda w: np.sum(w) - 1.0}]
-    bounds = [(MIN_WEIGHT, 1.0)] * n
 
     result = minimize(
         fun=objective,
