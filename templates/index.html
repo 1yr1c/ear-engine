@@ -527,6 +527,8 @@ function drawRiskLegend(){
     <span style="color:${rc(26)}">● HIGH</span>`;
 }
 drawRiskLegend();
+
+function selScen(id,btn){
   sel=id;
   document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
