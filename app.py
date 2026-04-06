@@ -12,6 +12,12 @@ from ear_engine import (
     compute_portfolio_ear, optimise_portfolio, parse_portfolio_csv
 )
 
+try:
+    from ml_modules import DETECTED_SCENARIO
+    _DEFAULT_SCENARIO_ID = DETECTED_SCENARIO.get("id", "netzero")
+except Exception:
+    _DEFAULT_SCENARIO_ID = "netzero"
+
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024  # 1MB upload limit
 
@@ -86,7 +92,7 @@ def analyse():
     Returns full EaR analysis + optimised portfolio + trade recommendations.
     """
     data = request.get_json()
-    scenario_id    = data.get("scenario_id", "netzero")
+    scenario_id    = data.get("scenario_id", _DEFAULT_SCENARIO_ID)
     turnover_limit = float(data.get("turnover_limit", 0.25))
     custom_portfolio = data.get("portfolio", None)
 
@@ -140,6 +146,20 @@ def get_scenarios():
 @app.route("/portfolio/default")
 def get_default_portfolio():
     return jsonify(PORTFOLIO)
+
+
+@app.route("/ml/status")
+def ml_status():
+    try:
+        from ml_modules import PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO
+        return jsonify({
+            "detected_scenario":   DETECTED_SCENARIO,
+            "passthrough_rates":   PASSTHROUGH_RATES,
+            "emissions_forecasts": EMISSIONS_FORECASTS,
+            "ml_active":           True,
+        })
+    except Exception as e:
+        return jsonify({"ml_active": False, "error": str(e)})
 
 
 if __name__ == "__main__":

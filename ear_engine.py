@@ -81,6 +81,14 @@ SCENARIOS = {
 
 BASELINE_CARBON = 25  # pre-ETS baseline for delta calculation
 
+try:
+    from ml_modules import PASSTHROUGH_RATES, EMISSIONS_FORECASTS, run_scipy_optimiser
+    ML_AVAILABLE = True
+except Exception:
+    ML_AVAILABLE = False
+    PASSTHROUGH_RATES   = {}
+    EMISSIONS_FORECASTS = {}
+
 
 def compute_holding_ear(holding, scenario, pass_through_override=None):
     """
@@ -99,11 +107,23 @@ def compute_holding_ear(holding, scenario, pass_through_override=None):
 
     Returns dict with all intermediate values for transparency.
     """
-    emis   = holding["emissions_intensity"]
     margin = holding["ebitda_margin"]
-    pt     = pass_through_override if pass_through_override is not None else holding["pass_through"]
     weight = holding["weight"]
     sector = holding["sector"]
+
+    # Module 2 ARIMA — use forecasted emissions intensity if available
+    if ML_AVAILABLE and holding["ticker"] in EMISSIONS_FORECASTS:
+        emis = EMISSIONS_FORECASTS[holding["ticker"]]
+    else:
+        emis = holding["emissions_intensity"]
+
+    # Module 1 OLS — use ML pass-through rate if available
+    if pass_through_override is not None:
+        pt = pass_through_override
+    elif ML_AVAILABLE and sector in PASSTHROUGH_RATES:
+        pt = PASSTHROUGH_RATES[sector]
+    else:
+        pt = holding["pass_through"]
 
     carbon = scenario["carbon_price"]
     subsidy = scenario["subsidy_removal"]
@@ -208,33 +228,48 @@ def optimise_portfolio(portfolio, scenario, turnover_limit=0.25, pass_through_ov
     w0 = np.array([h["weight"] for h in portfolio])
     eps = np.array([r["eps_impact"] for r in original["holdings"]])
 
-    # Step 2 — compute inverse-EaR target weights
-    eps_min, eps_max = eps.min(), eps.max()
-    if eps_max == eps_min:
-        raw_t = np.ones(len(eps))
+    # Step 2 — compute target weights
+    if ML_AVAILABLE:
+        # Module 4 — scipy SLSQP mean-variance optimiser
+        holdings_for_scipy = [
+            {
+                "weight":     h["weight"],
+                "eps_impact": r["eps_impact"],
+                "beta":       h.get("beta", 1.0),
+                "ticker":     h["ticker"],
+            }
+            for h, r in zip(portfolio, original["holdings"])
+        ]
+        scipy_result = run_scipy_optimiser(holdings_for_scipy, turnover_limit=turnover_limit)
+        final_w = scipy_result["final_weights"]
+        actual_turnover = scipy_result["actual_turnover"] / 100
     else:
-        raw_t = 1 - (eps - eps_min) / (eps_max - eps_min) + 0.05
-    target = raw_t / raw_t.sum()
-
-    # Step 3 — bisection to find largest scale s where turnover <= limit
-    deltas = target - w0
-
-    def apply_scale(s):
-        w_new = np.maximum(w0 + deltas * s, 0.005)
-        w_new = w_new / w_new.sum()
-        actual_turnover = np.abs(w_new - w0).sum()
-        return w_new, actual_turnover
-
-    lo, hi = 0.0, 1.0
-    for _ in range(50):
-        mid = (lo + hi) / 2
-        _, turn = apply_scale(mid)
-        if turn <= turnover_limit:
-            lo = mid
+        # Fallback — inverse-EaR bisection
+        eps_min, eps_max = eps.min(), eps.max()
+        if eps_max == eps_min:
+            raw_t = np.ones(len(eps))
         else:
-            hi = mid
+            raw_t = 1 - (eps - eps_min) / (eps_max - eps_min) + 0.05
+        target = raw_t / raw_t.sum()
 
-    final_w, actual_turnover = apply_scale(lo)
+        deltas = target - w0
+
+        def apply_scale(s):
+            w_new = np.maximum(w0 + deltas * s, 0.005)
+            w_new = w_new / w_new.sum()
+            actual_turnover = np.abs(w_new - w0).sum()
+            return w_new, actual_turnover
+
+        lo, hi = 0.0, 1.0
+        for _ in range(50):
+            mid = (lo + hi) / 2
+            _, turn = apply_scale(mid)
+            if turn <= turnover_limit:
+                lo = mid
+            else:
+                hi = mid
+
+        final_w, actual_turnover = apply_scale(lo)
 
     # Step 4 — build optimised portfolio with new weights
     opt_portfolio = []
