@@ -174,6 +174,8 @@ def compute_holding_ear(holding, scenario, pass_through_override=None):
         "name":                 holding["name"],
         "sector":               sector,
         "weight":               weight,
+        "emissions_intensity":  holding["emissions_intensity"],
+        "emis_used":            round(emis, 6),
         "carbon_cost_impact":   round(carbon_cost_impact, 6),
         "subsidy_impact":       round(subsidy_impact, 6),
         "energy_input_impact":  round(energy_input_impact, 6),
@@ -230,7 +232,6 @@ def optimise_portfolio(portfolio, scenario, turnover_limit=0.25, pass_through_ov
 
     # Step 2 — compute target weights
     if ML_AVAILABLE:
-        # Module 4 — scipy SLSQP mean-variance optimiser
         holdings_for_scipy = [
             {
                 "weight":     h["weight"],
@@ -244,7 +245,6 @@ def optimise_portfolio(portfolio, scenario, turnover_limit=0.25, pass_through_ov
         final_w = scipy_result["final_weights"]
         actual_turnover = scipy_result["actual_turnover"] / 100
     else:
-        # Fallback — inverse-EaR bisection
         eps_min, eps_max = eps.min(), eps.max()
         if eps_max == eps_min:
             raw_t = np.ones(len(eps))

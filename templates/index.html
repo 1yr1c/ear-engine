@@ -166,7 +166,16 @@
     .ai-badge::before{content:'◆';font-size:6px}
     .memo-body{font-family:'Instrument Serif',Georgia,serif;font-size:15px;line-height:1.95;color:var(--text2);white-space:pre-wrap}
     .disclaimer{font-size:9px;color:var(--text3);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);line-height:1.7;font-style:italic}
-    /* GEN BUTTON */
+    /* ML STATUS */
+    .ml-panel{margin-top:12px}
+    .ml-module{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+    .ml-module:last-child{border-bottom:none}
+    .ml-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
+    .ml-dot.active{background:var(--green);box-shadow:0 0 6px var(--green)}
+    .ml-dot.fallback{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+    .ml-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
+    .ml-where{font-size:9px;color:var(--accent);margin-bottom:2px}
+    .ml-why{font-size:9px;color:var(--text3);line-height:1.5}
     .gen-btn{background:linear-gradient(135deg,#0ea5e9,#6366f1);border:none;border-radius:6px;cursor:pointer;padding:10px 20px;font-family:inherit;font-size:12px;color:white;letter-spacing:.04em;font-weight:600;transition:opacity .2s;margin-bottom:16px}
     .gen-btn:hover{opacity:.85}
     .gen-btn:disabled{opacity:.4;cursor:not-allowed}
@@ -252,6 +261,41 @@
           <span class="op">÷</span>EBITDA margin<br>
           <span class="op">×</span>0.75 tax/leverage<br>
           <span class="op">=</span><span class="res">EPS at Risk</span> (cap 95%)
+        </div>
+      </div>
+      <div class="panel ml-panel">
+        <div class="ptitle">ML Modules</div>
+        <div class="ml-module">
+          <div class="ml-dot active"></div>
+          <div>
+            <div class="ml-name">Module 1 — OLS Regression</div>
+            <div class="ml-where">→ Pass-through rates in EaR formula</div>
+            <div class="ml-why">Replaces static Fabra & Reguant (2014) sector rates with rates estimated from EU ETS price history vs actual gross margins. Higher R² = more empirically grounded EPS impact.</div>
+          </div>
+        </div>
+        <div class="ml-module">
+          <div class="ml-dot active"></div>
+          <div>
+            <div class="ml-name">Module 2 — ARIMA Forecasting</div>
+            <div class="ml-where">→ Emissions intensity per holding</div>
+            <div class="ml-why">Projects each holding's Scope 1+2 emissions intensity forward 3 years using ARIMA(1,1,0) rather than using static 2023 figures. Captures decarbonisation trajectories already underway.</div>
+          </div>
+        </div>
+        <div class="ml-module">
+          <div class="ml-dot fallback" id="hmm-dot"></div>
+          <div>
+            <div class="ml-name">Module 3 — Gaussian HMM</div>
+            <div class="ml-where">→ Default scenario selection</div>
+            <div class="ml-why">Detects current EUA carbon market regime (low volatility / shock / spike) from monthly log returns. Maps detected regime to the most appropriate NGFS scenario on load.</div>
+          </div>
+        </div>
+        <div class="ml-module">
+          <div class="ml-dot active"></div>
+          <div>
+            <div class="ml-name">Module 4 — scipy SLSQP</div>
+            <div class="ml-where">→ Portfolio optimiser weights</div>
+            <div class="ml-why">Mean-variance optimisation minimising λ·EaR + (1-λ)·w'Σw subject to turnover constraint. Uses single-factor covariance matrix (beta + EaR-scaled idiosyncratic risk) to prevent concentration.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -391,6 +435,23 @@ const SC={Energy:"#ff6b6b",Materials:"#ffa94d",Industrials:"#ffe066",Healthcare:
 const rc=v=>v>25?"#ff4757":v>12?"#ffa94d":v>5?"#ffe066":"#00e676";
 const fmt=(v,d=1)=>v==null?"—":v.toFixed(d);
 let sel="netzero",custPort=null,lastData=null,expandedRow=null;
+
+// Check ML status and update HMM dot + default scenario
+fetch("/ml/status").then(r=>r.json()).then(d=>{
+  if(d.ml_active){
+    const hmm=d.detected_scenario;
+    const dot=document.getElementById("hmm-dot");
+    if(hmm&&hmm.source!=="fallback"){
+      dot.classList.remove("fallback");dot.classList.add("active");
+    }
+    // Set default scenario to HMM detected one if valid
+    if(hmm&&hmm.id&&document.querySelector(`.scen-btn[data-id="${hmm.id}"]`)){
+      document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
+      const btn=document.querySelector(`.scen-btn[data-id="${hmm.id}"]`);
+      if(btn){btn.classList.add("active");sel=hmm.id;document.getElementById("scen-desc").textContent=SCENARIOS[hmm.id]?.description||"";}
+    }
+  }
+}).catch(()=>{});
 
 function selScen(id,btn){
   sel=id;
@@ -548,7 +609,7 @@ function render(data){
         <td><span class="co">${h.name}</span>${s3}</td>
         <td><span class="tag tag-${h.sector}">${h.sector}</span></td>
         <td class="mono" style="text-align:right">${(h.weight*100).toFixed(1)}%</td>
-        <td class="mono" style="text-align:right">${h.emissions_intensity?.toFixed(3)||"—"}</td>
+        <td class="mono" style="text-align:right">${(h.emis_used??h.emissions_intensity)?.toFixed(3)||"—"}</td>
         <td class="mono" style="text-align:right">${h.pass_through_used?((h.pass_through_used*100).toFixed(0)+"%"):"—"}</td>
         <td class="mono" style="text-align:right">${(h.net_cost_increase*100).toFixed(2)}%</td>
         <td class="mono" style="text-align:right;color:${col}">${(h.margin_compression*100).toFixed(1)}%</td>
@@ -623,7 +684,7 @@ function render(data){
       <td class="mono" style="text-align:right">${(t.weight_to*100).toFixed(1)}%</td>
       <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:${dCol};font-weight:500">${delta}</td>
       <td style="text-align:right"><span class="action-badge action-${action}">${action==="INC"?"INCREASE":action==="RED"?"REDUCE":"HOLD"}</span></td>
-      <td class="mono" style="text-align:right">${origH?origH.emissions_intensity?.toFixed(3):"—"}</td>
+      <td class="mono" style="text-align:right">${origH?(origH.emis_used??origH.emissions_intensity)?.toFixed(3):"—"}</td>
       <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:${rc(origH?origH.eps_impact*100:0)}">${origH?fmt(origH.eps_impact*100)+"%" :"—"}</td>
     </tr>`;
   }).join("");
