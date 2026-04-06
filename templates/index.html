@@ -207,6 +207,51 @@
     .ph-body strong{color:var(--accent)}
     footer{text-align:center;padding:28px 20px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);margin-top:36px;letter-spacing:.04em;line-height:2.2;position:relative;z-index:1}
     .risk-dots{display:flex;gap:10px;font-size:9px}
+    /* PIPELINE MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--bg1);border:1px solid var(--border2);border-radius:14px;padding:28px;max-width:800px;width:94%;max-height:88vh;overflow-y:auto;position:relative}
+    .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);line-height:1}
+    .modal-close:hover{color:var(--text)}
+    .modal-title{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text);margin-bottom:4px}
+    .modal-sub{font-size:11px;color:var(--text3);margin-bottom:24px}
+    .pipe-row{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;gap:0;align-items:center;margin-bottom:8px}
+    .pipe-module{border:1px solid var(--border2);border-radius:8px;padding:11px 13px}
+    .pipe-module.m1{border-color:rgba(0,102,204,.4);background:rgba(0,102,204,.05)}
+    .pipe-module.m2{border-color:rgba(10,124,76,.4);background:rgba(10,124,76,.05)}
+    .pipe-module.m3{border-color:rgba(180,83,9,.4);background:rgba(180,83,9,.05)}
+    .pipe-module.m4{border-color:rgba(109,40,217,.4);background:rgba(109,40,217,.05)}
+    html.dark .pipe-module.m1{border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.05)}
+    html.dark .pipe-module.m2{border-color:rgba(0,230,118,.35);background:rgba(0,230,118,.05)}
+    html.dark .pipe-module.m3{border-color:rgba(255,179,0,.35);background:rgba(255,179,0,.05)}
+    html.dark .pipe-module.m4{border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.05)}
+    .pipe-tag{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+    .pipe-tag.m1{color:#0066cc}.pipe-tag.m2{color:#0a7c4c}.pipe-tag.m3{color:#b45309}.pipe-tag.m4{color:#6d28d9}
+    html.dark .pipe-tag.m1{color:#00d4ff}html.dark .pipe-tag.m2{color:#00e676}html.dark .pipe-tag.m3{color:#ffb300}html.dark .pipe-tag.m4{color:#a78bfa}
+    .pipe-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
+    .pipe-method{font-size:8px;color:var(--text3);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+    .pipe-input-lbl{font-size:8px;color:var(--text3);margin-bottom:2px;letter-spacing:.04em}
+    .pipe-input{font-size:9px;color:var(--text2);padding:3px 6px;background:var(--bg2);border-radius:3px;margin-bottom:5px;font-family:'JetBrains Mono',monospace}
+    .pipe-output-lbl{font-size:8px;color:var(--text3);margin-bottom:2px;letter-spacing:.04em}
+    .pipe-output{font-size:9px;font-weight:600;padding:3px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+    .pipe-output.m1{color:#0066cc;background:rgba(0,102,204,.1)}html.dark .pipe-output.m1{color:#00d4ff;background:rgba(0,212,255,.1)}
+    .pipe-output.m2{color:#0a7c4c;background:rgba(10,124,76,.1)}html.dark .pipe-output.m2{color:#00e676;background:rgba(0,230,118,.1)}
+    .pipe-output.m3{color:#b45309;background:rgba(180,83,9,.1)}html.dark .pipe-output.m3{color:#ffb300;background:rgba(255,179,0,.1)}
+    .pipe-output.m4{color:#6d28d9;background:rgba(109,40,217,.1)}html.dark .pipe-output.m4{color:#a78bfa;background:rgba(167,139,250,.1)}
+    .pipe-arrow{display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px}
+    .pipe-down-row{display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 0;font-size:9px;color:var(--text3)}
+    .pipe-ear-box{border:1px solid var(--border2);border-radius:8px;padding:14px 18px;margin:4px 0 8px;background:var(--bg2)}
+    .pipe-ear-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+    .pipe-formula{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);line-height:2.1}
+    .pipe-formula .hi1{color:#0066cc}html.dark .pipe-formula .hi1{color:#00d4ff}
+    .pipe-formula .hi2{color:#0a7c4c}html.dark .pipe-formula .hi2{color:#00e676}
+    .pipe-formula .hi4{color:#6d28d9}html.dark .pipe-formula .hi4{color:#a78bfa}
+    .pipe-formula .op{color:var(--accent);margin:0 2px}
+    .pipe-formula .res{font-weight:700;color:var(--text)}
+    .pipe-outputs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .pipe-out-card{border:1px solid var(--border);border-radius:6px;padding:9px 11px;background:var(--bg1)}
+    .pipe-out-col{font-size:8px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;text-transform:uppercase}
+    .pipe-out-val{font-size:10px;color:var(--text);font-weight:500;line-height:1.5}
     html.dark body::before{background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px)}
     html.dark .tag-Energy{color:#ff6b6b;border-color:rgba(255,107,107,.28);background:rgba(255,107,107,.07)}
     html.dark .tag-Materials{color:#ffa94d;border-color:rgba(255,169,77,.28);background:rgba(255,169,77,.07)}
@@ -235,6 +280,7 @@
     <span class="pill">BoE CBES</span>
     <span class="pill">Stirling Solvers 2026</span>
     <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"><span class="ti">☀</span><span id="theme-label">LIGHT</span></button>
+    <button class="theme-toggle" onclick="showPipeline()" style="margin-left:4px"><span class="ti">⬡</span><span>ML PIPELINE</span></button>
   </div>
 </header>
 
@@ -444,6 +490,98 @@
   Not investment advice · MIT Licence · <a href="https://github.com/1yr1c/ear-engine" style="color:var(--accent);text-decoration:none">GitHub</a>
 </footer>
 
+<!-- ML PIPELINE MODAL -->
+<div class="modal-overlay" id="pipeline-modal" onclick="if(event.target===this)closePipeline()">
+  <div class="modal">
+    <button class="modal-close" onclick="closePipeline()">✕</button>
+    <div class="modal-title">ML Pipeline</div>
+    <div class="modal-sub">How each module feeds into the EaR engine and optimiser</div>
+
+    <!-- ROW 1: 4 modules -->
+    <div class="pipe-row">
+      <div class="pipe-module m3">
+        <div class="pipe-tag m3">Module 3</div>
+        <div class="pipe-name">Gaussian HMM</div>
+        <div class="pipe-method">hmmlearn · 3 regimes</div>
+        <div class="pipe-input-lbl">INPUT</div>
+        <div class="pipe-input">EUA monthly log returns</div>
+        <div class="pipe-output-lbl">OUTPUT</div>
+        <div class="pipe-output m3">default scenario_id</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-module m2">
+        <div class="pipe-tag m2">Module 2</div>
+        <div class="pipe-name">ARIMA Forecasting</div>
+        <div class="pipe-method">statsmodels · (1,1,0)</div>
+        <div class="pipe-input-lbl">INPUT</div>
+        <div class="pipe-input">Scope 1+2 history per holding</div>
+        <div class="pipe-output-lbl">OUTPUT</div>
+        <div class="pipe-output m2">emissions_intensity ×15</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-module m1">
+        <div class="pipe-tag m1">Module 1</div>
+        <div class="pipe-name">OLS Regression</div>
+        <div class="pipe-method">sklearn · per sector</div>
+        <div class="pipe-input-lbl">INPUT</div>
+        <div class="pipe-input">EUA price × EBITDA margin</div>
+        <div class="pipe-output-lbl">OUTPUT</div>
+        <div class="pipe-output m1">pass_through rate ×7</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-module m4" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:100px">
+        <div class="pipe-tag m4" style="text-align:center">Module 4</div>
+        <div class="pipe-name">scipy SLSQP</div>
+        <div class="pipe-method">mean-variance opt.</div>
+        <div style="font-size:9px;color:var(--text3);margin-top:4px">takes EaR outputs below</div>
+      </div>
+    </div>
+
+    <!-- DOWN ARROWS -->
+    <div class="pipe-down-row">
+      <span style="opacity:.3">M3 sets carbon price →</span>
+      <span style="opacity:.3">M2 + M1 feed formula ↓</span>
+      <span style="opacity:.3">→ EaR feeds M4 ↓</span>
+    </div>
+
+    <!-- EaR FORMULA BOX -->
+    <div class="pipe-ear-box">
+      <div class="pipe-ear-title">EaR Formula Chain — per holding</div>
+      <div class="pipe-formula">
+        <span class="hi2">emissions_intensity</span><span class="op">×</span>Δcarbon<span class="op">/</span>1000 <span style="color:var(--text3);font-size:9px">← M2</span><br>
+        <span class="op">+</span> subsidy_impact <span class="op">+</span> energy_impact <span class="op">+</span> BCA_impact<br>
+        <span class="op">=</span> total_cost_increase<br>
+        <span class="op">×</span> (1 <span class="op">−</span> <span class="hi1">pass_through</span>) <span style="color:var(--text3);font-size:9px">← M1</span><br>
+        <span class="op">÷</span> EBITDA_margin<br>
+        <span class="op">×</span> 0.75 <span style="color:var(--text3);font-size:8px">(tax/leverage adj.)</span><br>
+        <span class="op">=</span> <span class="res">EPS at Risk</span> <span style="color:var(--text3);font-size:9px">(capped 95%)</span>
+      </div>
+    </div>
+
+    <!-- OUTPUT CARDS -->
+    <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Where each module's output appears in the UI</div>
+    <div class="pipe-outputs-row">
+      <div class="pipe-out-card">
+        <div class="pipe-out-col" style="color:#b45309">M3 — HMM</div>
+        <div class="pipe-out-val">Default scenario selected on page load<br><span style="color:var(--text3);font-size:9px">→ sets carbon price for everything</span></div>
+      </div>
+      <div class="pipe-out-card">
+        <div class="pipe-out-col" style="color:#0a7c4c">M2 — ARIMA</div>
+        <div class="pipe-out-val">Emis.Int column in Holdings table<br><span style="color:var(--text3);font-size:9px">→ affects Net Cost Δ, EPS at Risk</span></div>
+      </div>
+      <div class="pipe-out-card">
+        <div class="pipe-out-col" style="color:#0066cc">M1 — OLS</div>
+        <div class="pipe-out-val">Pass-thru column in Holdings table<br><span style="color:var(--text3);font-size:9px">→ affects Net Cost Δ, EPS at Risk</span></div>
+      </div>
+      <div class="pipe-out-card" style="grid-column:1/-1">
+        <div class="pipe-out-col" style="color:#6d28d9">M4 — scipy SLSQP</div>
+        <div class="pipe-out-val">Optimiser tab — Opt. Weight, Delta columns, EaR Reduction %<br><span style="color:var(--text3);font-size:9px">→ minimises λ·EaR + (1−λ)·w'Σw subject to turnover constraint · uses M1+M2 EaR values as input</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script>
 const SCENARIOS = {{ scenarios | tojson }};
 const SC={Energy:"#ff6b6b",Materials:"#ffa94d",Industrials:"#ffe066",Healthcare:"#74c0fc",Financials:"#b197fc",Consumer:"#69db7c",Utilities:"#38d9a9"};
@@ -480,12 +618,12 @@ function toggleTheme(){
   }
 }
 
-// Apply saved theme on load
+// Apply saved theme on load — default is DARK
 (function(){
   const saved=localStorage.getItem("theme");
-  if(saved==="dark"){
+  const preferDark = saved === null || saved === "dark";
+  if(preferDark){
     document.documentElement.classList.add("dark");
-    // Update button once DOM is ready
     window.addEventListener("DOMContentLoaded",()=>{
       const btn=document.getElementById("theme-btn");
       if(btn){btn.querySelector(".ti").textContent="🌙";btn.querySelector("#theme-label").textContent="DARK";}
@@ -527,6 +665,9 @@ function drawRiskLegend(){
     <span style="color:${rc(26)}">● HIGH</span>`;
 }
 drawRiskLegend();
+
+function showPipeline(){document.getElementById("pipeline-modal").classList.add("open")}
+function closePipeline(){document.getElementById("pipeline-modal").classList.remove("open")}
 
 function selScen(id,btn){
   sel=id;
