@@ -8,11 +8,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
     :root{--bg:#f0f4f8;--bg1:#ffffff;--bg2:#f5f7fa;--bg3:#e8edf2;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#1a2332;--text2:#4a5568;--text3:#8a9bb0;--accent:#0066cc;--green:#0a7c4c;--red:#c0392b;--amber:#b45309}
+    html.dark{--bg:#080c10;--bg1:#0c1118;--bg2:#111820;--bg3:#161e28;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--text:#f0f4f8;--text2:#8da0b3;--text3:#4a6070;--accent:#00d4ff;--green:#00e676;--red:#ff4757;--amber:#ffb300}
+    /* THEME TOGGLE */
+    .theme-toggle{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 10px;font-family:inherit;font-size:10px;font-weight:600;color:var(--text2);letter-spacing:.05em;transition:all .2s}
+    .theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+    .theme-toggle .ti{font-size:12px}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
     body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,102,204,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,204,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
     /* HEADER */
     header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between}
+    html.dark header{background:rgba(8,12,16,0.94)}
     .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
     .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 3s ease-in-out infinite}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
@@ -200,6 +206,20 @@
     .ph-body{font-size:11px;line-height:1.7;max-width:280px}
     .ph-body strong{color:var(--accent)}
     footer{text-align:center;padding:28px 20px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);margin-top:36px;letter-spacing:.04em;line-height:2.2;position:relative;z-index:1}
+    .risk-dots{display:flex;gap:10px;font-size:9px}
+    html.dark body::before{background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px)}
+    html.dark .tag-Energy{color:#ff6b6b;border-color:rgba(255,107,107,.28);background:rgba(255,107,107,.07)}
+    html.dark .tag-Materials{color:#ffa94d;border-color:rgba(255,169,77,.28);background:rgba(255,169,77,.07)}
+    html.dark .tag-Industrials{color:#ffe066;border-color:rgba(255,224,102,.28);background:rgba(255,224,102,.07)}
+    html.dark .tag-Healthcare{color:#74c0fc;border-color:rgba(116,192,252,.28);background:rgba(116,192,252,.07)}
+    html.dark .tag-Financials{color:#b197fc;border-color:rgba(177,151,252,.28);background:rgba(177,151,252,.07)}
+    html.dark .tag-Consumer{color:#69db7c;border-color:rgba(105,219,124,.28);background:rgba(105,219,124,.07)}
+    html.dark .tag-Utilities{color:#38d9a9;border-color:rgba(56,217,169,.28);background:rgba(56,217,169,.07)}
+    html.dark .action-INC{color:#00e676;border-color:rgba(0,230,118,.3);background:transparent}
+    html.dark .action-RED{color:#ff4757;border-color:rgba(255,71,87,.3);background:transparent}
+    html.dark .ml-dot.active{box-shadow:0 0 6px var(--green)}
+    html.dark .ml-dot.fallback{box-shadow:0 0 6px var(--amber)}
+    html.dark .pill.live{border-color:rgba(0,230,118,.35);color:#00e676;background:rgba(0,230,118,.07)}
   </style>
 </head>
 <body>
@@ -214,6 +234,7 @@
     <span class="pill">NGFS Phase V</span>
     <span class="pill">BoE CBES</span>
     <span class="pill">Stirling Solvers 2026</span>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"><span class="ti">☀</span><span id="theme-label">LIGHT</span></button>
   </div>
 </header>
 
@@ -328,12 +349,7 @@
             <div class="panel" style="margin-bottom:10px;padding:14px 12px 12px">
               <div class="ptitle" style="justify-content:center;margin-bottom:10px">Portfolio EaR Gauge</div>
               <svg id="gauge" width="100%" viewBox="0 0 168 112" style="display:block;max-width:210px;margin:0 auto"></svg>
-                <div class="risk-legend" id="risk-legend">
-                  <div class="rl-item"><div class="rl-lbl" style="color:#0a7c4c">LOW</div><div class="rl-range">&lt;5%</div></div>
-                  <div class="rl-item"><div class="rl-lbl" style="color:#856404">MED</div><div class="rl-range">5–12%</div></div>
-                  <div class="rl-item"><div class="rl-lbl" style="color:#d9480f">HIGH</div><div class="rl-range">12–25%</div></div>
-                  <div class="rl-item"><div class="rl-lbl" style="color:#c0392b">CRIT</div><div class="rl-range">&gt;25%</div></div>
-                </div>
+                <div class="risk-legend" id="risk-legend"></div>
             </div>
             <div class="panel" style="margin-bottom:0;padding:14px 12px 12px">
               <div class="ptitle" style="justify-content:center;margin-bottom:10px">Sector Allocation</div>
@@ -358,12 +374,7 @@
           <div id="tab-h">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
               <div style="font-size:9px;color:var(--text3);letter-spacing:.05em">CLICK A ROW TO EXPAND COST BREAKDOWN</div>
-              <div style="display:flex;gap:10px;font-size:9px">
-                <span style="color:#0a7c4c">● MINIMAL</span>
-                <span style="color:#856404">● LOW</span>
-                <span style="color:#d9480f">● MEDIUM</span>
-                <span style="color:#c0392b">● HIGH</span>
-              </div>
+              <div class="risk-dots" id="risk-dots"></div>
             </div>
             <div style="overflow-x:auto">
               <table>
@@ -436,7 +447,51 @@
 <script>
 const SCENARIOS = {{ scenarios | tojson }};
 const SC={Energy:"#ff6b6b",Materials:"#ffa94d",Industrials:"#ffe066",Healthcare:"#74c0fc",Financials:"#b197fc",Consumer:"#69db7c",Utilities:"#38d9a9"};
-const rc=v=>v>25?"#c0392b":v>12?"#d9480f":v>5?"#856404":"#0a7c4c";
+const SC_LIGHT={Energy:"#c92a2a",Materials:"#d9480f",Industrials:"#856404",Healthcare:"#1864ab",Financials:"#5f3dc4",Consumer:"#2b8a3e",Utilities:"#0b7285"};
+
+function isDark(){return document.documentElement.classList.contains("dark")}
+function sectorColor(s){return isDark()?(SC[s]||"#64748b"):(SC_LIGHT[s]||"#64748b")}
+function rc(v){return isDark()?(v>25?"#ff4757":v>12?"#ffa94d":v>5?"#ffe066":"#00e676"):(v>25?"#c0392b":v>12?"#d9480f":v>5?"#856404":"#0a7c4c")}
+
+function toggleTheme(){
+  const html=document.documentElement;
+  const dark=html.classList.toggle("dark");
+  const btn=document.getElementById("theme-btn");
+  btn.querySelector(".ti").textContent=dark?"🌙":"☀";
+  btn.querySelector("#theme-label").textContent=dark?"DARK":"LIGHT";
+  localStorage.setItem("theme",dark?"dark":"light");
+  // Redraw SVGs with correct colours
+  drawRiskLegend();
+  if(lastData){
+    const o=lastData.original.portfolio_ear*100;
+    drawGauge(o,Math.max(15,Math.ceil(o/5)*5+5));
+    const portfolio=custPort||lastData.original.holdings;
+    drawDonut(portfolio);
+    const sectorEaR={};
+    lastData.original.holdings.forEach(h=>{sectorEaR[h.sector]=(sectorEaR[h.sector]||0)+h.ear;});
+    const sEntries=Object.entries(sectorEaR).sort((a,b)=>b[1]-a[1]);
+    const maxSear=Math.max(...sEntries.map(([,v])=>v));
+    document.getElementById("sector-bars").innerHTML=sEntries.map(([s,ear])=>`
+      <div class="sector-bar-wrap">
+        <div class="sbr-hdr"><span style="color:${sectorColor(s)};font-size:11px">${s}</span><span style="color:var(--text3);font-size:11px">${(ear*100).toFixed(2)}% of NAV</span></div>
+        <div class="sbr-bg"><div class="sbr-fill" style="width:${maxSear>0?Math.min(100,ear/maxSear*100):0}%;background:${sectorColor(s)}"></div></div>
+      </div>
+    `).join("");
+  }
+}
+
+// Apply saved theme on load
+(function(){
+  const saved=localStorage.getItem("theme");
+  if(saved==="dark"){
+    document.documentElement.classList.add("dark");
+    // Update button once DOM is ready
+    window.addEventListener("DOMContentLoaded",()=>{
+      const btn=document.getElementById("theme-btn");
+      if(btn){btn.querySelector(".ti").textContent="🌙";btn.querySelector("#theme-label").textContent="DARK";}
+    });
+  }
+})();
 const fmt=(v,d=1)=>v==null?"—":v.toFixed(d);
 let sel="netzero",custPort=null,lastData=null,expandedRow=null;
 
@@ -457,7 +512,21 @@ fetch("/ml/status").then(r=>r.json()).then(d=>{
   }
 }).catch(()=>{});
 
-function selScen(id,btn){
+function drawRiskLegend(){
+  const rl=document.getElementById("risk-legend");
+  const rd=document.getElementById("risk-dots");
+  if(rl)rl.innerHTML=`
+    <div class="rl-item"><div class="rl-lbl" style="color:${rc(0)}">LOW</div><div class="rl-range">&lt;5%</div></div>
+    <div class="rl-item"><div class="rl-lbl" style="color:${rc(6)}">MED</div><div class="rl-range">5–12%</div></div>
+    <div class="rl-item"><div class="rl-lbl" style="color:${rc(13)}">HIGH</div><div class="rl-range">12–25%</div></div>
+    <div class="rl-item"><div class="rl-lbl" style="color:${rc(26)}">CRIT</div><div class="rl-range">&gt;25%</div></div>`;
+  if(rd)rd.innerHTML=`
+    <span style="color:${rc(0)}">● MINIMAL</span>
+    <span style="color:${rc(6)}">● LOW</span>
+    <span style="color:${rc(13)}">● MEDIUM</span>
+    <span style="color:${rc(26)}">● HIGH</span>`;
+}
+drawRiskLegend();
   sel=id;
   document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
@@ -478,30 +547,34 @@ function drawGauge(val,max){
   const pct=Math.min(1,Math.max(0,val/max));
   const col=rc(val);
   const arc=`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`;
-  const bands=[{s:0,e:.33,c:"#0a7c4c"},{s:.33,e:.60,c:"#856404"},{s:.60,e:.80,c:"#d9480f"},{s:.80,e:1,c:"#c0392b"}];
   const needleAngle=Math.PI*(1-pct);
   const nLen=r-sw/2-6;
   const nx=cx+nLen*Math.cos(needleAngle),ny=cy-nLen*Math.sin(needleAngle);
-  let h=`<path d="${arc}" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="${sw}" stroke-linecap="butt"/>`;
-  // dim bands
-  bands.forEach(b=>{
+  const gBands=isDark()?[{s:0,e:.33,c:"#00e676"},{s:.33,e:.60,c:"#ffe066"},{s:.60,e:.80,c:"#ffa94d"},{s:.80,e:1,c:"#ff4757"}]:[{s:0,e:.33,c:"#0a7c4c"},{s:.33,e:.60,c:"#856404"},{s:.60,e:.80,c:"#d9480f"},{s:.80,e:1,c:"#c0392b"}];
+  const needleStroke=isDark()?"rgba(255,255,255,0.9)":"rgba(0,0,0,0.7)";
+  const needleCenter=isDark()?"#080c10":"#f0f4f8";
+  const dimOpacity=isDark()?".2":".25";
+  const labelFill=isDark()?"rgba(255,255,255,0.2)":"rgba(0,0,0,0.25)";
+  const subFill=isDark()?"rgba(255,255,255,0.25)":"rgba(0,0,0,0.35)";
+  const trackFill=isDark()?"rgba(255,255,255,0.06)":"rgba(0,0,0,0.07)";
+  let h=`<path d="${arc}" fill="none" stroke="${trackFill}" stroke-width="${sw}" stroke-linecap="butt"/>`;
+  gBands.forEach(b=>{
     const len=(b.e-b.s)*semi,offset=-(b.s*semi);
-    h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity=".25"/>`;
+    h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity="${dimOpacity}"/>`;
   });
-  // bright fill up to value
-  bands.forEach(b=>{
+  gBands.forEach(b=>{
     const ae=Math.min(b.e,pct),as=b.s;
     if(ae<=as)return;
     const len=(ae-as)*semi,offset=-(as*semi);
     h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity="1"/>`;
   });
-  h+=`<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="rgba(0,0,0,0.7)" stroke-width="2.5" stroke-linecap="round"/>`;
-  h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="2.5" fill="#f0f4f8"/>`;
+  h+=`<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${needleStroke}" stroke-width="2.5" stroke-linecap="round"/>`;
+  h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="2.5" fill="${needleCenter}"/>`;
   h+=`<text x="${cx}" y="${cy+22}" text-anchor="middle" fill="${col}" font-size="17" font-weight="700" font-family="'JetBrains Mono',monospace">${fmt(val)}%</text>`;
-  h+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="rgba(0,0,0,0.35)" font-size="8" font-family="'Space Grotesk',sans-serif" letter-spacing="1.5">portfolio EaR</text>`;
-  h+=`<text x="${cx-r-5}" y="${cy+4}" text-anchor="end" fill="rgba(0,0,0,0.25)" font-size="8" font-family="'JetBrains Mono',monospace">0%</text>`;
-  h+=`<text x="${cx+r+5}" y="${cy+4}" text-anchor="start" fill="rgba(0,0,0,0.25)" font-size="8" font-family="'JetBrains Mono',monospace">${max}%</text>`;
-  h+=`<text x="${cx}" y="${cy-r-8}" text-anchor="middle" fill="rgba(0,0,0,0.25)" font-size="7" font-family="'JetBrains Mono',monospace">${(max/2).toFixed(0)}%</text>`;
+  h+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="${subFill}" font-size="8" font-family="'Space Grotesk',sans-serif" letter-spacing="1.5">portfolio EaR</text>`;
+  h+=`<text x="${cx-r-5}" y="${cy+4}" text-anchor="end" fill="${labelFill}" font-size="8" font-family="'JetBrains Mono',monospace">0%</text>`;
+  h+=`<text x="${cx+r+5}" y="${cy+4}" text-anchor="start" fill="${labelFill}" font-size="8" font-family="'JetBrains Mono',monospace">${max}%</text>`;
+  h+=`<text x="${cx}" y="${cy-r-8}" text-anchor="middle" fill="${labelFill}" font-size="7" font-family="'JetBrains Mono',monospace">${(max/2).toFixed(0)}%</text>`;
   svg.innerHTML=h;
 }
 
@@ -519,20 +592,23 @@ function drawDonut(portfolio){
     const dash=Math.max(0,len-GAP),gap=circ-dash;
     const offset=circ/4-cum;
     cum+=len;
-    return{s,w,dash,gap,offset,color:SC[s]||"#64748b"};
+    return{s,w,dash,gap,offset,color:sectorColor(s)};
   });
   let h=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="${sw}"/>`;
   slices.forEach(sl=>{
     h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${sl.color}" stroke-width="${sw}" stroke-dasharray="${sl.dash.toFixed(2)} ${sl.gap.toFixed(2)}" stroke-dashoffset="${sl.offset.toFixed(2)}" stroke-linecap="butt" opacity=".92"/>`;
   });
-  h+=`<circle cx="${cx}" cy="${cy}" r="${r-sw/2-1}" fill="#ffffff"/>`;
-  h+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" fill="rgba(0,0,0,0.3)" font-size="8" font-family="'JetBrains Mono',monospace" letter-spacing="1">SECTOR</text>`;
-  h+=`<text x="${cx}" y="${cy+8}" text-anchor="middle" fill="#1a2332" font-size="14" font-weight="600" font-family="'JetBrains Mono',monospace">${entries.length}</text>`;
-  h+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" fill="rgba(0,0,0,0.3)" font-size="8" font-family="'JetBrains Mono',monospace">sectors</text>`;
+  const bgFill=isDark()?"#0c1118":"#ffffff";
+  const textFill=isDark()?"rgba(255,255,255,0.3)":"rgba(0,0,0,0.3)";
+  const countFill=isDark()?"#f0f4f8":"#1a2332";
+  h+=`<circle cx="${cx}" cy="${cy}" r="${r-sw/2-1}" fill="${bgFill}"/>`;
+  h+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" fill="${textFill}" font-size="8" font-family="'JetBrains Mono',monospace" letter-spacing="1">SECTOR</text>`;
+  h+=`<text x="${cx}" y="${cy+8}" text-anchor="middle" fill="${countFill}" font-size="14" font-weight="600" font-family="'JetBrains Mono',monospace">${entries.length}</text>`;
+  h+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" fill="${textFill}" font-size="8" font-family="'JetBrains Mono',monospace">sectors</text>`;
   document.getElementById("donut").innerHTML=h;
   const sorted=[...entries].sort((a,b)=>b[1]-a[1]);
   document.getElementById("donut-legend").innerHTML=sorted.map(([s,w])=>`
-    <div class="dl-row"><span style="display:flex;align-items:center;color:${SC[s]||'#888'}"><span class="dl-dot" style="background:${SC[s]||'#888'}"></span>${s}</span><span style="color:var(--text3)">${(w*100).toFixed(1)}%</span></div>
+    <div class="dl-row"><span style="display:flex;align-items:center;color:${sectorColor(s)}"><span class="dl-dot" style="background:${sectorColor(s)}"></span>${s}</span><span style="color:var(--text3)">${(w*100).toFixed(1)}%</span></div>
   `).join("");
 }
 
@@ -574,6 +650,7 @@ function render(data){
 
   // GAUGE
   drawGauge(o,Math.max(15,Math.ceil(o/5)*5+5));
+  drawRiskLegend();
 
   // SECTOR BARS
   const portfolio=custPort||data.original.holdings;
@@ -584,8 +661,8 @@ function render(data){
   const maxSear=Math.max(...sEntries.map(([,v])=>v));
   document.getElementById("sector-bars").innerHTML=sEntries.map(([s,ear])=>`
     <div class="sector-bar-wrap">
-      <div class="sbr-hdr"><span style="color:${SC[s]||'#888'};font-size:11px">${s}</span><span style="color:var(--text3);font-size:11px">${fmt(ear*100,2)}% of NAV</span></div>
-      <div class="sbr-bg"><div class="sbr-fill" style="width:${maxSear>0?Math.min(100,ear/maxSear*100):0}%;background:${SC[s]||'#888'}"></div></div>
+      <div class="sbr-hdr"><span style="color:${sectorColor(s)};font-size:11px">${s}</span><span style="color:var(--text3);font-size:11px">${fmt(ear*100,2)}% of NAV</span></div>
+      <div class="sbr-bg"><div class="sbr-fill" style="width:${maxSear>0?Math.min(100,ear/maxSear*100):0}%;background:${sectorColor(s)}"></div></div>
     </div>
   `).join("");
 
