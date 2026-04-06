@@ -7,45 +7,45 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#080c10;--bg1:#0c1118;--bg2:#111820;--bg3:#161e28;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--text:#f0f4f8;--text2:#8da0b3;--text3:#4a6070;--accent:#00d4ff;--green:#00e676;--red:#ff4757;--amber:#ffb300}
+    :root{--bg:#f0f4f8;--bg1:#ffffff;--bg2:#f5f7fa;--bg3:#e8edf2;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#1a2332;--text2:#4a5568;--text3:#8a9bb0;--accent:#0066cc;--green:#0a7c4c;--red:#c0392b;--amber:#b45309}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
-    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,102,204,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,204,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
     /* HEADER */
-    header{position:sticky;top:0;z-index:100;background:rgba(8,12,16,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between}
+    header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between}
     .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
     .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 3s ease-in-out infinite}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
     .logo-sub{color:var(--accent);font-size:10px;font-weight:400;letter-spacing:.08em;margin-left:3px}
     .hpills{display:flex;gap:7px;align-items:center}
     .pill{font-size:9px;font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);background:var(--bg2)}
-    .pill.live{border-color:rgba(0,230,118,.35);color:var(--green);background:rgba(0,230,118,.07)}
+    .pill.live{border-color:rgba(10,124,76,.35);color:var(--green);background:rgba(10,124,76,.07)}
     .pill.live::before{content:'●';margin-right:4px;font-size:7px;animation:pulse 2s infinite}
     /* LAYOUT */
     .page{max-width:1380px;margin:0 auto;padding:20px 20px;position:relative;z-index:1}
     .layout{display:grid;grid-template-columns:268px 1fr;gap:14px;align-items:start}
     @media(max-width:940px){.layout{grid-template-columns:1fr}}
     /* PANEL */
-    .panel{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
-    .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.25),transparent)}
+    .panel{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+    .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,102,204,.2),transparent)}
     .ptitle{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
     .ptitle::after{content:'';flex:1;height:1px;background:var(--border)}
     /* SCENARIO */
     .scen-list{display:flex;flex-direction:column;gap:5px}
     .scen-btn{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;cursor:pointer;padding:9px 12px;font-family:inherit;font-size:12px;font-weight:500;color:var(--text2);text-align:left;transition:all .18s;display:flex;justify-content:space-between;align-items:center}
     .scen-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
-    .scen-btn.active{background:rgba(0,212,255,.07);border-color:rgba(0,212,255,.38);color:var(--accent)}
+    .scen-btn.active{background:rgba(0,102,204,.07);border-color:rgba(0,102,204,.38);color:var(--accent)}
     .scen-right{text-align:right;flex-shrink:0;margin-left:8px}
     .scen-price{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);display:block}
     .scen-temp{font-size:9px;color:var(--text3)}
-    .scen-btn.active .scen-price,.scen-btn.active .scen-temp{color:rgba(0,212,255,.6)}
-    .scen-desc{margin-top:10px;padding:9px 11px;background:rgba(0,212,255,.035);border:1px solid rgba(0,212,255,.09);border-radius:5px;font-size:10px;color:var(--text2);line-height:1.7}
+    .scen-btn.active .scen-price,.scen-btn.active .scen-temp{color:rgba(0,102,204,.6)}
+    .scen-desc{margin-top:10px;padding:9px 11px;background:rgba(0,102,204,.04);border:1px solid rgba(0,102,204,.12);border-radius:5px;font-size:10px;color:var(--text2);line-height:1.7}
     /* CONTROLS */
     .sl-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
     .sl-hdr label{font-size:11px;color:var(--text2)}
     .sl-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--accent)}
     input[type=range]{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;background:var(--bg3);outline:none;margin-bottom:14px;cursor:pointer}
-    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 8px rgba(0,212,255,.5)}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 8px rgba(0,102,204,.3)}
     .ilabel{font-size:10px;color:var(--text2);display:block;margin-bottom:5px}
     input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 10px}
     input[type=number]:focus{outline:1px solid var(--accent)}
@@ -71,7 +71,7 @@
     .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
     @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
     .metric{background:var(--bg1);border:1px solid var(--border);border-radius:9px;padding:14px 16px;position:relative;overflow:hidden}
-    .metric::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,.18),transparent)}
+    .metric::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,102,204,.18),transparent)}
     .mlabel{font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
     .mval{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:500;line-height:1;margin-bottom:3px}
     .mval.red{color:var(--red)}.mval.grn{color:var(--green)}.mval.acc{color:var(--accent)}
@@ -88,28 +88,27 @@
     /* TABS */
     .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto}
     .tab-btn{background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;padding:9px 16px;color:var(--text3);letter-spacing:.03em;transition:all .15s;white-space:nowrap}
-    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-    .tab-btn:hover:not(.active){color:var(--text2)}
+    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}    .tab-btn:hover:not(.active){color:var(--text2)}
     /* TABLE */
     table{width:100%;border-collapse:collapse;font-size:12px}
     th{text-align:left;padding:7px 10px;font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
     td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
-    tr:hover td{background:rgba(255,255,255,.018)}
+    tr:hover td{background:rgba(0,0,0,.025)}
     .expandable{cursor:pointer}
-    .exp-row td{background:rgba(0,212,255,.025);padding:12px 14px 14px 32px}
+    .exp-row td{background:rgba(0,102,204,.03);padding:12px 14px 14px 32px}
     .ticker{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:500}
     .co{color:var(--text);font-size:12px}
     .scope3{font-size:8px;color:var(--amber);display:block;margin-top:1px}
     .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)}
     /* TAGS */
     .tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:8px;font-weight:600;letter-spacing:.05em;border:1px solid}
-    .tag-Energy{color:#ff6b6b;border-color:rgba(255,107,107,.28);background:rgba(255,107,107,.07)}
-    .tag-Materials{color:#ffa94d;border-color:rgba(255,169,77,.28);background:rgba(255,169,77,.07)}
-    .tag-Industrials{color:#ffe066;border-color:rgba(255,224,102,.28);background:rgba(255,224,102,.07)}
-    .tag-Healthcare{color:#74c0fc;border-color:rgba(116,192,252,.28);background:rgba(116,192,252,.07)}
-    .tag-Financials{color:#b197fc;border-color:rgba(177,151,252,.28);background:rgba(177,151,252,.07)}
-    .tag-Consumer{color:#69db7c;border-color:rgba(105,219,124,.28);background:rgba(105,219,124,.07)}
-    .tag-Utilities{color:#38d9a9;border-color:rgba(56,217,169,.28);background:rgba(56,217,169,.07)}
+    .tag-Energy{color:#c92a2a;border-color:rgba(201,42,42,.28);background:rgba(201,42,42,.07)}
+    .tag-Materials{color:#d9480f;border-color:rgba(217,72,15,.28);background:rgba(217,72,15,.07)}
+    .tag-Industrials{color:#856404;border-color:rgba(133,100,4,.28);background:rgba(133,100,4,.07)}
+    .tag-Healthcare{color:#1864ab;border-color:rgba(24,100,171,.28);background:rgba(24,100,171,.07)}
+    .tag-Financials{color:#5f3dc4;border-color:rgba(95,61,196,.28);background:rgba(95,61,196,.07)}
+    .tag-Consumer{color:#2b8a3e;border-color:rgba(43,138,62,.28);background:rgba(43,138,62,.07)}
+    .tag-Utilities{color:#0b7285;border-color:rgba(11,114,133,.28);background:rgba(11,114,133,.07)}
     /* BARS */
     .bar-wrap{display:flex;align-items:center;gap:8px}
     .bar-bg{flex:1;background:var(--bg3);border-radius:2px;height:5px;overflow:hidden}
@@ -132,9 +131,9 @@
     .wc-legend{display:flex;justify-content:space-between;margin-top:6px;padding-top:7px;border-top:1px solid var(--border);font-size:8px}
     /* ACTION BADGE */
     .action-badge{font-size:9px;font-weight:600;padding:2px 8px;border-radius:3px;border:1px solid;letter-spacing:.05em}
-    .action-INC{color:var(--green);border-color:rgba(0,230,118,.3)}
-    .action-RED{color:var(--red);border-color:rgba(255,71,87,.3)}
-    .action-HLD{color:var(--text3);border-color:var(--border2)}
+    .action-INC{color:var(--green);border-color:rgba(10,124,76,.3);background:rgba(10,124,76,.06)}
+    .action-RED{color:var(--red);border-color:rgba(192,57,43,.3);background:rgba(192,57,43,.06)}
+    .action-HLD{color:var(--text3);border-color:var(--border2);background:var(--bg2)}
     /* DIAG CARDS */
     .diag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
     .diag-card{background:var(--bg2);border-radius:5px;padding:7px 10px}
@@ -162,17 +161,23 @@
     .dl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;font-size:9px}
     .dl-dot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
     /* AI MEMO */
-    .ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.18);border-radius:20px;padding:3px 11px;font-size:8px;font-weight:600;letter-spacing:.1em;color:var(--accent);margin-bottom:14px}
+    .ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,102,204,.05);border:1px solid rgba(0,102,204,.18);border-radius:20px;padding:3px 11px;font-size:8px;font-weight:600;letter-spacing:.1em;color:var(--accent);margin-bottom:14px}
     .ai-badge::before{content:'◆';font-size:6px}
     .memo-body{font-family:'Instrument Serif',Georgia,serif;font-size:15px;line-height:1.95;color:var(--text2);white-space:pre-wrap}
     .disclaimer{font-size:9px;color:var(--text3);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);line-height:1.7;font-style:italic}
+    /* ML INLINE BADGES */
+    .ml-badge{display:inline-flex;align-items:center;gap:3px;font-size:7px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px;border:1px solid}
+    .ml-badge.m1{color:#0066cc;border-color:rgba(0,102,204,.3);background:rgba(0,102,204,.07)}
+    .ml-badge.m2{color:#0a7c4c;border-color:rgba(10,124,76,.3);background:rgba(10,124,76,.07)}
+    .ml-badge.m3{color:#b45309;border-color:rgba(180,83,9,.3);background:rgba(180,83,9,.07)}
+    .ml-badge.m4{color:#6d28d9;border-color:rgba(109,40,217,.3);background:rgba(109,40,217,.07)}
     /* ML STATUS */
     .ml-panel{margin-top:12px}
     .ml-module{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
     .ml-module:last-child{border-bottom:none}
     .ml-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
-    .ml-dot.active{background:var(--green);box-shadow:0 0 6px var(--green)}
-    .ml-dot.fallback{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+    .ml-dot.active{background:var(--green);box-shadow:0 0 6px rgba(10,124,76,.4)}
+    .ml-dot.fallback{background:var(--amber);box-shadow:0 0 6px rgba(180,83,9,.4)}
     .ml-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
     .ml-where{font-size:9px;color:var(--accent);margin-bottom:2px}
     .ml-why{font-size:9px;color:var(--text3);line-height:1.5}
@@ -182,10 +187,9 @@
     /* LOADING/ERROR */
     .loading{display:none;text-align:center;padding:70px 20px}
     .loading.visible{display:block}
-    .spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}    @keyframes spin{to{transform:rotate(360deg)}}
     .loading p{font-size:11px;color:var(--text3);letter-spacing:.05em}
-    .err-box{display:none;background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.28);border-radius:7px;padding:12px 14px;color:var(--red);font-size:12px;margin-bottom:12px}
+    .err-box{display:none;background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.28);border-radius:7px;padding:12px 14px;color:var(--red);font-size:12px;margin-bottom:12px}
     .err-box.visible{display:block}
     .results{display:none}
     .results.visible{display:block;animation:fadeUp .28s ease}
@@ -218,7 +222,7 @@
     <!-- LEFT -->
     <div>
       <div class="panel">
-        <div class="ptitle">Scenario</div>
+        <div class="ptitle">Scenario <span class="ml-badge m3">M3 default</span></div>
         <div class="scen-list">
           {% for id, s in scenarios.items() %}
           <button class="scen-btn {% if id == 'netzero' %}active{% endif %}" data-id="{{ id }}" onclick="selScen('{{ id }}',this)">
@@ -324,12 +328,12 @@
             <div class="panel" style="margin-bottom:10px;padding:14px 12px 12px">
               <div class="ptitle" style="justify-content:center;margin-bottom:10px">Portfolio EaR Gauge</div>
               <svg id="gauge" width="100%" viewBox="0 0 168 112" style="display:block;max-width:210px;margin:0 auto"></svg>
-              <div class="risk-legend" id="risk-legend">
-                <div class="rl-item"><div class="rl-lbl" style="color:#00e676">LOW</div><div class="rl-range">&lt;5%</div></div>
-                <div class="rl-item"><div class="rl-lbl" style="color:#ffe066">MED</div><div class="rl-range">5–12%</div></div>
-                <div class="rl-item"><div class="rl-lbl" style="color:#ffa94d">HIGH</div><div class="rl-range">12–25%</div></div>
-                <div class="rl-item"><div class="rl-lbl" style="color:#ff4757">CRIT</div><div class="rl-range">&gt;25%</div></div>
-              </div>
+                <div class="risk-legend" id="risk-legend">
+                  <div class="rl-item"><div class="rl-lbl" style="color:#0a7c4c">LOW</div><div class="rl-range">&lt;5%</div></div>
+                  <div class="rl-item"><div class="rl-lbl" style="color:#856404">MED</div><div class="rl-range">5–12%</div></div>
+                  <div class="rl-item"><div class="rl-lbl" style="color:#d9480f">HIGH</div><div class="rl-range">12–25%</div></div>
+                  <div class="rl-item"><div class="rl-lbl" style="color:#c0392b">CRIT</div><div class="rl-range">&gt;25%</div></div>
+                </div>
             </div>
             <div class="panel" style="margin-bottom:0;padding:14px 12px 12px">
               <div class="ptitle" style="justify-content:center;margin-bottom:10px">Sector Allocation</div>
@@ -355,10 +359,10 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
               <div style="font-size:9px;color:var(--text3);letter-spacing:.05em">CLICK A ROW TO EXPAND COST BREAKDOWN</div>
               <div style="display:flex;gap:10px;font-size:9px">
-                <span style="color:#00e676">● MINIMAL</span>
-                <span style="color:#ffe066">● LOW</span>
-                <span style="color:#ffa94d">● MEDIUM</span>
-                <span style="color:#ff4757">● HIGH</span>
+                <span style="color:#0a7c4c">● MINIMAL</span>
+                <span style="color:#856404">● LOW</span>
+                <span style="color:#d9480f">● MEDIUM</span>
+                <span style="color:#c0392b">● HIGH</span>
               </div>
             </div>
             <div style="overflow-x:auto">
@@ -366,11 +370,11 @@
                 <thead><tr>
                   <th>Ticker</th><th>Name</th><th>Sector</th>
                   <th style="text-align:right">Weight</th>
-                  <th style="text-align:right">Emis.Int</th>
-                  <th style="text-align:right">Pass-thru</th>
+                  <th style="text-align:right">Emis.Int <span class="ml-badge m2">M2</span></th>
+                  <th style="text-align:right">Pass-thru <span class="ml-badge m1">M1</span></th>
                   <th style="text-align:right">Net Cost Δ</th>
                   <th style="text-align:right">Margin Comp.</th>
-                  <th style="text-align:right">EPS at Risk</th>
+                  <th style="text-align:right">EPS at Risk <span class="ml-badge m1">M1</span><span class="ml-badge m2">M2</span></th>
                   <th style="text-align:right">EaR Contrib.</th>
                 </tr></thead>
                 <tbody id="htb"></tbody>
@@ -385,7 +389,7 @@
               <div>
                 <div class="ptitle">Optimisation Results</div>
                 <div class="diag-grid" id="diag-grid"></div>
-                <div style="margin-top:14px;padding:10px 12px;background:var(--bg2);border-radius:6px;font-size:10px;color:var(--text2);line-height:1.7;border-left:2px solid rgba(0,212,255,.3)" id="turnover-note"></div>
+                <div style="margin-top:14px;padding:10px 12px;background:var(--bg2);border-radius:6px;font-size:10px;color:var(--text2);line-height:1.7;border-left:2px solid rgba(0,102,204,.3)" id="turnover-note"></div>
               </div>
               <!-- WEIGHT CHART -->
               <div>
@@ -400,11 +404,11 @@
                 <thead><tr>
                   <th>Ticker</th><th>Name</th>
                   <th style="text-align:right">Current Wt</th>
-                  <th style="text-align:right">Opt. Wt</th>
-                  <th style="text-align:right">Delta</th>
+                  <th style="text-align:right">Opt. Wt <span class="ml-badge m4">M4</span></th>
+                  <th style="text-align:right">Delta <span class="ml-badge m4">M4</span></th>
                   <th style="text-align:right">Action</th>
-                  <th style="text-align:right">Emis.Int</th>
-                  <th style="text-align:right">EPS at Risk</th>
+                  <th style="text-align:right">Emis.Int <span class="ml-badge m2">M2</span></th>
+                  <th style="text-align:right">EPS at Risk <span class="ml-badge m1">M1</span><span class="ml-badge m2">M2</span></th>
                 </tr></thead>
                 <tbody id="ttb"></tbody>
               </table>
@@ -432,7 +436,7 @@
 <script>
 const SCENARIOS = {{ scenarios | tojson }};
 const SC={Energy:"#ff6b6b",Materials:"#ffa94d",Industrials:"#ffe066",Healthcare:"#74c0fc",Financials:"#b197fc",Consumer:"#69db7c",Utilities:"#38d9a9"};
-const rc=v=>v>25?"#ff4757":v>12?"#ffa94d":v>5?"#ffe066":"#00e676";
+const rc=v=>v>25?"#c0392b":v>12?"#d9480f":v>5?"#856404":"#0a7c4c";
 const fmt=(v,d=1)=>v==null?"—":v.toFixed(d);
 let sel="netzero",custPort=null,lastData=null,expandedRow=null;
 
@@ -474,15 +478,15 @@ function drawGauge(val,max){
   const pct=Math.min(1,Math.max(0,val/max));
   const col=rc(val);
   const arc=`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`;
-  const bands=[{s:0,e:.33,c:"#00e676"},{s:.33,e:.60,c:"#ffe066"},{s:.60,e:.80,c:"#ffa94d"},{s:.80,e:1,c:"#ff4757"}];
+  const bands=[{s:0,e:.33,c:"#0a7c4c"},{s:.33,e:.60,c:"#856404"},{s:.60,e:.80,c:"#d9480f"},{s:.80,e:1,c:"#c0392b"}];
   const needleAngle=Math.PI*(1-pct);
   const nLen=r-sw/2-6;
   const nx=cx+nLen*Math.cos(needleAngle),ny=cy-nLen*Math.sin(needleAngle);
-  let h=`<path d="${arc}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="${sw}" stroke-linecap="butt"/>`;
+  let h=`<path d="${arc}" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="${sw}" stroke-linecap="butt"/>`;
   // dim bands
   bands.forEach(b=>{
     const len=(b.e-b.s)*semi,offset=-(b.s*semi);
-    h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity=".2"/>`;
+    h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity=".25"/>`;
   });
   // bright fill up to value
   bands.forEach(b=>{
@@ -491,13 +495,13 @@ function drawGauge(val,max){
     const len=(ae-as)*semi,offset=-(as*semi);
     h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity="1"/>`;
   });
-  h+=`<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round"/>`;
-  h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="2.5" fill="#080c10"/>`;
+  h+=`<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="rgba(0,0,0,0.7)" stroke-width="2.5" stroke-linecap="round"/>`;
+  h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="2.5" fill="#f0f4f8"/>`;
   h+=`<text x="${cx}" y="${cy+22}" text-anchor="middle" fill="${col}" font-size="17" font-weight="700" font-family="'JetBrains Mono',monospace">${fmt(val)}%</text>`;
-  h+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="8" font-family="'Space Grotesk',sans-serif" letter-spacing="1.5">portfolio EaR</text>`;
-  h+=`<text x="${cx-r-5}" y="${cy+4}" text-anchor="end" fill="rgba(255,255,255,0.2)" font-size="8" font-family="'JetBrains Mono',monospace">0%</text>`;
-  h+=`<text x="${cx+r+5}" y="${cy+4}" text-anchor="start" fill="rgba(255,255,255,0.2)" font-size="8" font-family="'JetBrains Mono',monospace">${max}%</text>`;
-  h+=`<text x="${cx}" y="${cy-r-8}" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7" font-family="'JetBrains Mono',monospace">${(max/2).toFixed(0)}%</text>`;
+  h+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="rgba(0,0,0,0.35)" font-size="8" font-family="'Space Grotesk',sans-serif" letter-spacing="1.5">portfolio EaR</text>`;
+  h+=`<text x="${cx-r-5}" y="${cy+4}" text-anchor="end" fill="rgba(0,0,0,0.25)" font-size="8" font-family="'JetBrains Mono',monospace">0%</text>`;
+  h+=`<text x="${cx+r+5}" y="${cy+4}" text-anchor="start" fill="rgba(0,0,0,0.25)" font-size="8" font-family="'JetBrains Mono',monospace">${max}%</text>`;
+  h+=`<text x="${cx}" y="${cy-r-8}" text-anchor="middle" fill="rgba(0,0,0,0.25)" font-size="7" font-family="'JetBrains Mono',monospace">${(max/2).toFixed(0)}%</text>`;
   svg.innerHTML=h;
 }
 
@@ -521,10 +525,10 @@ function drawDonut(portfolio){
   slices.forEach(sl=>{
     h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${sl.color}" stroke-width="${sw}" stroke-dasharray="${sl.dash.toFixed(2)} ${sl.gap.toFixed(2)}" stroke-dashoffset="${sl.offset.toFixed(2)}" stroke-linecap="butt" opacity=".92"/>`;
   });
-  h+=`<circle cx="${cx}" cy="${cy}" r="${r-sw/2-1}" fill="#0c1118"/>`;
-  h+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="'JetBrains Mono',monospace" letter-spacing="1">SECTOR</text>`;
-  h+=`<text x="${cx}" y="${cy+8}" text-anchor="middle" fill="#f0f4f8" font-size="14" font-weight="600" font-family="'JetBrains Mono',monospace">${entries.length}</text>`;
-  h+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="'JetBrains Mono',monospace">sectors</text>`;
+  h+=`<circle cx="${cx}" cy="${cy}" r="${r-sw/2-1}" fill="#ffffff"/>`;
+  h+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" fill="rgba(0,0,0,0.3)" font-size="8" font-family="'JetBrains Mono',monospace" letter-spacing="1">SECTOR</text>`;
+  h+=`<text x="${cx}" y="${cy+8}" text-anchor="middle" fill="#1a2332" font-size="14" font-weight="600" font-family="'JetBrains Mono',monospace">${entries.length}</text>`;
+  h+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" fill="rgba(0,0,0,0.3)" font-size="8" font-family="'JetBrains Mono',monospace">sectors</text>`;
   document.getElementById("donut").innerHTML=h;
   const sorted=[...entries].sort((a,b)=>b[1]-a[1]);
   document.getElementById("donut-legend").innerHTML=sorted.map(([s,w])=>`
@@ -632,7 +636,7 @@ function render(data){
             ].map(item=>`
               <div class="bd-item">
                 <div class="bd-lbl">${item.l}</div>
-                <div class="bd-val" style="color:${item.color||( item.bold?"#f0f4f8":"#8da0b3")}">${fmt(item.v*100,2)}%</div>
+                <div class="bd-val" style="color:${item.color||(item.bold?"var(--text)":"var(--text2)")}">${fmt(item.v*100,2)}%</div>
               </div>
             `).join("")}
           </div>
@@ -645,8 +649,8 @@ function render(data){
   const turn=(data.actual_turnover*100).toFixed(1);
   document.getElementById("diag-grid").innerHTML=`
     <div class="diag-card"><div class="diag-k">ORIGINAL EaR</div><div class="diag-v" style="color:${rc(o)}">${fmt(o)}%</div></div>
-    <div class="diag-card"><div class="diag-k">OPTIMISED EaR</div><div class="diag-v" style="color:var(--green)">${fmt(p)}%</div></div>
-    <div class="diag-card"><div class="diag-k">REDUCTION</div><div class="diag-v" style="color:var(--green)">↓${fmt(data.ear_reduction_pct)}%</div></div>
+    <div class="diag-card"><div class="diag-k">OPTIMISED EaR <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">${fmt(p)}%</div></div>
+    <div class="diag-card"><div class="diag-k">REDUCTION <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">↓${fmt(data.ear_reduction_pct)}%</div></div>
     <div class="diag-card"><div class="diag-k">ACTUAL TURNOVER</div><div class="diag-v">${turn}%</div></div>
   `;
   const tl=data.turnover_limit*100;
