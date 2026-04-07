@@ -147,6 +147,67 @@ def upload():
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
 
+@app.route("/chat", methods=["POST"])
+def chat():
+    """
+    Portfolio analyst chatbot endpoint.
+    Accepts: { message, history, context }
+    Returns: { reply }
+    """
+    if not ANTHROPIC_AVAILABLE:
+        return jsonify({"reply": "[Chat unavailable: anthropic package not installed.]"})
+
+    data = request.get_json()
+    message = data.get("message", "")
+    history = data.get("history", [])
+    ctx     = data.get("context", {})
+
+    if not message:
+        return jsonify({"reply": ""}), 400
+
+    system = f"""You are a senior climate finance analyst assistant embedded in a portfolio risk tool.
+You have full context of the current analysis and can answer questions about it clearly and concisely.
+
+CURRENT ANALYSIS CONTEXT:
+Scenario: {ctx.get('scenario')} (carbon price £{ctx.get('carbon_price')}/t)
+Portfolio EaR (before): {ctx.get('portfolio_ear')}%
+Portfolio EaR (after optimisation): {ctx.get('optimised_ear')}%
+EaR Reduction: {ctx.get('ear_reduction')}%
+
+Holdings (sorted by EPS at Risk):
+{chr(10).join([f"- {h['ticker']} ({h['sector']}): {h['eps_impact']}% EPS at Risk, {h['weight']}% weight, emissions intensity {h['emissions_intensity']}, pass-through {h['pass_through']}%" for h in sorted(ctx.get('holdings',[]), key=lambda x: float(x.get('eps_impact',0)), reverse=True)])}
+
+Rebalancing trades:
+{chr(10).join([f"- {t['ticker']}: {t['direction']} {t['from']}% → {t['to']}%" for t in ctx.get('trades',[])])}
+
+Investment memo:
+{ctx.get('memo','')}
+
+INSTRUCTIONS:
+- Answer questions about this specific portfolio and analysis
+- Be concise — 2-4 sentences unless a detailed explanation is needed
+- You can explain methodology, interpret numbers, discuss scenarios, or explore hypotheticals
+- Always clarify this is not investment advice
+- Do not make specific buy/sell recommendations"""
+
+    try:
+        client = _anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+
+        messages = history + [{"role": "user", "content": message}]
+
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=400,
+            system=system,
+            messages=messages,
+        )
+        reply = response.content[0].text
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        return jsonify({"reply": f"[Chat error: {str(e)}]"})
+
+
 @app.route("/scenarios")
 def get_scenarios():
     return jsonify(SCENARIOS)
