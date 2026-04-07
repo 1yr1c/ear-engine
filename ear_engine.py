@@ -79,6 +79,9 @@ SCENARIOS = {
     },
 }
 
+import numpy as np
+import csv
+
 BASELINE_CARBON = 25  # pre-ETS baseline for delta calculation
 
 try:
@@ -223,8 +226,6 @@ def optimise_portfolio(portfolio, scenario, turnover_limit=0.25, pass_through_ov
 
     Returns original results, optimised results, and trade recommendations.
     """
-    import numpy as np
-
     # Step 1 — compute original EaR
     original = compute_portfolio_ear(portfolio, scenario, pass_through_overrides)
     w0 = np.array([h["weight"] for h in portfolio])
@@ -317,8 +318,6 @@ def parse_portfolio_csv(filepath):
     Returns list of holding dicts compatible with compute_portfolio_ear.
     Raises ValueError with a clear message if validation fails.
     """
-    import csv
-
     required = {"ticker", "name", "sector", "weight", "emissions_intensity", "ebitda_margin", "pass_through"}
     valid_sectors = {"Energy", "Materials", "Industrials", "Healthcare", "Financials", "Consumer", "Utilities"}
 

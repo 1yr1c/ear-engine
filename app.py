@@ -13,8 +13,15 @@ from ear_engine import (
 )
 
 try:
+    import anthropic as _anthropic
+    ANTHROPIC_AVAILABLE = True
+except Exception:
+    ANTHROPIC_AVAILABLE = False
+
+try:
     from ml_modules import DETECTED_SCENARIO
     _detected_id = DETECTED_SCENARIO.get("id", "netzero")
+    # Validate it's a real scenario — fallback to netzero if not
     _DEFAULT_SCENARIO_ID = _detected_id if _detected_id in SCENARIOS else "netzero"
 except Exception:
     _DEFAULT_SCENARIO_ID = "netzero"
@@ -38,8 +45,9 @@ def generate_memo(result):
         return memo_cache[cache_key]
 
     try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+        if not ANTHROPIC_AVAILABLE:
+            return "[AI memo unavailable: anthropic package not installed.]"
+        client = _anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
 
         prompt = f"""You are a senior investment analyst writing a concise portfolio risk memo.
 
