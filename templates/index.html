@@ -73,6 +73,16 @@
     .formula .op{color:var(--accent);margin:0 3px}
     .formula .hi{color:var(--text2)}
     .formula .res{color:var(--accent);font-weight:600}
+    /* HMM RECOMMENDED BUTTON */
+    .hmm-rec-btn{width:100%;display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(180,83,9,.07);border:1px solid rgba(180,83,9,.3);border-radius:7px;cursor:pointer;font-family:inherit;text-align:left;transition:all .18s}
+    .hmm-rec-btn:hover{background:rgba(180,83,9,.12);border-color:rgba(180,83,9,.5)}
+    html.dark .hmm-rec-btn{background:rgba(255,179,0,.07);border-color:rgba(255,179,0,.3)}
+    html.dark .hmm-rec-btn:hover{background:rgba(255,179,0,.12);border-color:rgba(255,179,0,.5)}
+    .hmm-rec-icon{font-size:16px;flex-shrink:0;color:#b45309}
+    html.dark .hmm-rec-icon{color:#ffb300}
+    .hmm-rec-label{display:block;font-size:11px;font-weight:600;color:#b45309;letter-spacing:.03em}
+    html.dark .hmm-rec-label{color:#ffb300}
+    .hmm-rec-sub{display:block;font-size:9px;color:var(--text3);margin-top:1px}
     /* METRICS */
     .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
     @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
@@ -299,6 +309,15 @@
           {% endfor %}
         </div>
         <div class="scen-desc" id="scen-desc">{{ scenarios.netzero.description }}</div>
+        <div id="hmm-rec-wrap" style="display:none;margin-top:10px">
+          <button class="hmm-rec-btn" id="hmm-rec-btn" onclick="useHMMScenario()">
+            <span class="hmm-rec-icon">⬡</span>
+            <span>
+              <span class="hmm-rec-label">Use ML Recommended</span>
+              <span class="hmm-rec-sub" id="hmm-rec-sub">Detecting regime...</span>
+            </span>
+          </button>
+        </div>
       </div>
 
       <div class="panel">
@@ -634,6 +653,8 @@ const fmt=(v,d=1)=>v==null?"—":v.toFixed(d);
 let sel="netzero",custPort=null,lastData=null,expandedRow=null;
 
 // Check ML status and update HMM dot + default scenario
+let hmmScenarioId = null;
+
 fetch("/ml/status").then(r=>r.json()).then(d=>{
   if(d.ml_active){
     const hmm=d.detected_scenario;
@@ -641,14 +662,38 @@ fetch("/ml/status").then(r=>r.json()).then(d=>{
     if(hmm&&hmm.source!=="fallback"){
       dot.classList.remove("fallback");dot.classList.add("active");
     }
-    // Set default scenario to HMM detected one if valid
-    if(hmm&&hmm.id&&document.querySelector(`.scen-btn[data-id="${hmm.id}"]`)){
-      document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
-      const btn=document.querySelector(`.scen-btn[data-id="${hmm.id}"]`);
-      if(btn){btn.classList.add("active");sel=hmm.id;document.getElementById("scen-desc").textContent=SCENARIOS[hmm.id]?.description||"";}
+    if(hmm&&hmm.id){
+      hmmScenarioId = hmm.id;
+      const wrap=document.getElementById("hmm-rec-wrap");
+      const sub=document.getElementById("hmm-rec-sub");
+      if(wrap) wrap.style.display="block";
+      if(sub){
+        const label=hmm.label||hmm.id;
+        const price=hmm.carbon_price?`£${hmm.carbon_price}/t`:"";
+        const conf=hmm.confidence?` · ${Math.round(hmm.confidence*100)}% confidence`:"";
+        sub.textContent=`${label} ${price}${conf}`;
+      }
+      // Auto-select on load
+      if(document.querySelector(`.scen-btn[data-id="${hmm.id}"]`)){
+        document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
+        const btn=document.querySelector(`.scen-btn[data-id="${hmm.id}"]`);
+        if(btn){btn.classList.add("active");sel=hmm.id;document.getElementById("scen-desc").textContent=SCENARIOS[hmm.id]?.description||"";}
+      }
     }
   }
 }).catch(()=>{});
+
+function useHMMScenario(){
+  if(!hmmScenarioId) return;
+  const btn=document.querySelector(`.scen-btn[data-id="${hmmScenarioId}"]`);
+  if(btn){
+    document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    sel=hmmScenarioId;
+    document.getElementById("scen-desc").textContent=SCENARIOS[hmmScenarioId]?.description||"";
+    btn.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+}
 
 function drawRiskLegend(){
   const rl=document.getElementById("risk-legend");
