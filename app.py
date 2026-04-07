@@ -151,15 +151,16 @@ def get_default_portfolio():
 @app.route("/ml/status")
 def ml_status():
     try:
-        from ml_modules import PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO
+        from ml_modules import PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO, ML_READY
         return jsonify({
             "detected_scenario":   DETECTED_SCENARIO,
             "passthrough_rates":   PASSTHROUGH_RATES,
             "emissions_forecasts": EMISSIONS_FORECASTS,
             "ml_active":           True,
+            "ml_ready":            ML_READY,
         })
     except Exception as e:
-        return jsonify({"ml_active": False, "error": str(e)})
+        return jsonify({"ml_active": False, "ml_ready": False, "error": str(e)})
 
 
 if __name__ == "__main__":

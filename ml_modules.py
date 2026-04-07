@@ -380,33 +380,58 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
 # STARTUP — run all modules once, cache outputs
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _initialise(portfolio):
-    from ear_engine import PORTFOLIO as DEFAULT_PORTFOLIO
-    p = portfolio or DEFAULT_PORTFOLIO
+# ══════════════════════════════════════════════════════════════════════════════
+# STARTUP — background thread so Flask binds port immediately
+# ══════════════════════════════════════════════════════════════════════════════
 
-    df_raw = _load_eua_data()
+import threading
 
-    if df_raw is not None:
-        passthrough_rates    = _run_ols(df_raw, p)
-        emissions_forecasts  = _run_arima(p)
-        detected_scenario    = _run_hmm(df_raw)
-    else:
-        print("[ml_modules] No EUA data — all modules using fallbacks")
-        passthrough_rates    = _FALLBACK_PASSTHROUGH.copy()
-        emissions_forecasts  = {h["ticker"]: h["emissions_intensity"] for h in p}
-        detected_scenario    = _FALLBACK_SCENARIO.copy()
-
-    return passthrough_rates, emissions_forecasts, detected_scenario
+# Initialise with fallbacks immediately so the app is usable from first request
+PASSTHROUGH_RATES   = _FALLBACK_PASSTHROUGH.copy()
+EMISSIONS_FORECASTS = {}
+DETECTED_SCENARIO   = _FALLBACK_SCENARIO.copy()
+ML_READY            = False   # flips to True once background init completes
 
 
-# Run at import time
-try:
-    from ear_engine import PORTFOLIO as _DEFAULT_PORTFOLIO
-    PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO = _initialise(_DEFAULT_PORTFOLIO)
-    print(f"[ml_modules] Initialised. Detected scenario: {DETECTED_SCENARIO['label']} "
-          f"(£{DETECTED_SCENARIO['carbon_price']}/t)")
-except Exception as e:
-    print(f"[ml_modules] Startup failed: {e} — all fallbacks active")
-    PASSTHROUGH_RATES   = _FALLBACK_PASSTHROUGH.copy()
-    EMISSIONS_FORECASTS = {}
-    DETECTED_SCENARIO   = _FALLBACK_SCENARIO.copy()
+def _initialise_background():
+    """
+    Runs all 4 ML modules at full quality in a background thread.
+    Updates the module-level globals once complete.
+    Flask binds its port immediately using fallback values.
+    All requests after this completes get full ML outputs.
+    """
+    global PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO, ML_READY
+    try:
+        from ear_engine import PORTFOLIO as DEFAULT_PORTFOLIO
+
+        df_raw = _load_eua_data()
+
+        if df_raw is not None:
+            passthrough_rates   = _run_ols(df_raw, DEFAULT_PORTFOLIO)
+            emissions_forecasts = _run_arima(DEFAULT_PORTFOLIO)
+            detected_scenario   = _run_hmm(df_raw)
+        else:
+            print("[ml_modules] No EUA data — all modules using fallbacks")
+            passthrough_rates   = _FALLBACK_PASSTHROUGH.copy()
+            emissions_forecasts = {h["ticker"]: h["emissions_intensity"] for h in DEFAULT_PORTFOLIO}
+            detected_scenario   = _FALLBACK_SCENARIO.copy()
+
+        # Atomically update globals
+        PASSTHROUGH_RATES   = passthrough_rates
+        EMISSIONS_FORECASTS = emissions_forecasts
+        DETECTED_SCENARIO   = detected_scenario
+        ML_READY            = True
+
+        print(f"[ml_modules] ✓ Background init complete. "
+              f"Scenario: {DETECTED_SCENARIO['label']} "
+              f"(£{DETECTED_SCENARIO['carbon_price']}/t)")
+
+    except Exception as e:
+        ML_READY = True  # mark ready even on failure so status endpoint reflects it
+        print(f"[ml_modules] Background init failed: {e} — fallbacks remain active")
+
+
+# Launch background thread at import time
+_bg_thread = threading.Thread(target=_initialise_background, daemon=True)
+_bg_thread.start()
+print("[ml_modules] Background ML initialisation started — app ready immediately")
