@@ -34,7 +34,7 @@ _FALLBACK_PASSTHROUGH = {
 }
 
 _FALLBACK_SCENARIO = {
-    "id": "moderate",
+    "id": "below2",
     "label": "Orderly — Below 2°C",
     "carbon_price": 120,
     "regime_name": "Unknown (HMM fallback)",
@@ -375,10 +375,6 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
         "scipy_success":   result.success,
     }
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-# STARTUP — run all modules once, cache outputs
-# ══════════════════════════════════════════════════════════════════════════════
 
 # ══════════════════════════════════════════════════════════════════════════════
 # STARTUP — background thread so Flask binds port immediately

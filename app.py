@@ -14,7 +14,9 @@ from ear_engine import (
 
 try:
     from ml_modules import DETECTED_SCENARIO
-    _DEFAULT_SCENARIO_ID = DETECTED_SCENARIO.get("id", "netzero")
+    _detected_id = DETECTED_SCENARIO.get("id", "netzero")
+    # Validate it's a real scenario — fallback to netzero if not
+    _DEFAULT_SCENARIO_ID = _detected_id if _detected_id in SCENARIOS else "netzero"
 except Exception:
     _DEFAULT_SCENARIO_ID = "netzero"
 
@@ -96,8 +98,9 @@ def analyse():
     turnover_limit = float(data.get("turnover_limit", 0.25))
     custom_portfolio = data.get("portfolio", None)
 
+    # Silently fall back to netzero if scenario_id is invalid
     if scenario_id not in SCENARIOS:
-        return jsonify({"error": f"Unknown scenario: {scenario_id}"}), 400
+        scenario_id = "netzero"
     if not (0.05 <= turnover_limit <= 1.0):
         return jsonify({"error": "Turnover limit must be between 5% and 100%"}), 400
 
@@ -151,16 +154,15 @@ def get_default_portfolio():
 @app.route("/ml/status")
 def ml_status():
     try:
-        from ml_modules import PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO, ML_READY
+        from ml_modules import PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO
         return jsonify({
             "detected_scenario":   DETECTED_SCENARIO,
             "passthrough_rates":   PASSTHROUGH_RATES,
             "emissions_forecasts": EMISSIONS_FORECASTS,
             "ml_active":           True,
-            "ml_ready":            ML_READY,
         })
     except Exception as e:
-        return jsonify({"ml_active": False, "ml_ready": False, "error": str(e)})
+        return jsonify({"ml_active": False, "error": str(e)})
 
 
 if __name__ == "__main__":
