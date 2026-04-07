@@ -12,12 +12,43 @@ Outputs:
 import os
 import json
 import logging
+import threading
 import numpy as np
 import pandas as pd
 import warnings
 warnings.filterwarnings("ignore")
 
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
+
 logging.getLogger("statsmodels").setLevel(logging.CRITICAL)
+
+# Pre-import all ML dependencies at module level to avoid
+# thread import lock conflicts during request handling
+try:
+    from scipy.optimize import minimize as scipy_minimize
+    SCIPY_AVAILABLE = True
+except Exception:
+    SCIPY_AVAILABLE = False
+
+try:
+    from sklearn.linear_model import LinearRegression
+    from sklearn.metrics import r2_score
+    SKLEARN_AVAILABLE = True
+except Exception:
+    SKLEARN_AVAILABLE = False
+
+try:
+    from statsmodels.tsa.arima.model import ARIMA
+    STATSMODELS_AVAILABLE = True
+except Exception:
+    STATSMODELS_AVAILABLE = False
+
+try:
+    from hmmlearn.hmm import GaussianHMM
+    HMM_AVAILABLE = True
+except Exception:
+    HMM_AVAILABLE = False
 
 # ── Path to Agnes's data file ─────────────────────────────────────────────────
 DATA_PATH = os.path.join(os.path.dirname(__file__), "EUA_Yearly_futures.csv")
@@ -90,8 +121,8 @@ def _load_eua_data():
 def _run_ols(df_raw, portfolio):
     """Returns {sector: pass_through_rate}"""
     try:
-        from sklearn.linear_model import LinearRegression
-        from sklearn.metrics import r2_score
+        if not SKLEARN_AVAILABLE:
+            return _FALLBACK_PASSTHROUGH.copy()
 
         annual_prices = df_raw.groupby("year")["price_gbp"].mean().reset_index()
         annual_prices.columns = ["year", "annual_avg_price_gbp"]
@@ -156,7 +187,8 @@ def _run_ols(df_raw, portfolio):
 def _run_arima(portfolio):
     """Returns {ticker: forecasted_emissions_intensity}"""
     try:
-        from statsmodels.tsa.arima.model import ARIMA
+        if not STATSMODELS_AVAILABLE:
+            return {h["ticker"]: h["emissions_intensity"] for h in portfolio}
 
         results = {}
         for h in portfolio:
@@ -200,7 +232,9 @@ def _run_arima(portfolio):
 def _run_hmm(df_raw):
     """Returns NGFS scenario dict with detected regime."""
     try:
-        from hmmlearn.hmm import GaussianHMM
+        if not HMM_AVAILABLE:
+            print("[ml_modules] Module 3 HMM — hmmlearn not installed, using fallback")
+            return _FALLBACK_SCENARIO.copy()
 
         prices = df_raw[df_raw["year"] >= 2013]["price_gbp"].values
         if len(prices) < 24:
@@ -267,9 +301,6 @@ def _run_hmm(df_raw):
               f"(confidence: {confidence:.2f}) → {scenario['label']} £{scenario['carbon_price']}/t")
         return scenario
 
-    except ImportError:
-        print("[ml_modules] Module 3 HMM — hmmlearn not installed, using fallback")
-        return _FALLBACK_SCENARIO.copy()
     except Exception as e:
         print(f"[ml_modules] Module 3 HMM failed: {e} — using fallback")
         return _FALLBACK_SCENARIO.copy()
@@ -297,22 +328,13 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
 
     Returns dict with final_weights, original_ear, optimised_ear, reduction, actual_turnover
     """
-    from scipy.optimize import minimize
-
     n    = len(portfolio)
     w0   = np.array([h["weight"]     for h in portfolio])
     ear  = np.array([h["eps_impact"] for h in portfolio])
     beta = np.array([h["beta"]       for h in portfolio]).reshape(-1, 1)
 
-    # ── Covariance matrix ────────────────────────────────────────────────────
-    # Single-factor model: Cov = beta * beta' * sigma_m^2 + diag(sigma_e^2)
-    # sigma_m = assumed market vol (20% annualised is standard)
-    # sigma_e = idiosyncratic vol estimated from EaR — high EaR holdings
-    #           are treated as having higher idiosyncratic risk, which
-    #           penalises over-concentration into any single stock
     SIGMA_M = 0.20
-    sigma_e = np.maximum(ear * 0.5, 0.05)  # idiosyncratic vol floor at 5%
-
+    sigma_e = np.maximum(ear * 0.5, 0.05)
     cov_market = (SIGMA_M ** 2) * (beta @ beta.T)
     cov_idio   = np.diag(sigma_e ** 2)
     COV        = cov_market + cov_idio
@@ -322,15 +344,12 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
         portfolio_var = float(w @ COV @ w)
         return LAMBDA_EAR * portfolio_ear + LAMBDA_VOL * portfolio_var
 
-    # Individual weight cap: no single position > 3x its original weight
-    # or 20% absolute — prevents degenerate concentration
     max_weights = np.minimum(w0 * 3.0, 0.20)
     max_weights = np.maximum(max_weights, MIN_WEIGHT * 2)
     bounds = [(MIN_WEIGHT, float(mx)) for mx in max_weights]
-
     constraints = [{"type": "eq", "fun": lambda w: np.sum(w) - 1.0}]
 
-    result = minimize(
+    result = scipy_minimize(
         fun=objective,
         x0=w0,
         method="SLSQP",
