@@ -662,13 +662,18 @@ function applyMLStatus(d){
 
 function pollMLStatus(attempts){
   if(attempts<=0) return;
-  fetch("/ml/status").then(r=>r.json()).then(d=>{
+  fetch("/ml/status").then(r=>{
+    if(!r.ok||!r.headers.get("content-type")?.includes("application/json")) throw new Error("not json");
+    return r.json();
+  }).then(d=>{
     applyMLStatus(d);
     if(!d.ml_ready){
-      // Not ready yet — check again in 3 seconds
       setTimeout(()=>pollMLStatus(attempts-1), 3000);
     }
-  }).catch(()=>{});
+  }).catch(()=>{
+    // Retry silently — backend may still be starting
+    setTimeout(()=>pollMLStatus(attempts-1), 3000);
+  });
 }
 // Start polling — up to 10 attempts × 3 seconds = 30 seconds max wait
 pollMLStatus(10);
