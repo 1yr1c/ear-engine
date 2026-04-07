@@ -15,7 +15,6 @@ from ear_engine import (
 try:
     from ml_modules import DETECTED_SCENARIO
     _detected_id = DETECTED_SCENARIO.get("id", "netzero")
-    # Validate it's a real scenario — fallback to netzero if not
     _DEFAULT_SCENARIO_ID = _detected_id if _detected_id in SCENARIOS else "netzero"
 except Exception:
     _DEFAULT_SCENARIO_ID = "netzero"
@@ -154,15 +153,16 @@ def get_default_portfolio():
 @app.route("/ml/status")
 def ml_status():
     try:
-        from ml_modules import PASSTHROUGH_RATES, EMISSIONS_FORECASTS, DETECTED_SCENARIO
+        import ml_modules
         return jsonify({
-            "detected_scenario":   DETECTED_SCENARIO,
-            "passthrough_rates":   PASSTHROUGH_RATES,
-            "emissions_forecasts": EMISSIONS_FORECASTS,
+            "detected_scenario":   ml_modules.DETECTED_SCENARIO,
+            "passthrough_rates":   ml_modules.PASSTHROUGH_RATES,
+            "emissions_forecasts": ml_modules.EMISSIONS_FORECASTS,
             "ml_active":           True,
+            "ml_ready":            getattr(ml_modules, "ML_READY", False),
         })
     except Exception as e:
-        return jsonify({"ml_active": False, "error": str(e)})
+        return jsonify({"ml_active": False, "ml_ready": False, "error": str(e)})
 
 
 if __name__ == "__main__":
