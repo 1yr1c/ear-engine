@@ -12,43 +12,12 @@ Outputs:
 import os
 import json
 import logging
-import threading
 import numpy as np
 import pandas as pd
 import warnings
 warnings.filterwarnings("ignore")
 
-from statsmodels.tools.sm_exceptions import ConvergenceWarning
-warnings.filterwarnings("ignore", category=ConvergenceWarning)
-
 logging.getLogger("statsmodels").setLevel(logging.CRITICAL)
-
-# Pre-import all ML dependencies at module level to avoid
-# thread import lock conflicts during request handling
-try:
-    from scipy.optimize import minimize as scipy_minimize
-    SCIPY_AVAILABLE = True
-except Exception:
-    SCIPY_AVAILABLE = False
-
-try:
-    from sklearn.linear_model import LinearRegression
-    from sklearn.metrics import r2_score
-    SKLEARN_AVAILABLE = True
-except Exception:
-    SKLEARN_AVAILABLE = False
-
-try:
-    from statsmodels.tsa.arima.model import ARIMA
-    STATSMODELS_AVAILABLE = True
-except Exception:
-    STATSMODELS_AVAILABLE = False
-
-try:
-    from hmmlearn.hmm import GaussianHMM
-    HMM_AVAILABLE = True
-except Exception:
-    HMM_AVAILABLE = False
 
 # ── Path to Agnes's data file ─────────────────────────────────────────────────
 DATA_PATH = os.path.join(os.path.dirname(__file__), "EUA_Yearly_futures.csv")
@@ -121,8 +90,8 @@ def _load_eua_data():
 def _run_ols(df_raw, portfolio):
     """Returns {sector: pass_through_rate}"""
     try:
-        if not SKLEARN_AVAILABLE:
-            return _FALLBACK_PASSTHROUGH.copy()
+        from sklearn.linear_model import LinearRegression
+        from sklearn.metrics import r2_score
 
         annual_prices = df_raw.groupby("year")["price_gbp"].mean().reset_index()
         annual_prices.columns = ["year", "annual_avg_price_gbp"]
@@ -184,28 +153,63 @@ def _run_ols(df_raw, portfolio):
 # MODULE 2 — ARIMA EMISSIONS FORECASTING
 # ══════════════════════════════════════════════════════════════════════════════
 
+# ── Path to Agnes's emissions history file ───────────────────────────────────
+EMISSIONS_DATA_PATH = os.path.join(os.path.dirname(__file__), "CarbonEmissions.xlsx")
+
+# ── Ticker mapping: Agnes's tickers → ear_engine tickers ─────────────────────
+_TICKER_MAP = {"BA": "BA.", "RR": "RR.", "NG": "NG."}
+
+
+def _load_emissions_data():
+    """Load real emissions intensity history from Agnes's Excel file."""
+    if not os.path.exists(EMISSIONS_DATA_PATH):
+        print(f"[ml_modules] WARNING: {EMISSIONS_DATA_PATH} not found — ARIMA will use synthetic data")
+        return None
+    try:
+        df = pd.read_excel(EMISSIONS_DATA_PATH)
+        df.columns = [c.strip() for c in df.columns]
+        df["Holding"] = df["Holding"].replace(_TICKER_MAP)
+        # Build {ticker: {year: intensity}}
+        history = {}
+        for _, row in df.iterrows():
+            ticker = str(row["Holding"])
+            year   = int(row["Year"])
+            intensity = float(row["emissions_intensity"])
+            history.setdefault(ticker, {})[year] = intensity
+        print(f"[ml_modules] Loaded real emissions data for {len(history)} holdings (2018–2023)")
+        return history
+    except Exception as e:
+        print(f"[ml_modules] WARNING: Could not load emissions data: {e}")
+        return None
+
+
 def _run_arima(portfolio):
     """Returns {ticker: forecasted_emissions_intensity}"""
     try:
-        if not STATSMODELS_AVAILABLE:
-            return {h["ticker"]: h["emissions_intensity"] for h in portfolio}
+        emissions_history = _load_emissions_data()
 
         results = {}
         for h in portfolio:
-            ticker = h["ticker"]
+            ticker   = h["ticker"]
             last_val = h["emissions_intensity"]
 
-            series = np.array([
-                last_val * (0.95 ** i)
-                for i in range(5, -1, -1)
-            ])
+            # Use real historical data if available, else synthetic decay
+            if emissions_history and ticker in emissions_history:
+                hist = emissions_history[ticker]
+                series = np.array([hist[y] for y in sorted(hist.keys())])
+                source = "real"
+            else:
+                series = np.array([last_val * (0.95 ** i) for i in range(5, -1, -1)])
+                source = "synthetic"
 
             try:
+                if not STATSMODELS_AVAILABLE:
+                    raise ImportError("statsmodels not available")
                 model = ARIMA(series, order=ARIMA_ORDER)
                 fitted = model.fit()
                 forecasts = list(fitted.forecast(steps=FORECAST_HORIZON))
 
-                if any(f < 0 or f > last_val * 3 for f in forecasts):
+                if any(f < 0 or f > series[-1] * 5 for f in forecasts):
                     raise ValueError("Forecast out of range")
 
                 forecast_val = max(forecasts[-1], 0.001)
@@ -217,7 +221,9 @@ def _run_arima(portfolio):
                 forecast_val = max(intercept + slope * (len(series) + FORECAST_HORIZON - 1), 0.001)
                 results[ticker] = round(float(forecast_val), 6)
 
-        print(f"[ml_modules] Module 2 ARIMA — forecasted {len(results)} holdings")
+        real_count = sum(1 for h in portfolio if emissions_history and h["ticker"] in (emissions_history or {}))
+        print(f"[ml_modules] Module 2 ARIMA — forecasted {len(results)} holdings "
+              f"({real_count} real data, {len(results)-real_count} synthetic)")
         return results
 
     except Exception as e:
@@ -232,9 +238,7 @@ def _run_arima(portfolio):
 def _run_hmm(df_raw):
     """Returns NGFS scenario dict with detected regime."""
     try:
-        if not HMM_AVAILABLE:
-            print("[ml_modules] Module 3 HMM — hmmlearn not installed, using fallback")
-            return _FALLBACK_SCENARIO.copy()
+        from hmmlearn.hmm import GaussianHMM
 
         prices = df_raw[df_raw["year"] >= 2013]["price_gbp"].values
         if len(prices) < 24:
@@ -301,6 +305,9 @@ def _run_hmm(df_raw):
               f"(confidence: {confidence:.2f}) → {scenario['label']} £{scenario['carbon_price']}/t")
         return scenario
 
+    except ImportError:
+        print("[ml_modules] Module 3 HMM — hmmlearn not installed, using fallback")
+        return _FALLBACK_SCENARIO.copy()
     except Exception as e:
         print(f"[ml_modules] Module 3 HMM failed: {e} — using fallback")
         return _FALLBACK_SCENARIO.copy()
@@ -328,13 +335,22 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
 
     Returns dict with final_weights, original_ear, optimised_ear, reduction, actual_turnover
     """
+    from scipy.optimize import minimize
+
     n    = len(portfolio)
     w0   = np.array([h["weight"]     for h in portfolio])
     ear  = np.array([h["eps_impact"] for h in portfolio])
     beta = np.array([h["beta"]       for h in portfolio]).reshape(-1, 1)
 
+    # ── Covariance matrix ────────────────────────────────────────────────────
+    # Single-factor model: Cov = beta * beta' * sigma_m^2 + diag(sigma_e^2)
+    # sigma_m = assumed market vol (20% annualised is standard)
+    # sigma_e = idiosyncratic vol estimated from EaR — high EaR holdings
+    #           are treated as having higher idiosyncratic risk, which
+    #           penalises over-concentration into any single stock
     SIGMA_M = 0.20
-    sigma_e = np.maximum(ear * 0.5, 0.05)
+    sigma_e = np.maximum(ear * 0.5, 0.05)  # idiosyncratic vol floor at 5%
+
     cov_market = (SIGMA_M ** 2) * (beta @ beta.T)
     cov_idio   = np.diag(sigma_e ** 2)
     COV        = cov_market + cov_idio
@@ -344,12 +360,15 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
         portfolio_var = float(w @ COV @ w)
         return LAMBDA_EAR * portfolio_ear + LAMBDA_VOL * portfolio_var
 
+    # Individual weight cap: no single position > 3x its original weight
+    # or 20% absolute — prevents degenerate concentration
     max_weights = np.minimum(w0 * 3.0, 0.20)
     max_weights = np.maximum(max_weights, MIN_WEIGHT * 2)
     bounds = [(MIN_WEIGHT, float(mx)) for mx in max_weights]
+
     constraints = [{"type": "eq", "fun": lambda w: np.sum(w) - 1.0}]
 
-    result = scipy_minimize(
+    result = minimize(
         fun=objective,
         x0=w0,
         method="SLSQP",
