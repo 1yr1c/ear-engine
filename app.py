@@ -47,7 +47,10 @@ def generate_memo(result):
     try:
         if not ANTHROPIC_AVAILABLE:
             return "[AI memo unavailable: anthropic package not installed.]"
-        client = _anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+        client = _anthropic.Anthropic(
+            api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
+            timeout=60.0,
+        )
         prompt = f"""You are a senior investment analyst writing a concise portfolio risk memo.
 
 Based on the following climate transition risk analysis, write a professional 150-200 word investment memo.
@@ -191,7 +194,10 @@ INSTRUCTIONS:
 - Do not make specific buy/sell recommendations"""
 
     try:
-        client = _anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+        client = _anthropic.Anthropic(
+            api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
+            timeout=60.0,
+        )
 
         messages = history + [{"role": "user", "content": message}]
 
