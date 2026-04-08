@@ -12,12 +12,42 @@ Outputs:
 import os
 import json
 import logging
+import threading
 import numpy as np
 import pandas as pd
 import warnings
 warnings.filterwarnings("ignore")
 
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
 logging.getLogger("statsmodels").setLevel(logging.CRITICAL)
+
+# Pre-import all ML dependencies at module level to prevent
+# thread import lock conflicts during request handling
+try:
+    from scipy.optimize import minimize as scipy_minimize
+    SCIPY_AVAILABLE = True
+except Exception:
+    SCIPY_AVAILABLE = False
+
+try:
+    from sklearn.linear_model import LinearRegression
+    from sklearn.metrics import r2_score
+    SKLEARN_AVAILABLE = True
+except Exception:
+    SKLEARN_AVAILABLE = False
+
+try:
+    from statsmodels.tsa.arima.model import ARIMA
+    STATSMODELS_AVAILABLE = True
+except Exception:
+    STATSMODELS_AVAILABLE = False
+
+try:
+    from hmmlearn.hmm import GaussianHMM
+    HMM_AVAILABLE = True
+except Exception:
+    HMM_AVAILABLE = False
 
 # ── Path to Agnes's data file ─────────────────────────────────────────────────
 DATA_PATH = os.path.join(os.path.dirname(__file__), "EUA_Yearly_futures.csv")
@@ -90,8 +120,8 @@ def _load_eua_data():
 def _run_ols(df_raw, portfolio):
     """Returns {sector: pass_through_rate}"""
     try:
-        from sklearn.linear_model import LinearRegression
-        from sklearn.metrics import r2_score
+        if not SKLEARN_AVAILABLE:
+            return _FALLBACK_PASSTHROUGH.copy()
 
         annual_prices = df_raw.groupby("year")["price_gbp"].mean().reset_index()
         annual_prices.columns = ["year", "annual_avg_price_gbp"]
@@ -238,7 +268,9 @@ def _run_arima(portfolio):
 def _run_hmm(df_raw):
     """Returns NGFS scenario dict with detected regime."""
     try:
-        from hmmlearn.hmm import GaussianHMM
+        if not HMM_AVAILABLE:
+            print("[ml_modules] Module 3 HMM — hmmlearn not installed, using fallback")
+            return _FALLBACK_SCENARIO.copy()
 
         prices = df_raw[df_raw["year"] >= 2013]["price_gbp"].values
         if len(prices) < 24:
@@ -305,9 +337,6 @@ def _run_hmm(df_raw):
               f"(confidence: {confidence:.2f}) → {scenario['label']} £{scenario['carbon_price']}/t")
         return scenario
 
-    except ImportError:
-        print("[ml_modules] Module 3 HMM — hmmlearn not installed, using fallback")
-        return _FALLBACK_SCENARIO.copy()
     except Exception as e:
         print(f"[ml_modules] Module 3 HMM failed: {e} — using fallback")
         return _FALLBACK_SCENARIO.copy()
@@ -335,8 +364,6 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
 
     Returns dict with final_weights, original_ear, optimised_ear, reduction, actual_turnover
     """
-    from scipy.optimize import minimize
-
     n    = len(portfolio)
     w0   = np.array([h["weight"]     for h in portfolio])
     ear  = np.array([h["eps_impact"] for h in portfolio])
@@ -368,7 +395,7 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
 
     constraints = [{"type": "eq", "fun": lambda w: np.sum(w) - 1.0}]
 
-    result = minimize(
+    result = scipy_minimize(
         fun=objective,
         x0=w0,
         method="SLSQP",
@@ -417,8 +444,6 @@ def run_scipy_optimiser(portfolio, turnover_limit=0.25):
 # ══════════════════════════════════════════════════════════════════════════════
 # STARTUP — background thread so Flask binds port immediately
 # ══════════════════════════════════════════════════════════════════════════════
-
-import threading
 
 # Initialise with fallbacks immediately so the app is usable from first request
 PASSTHROUGH_RATES   = _FALLBACK_PASSTHROUGH.copy()
