@@ -171,20 +171,6 @@
     .ai-badge::before{content:'◆';font-size:6px}
     .memo-body{font-family:'Instrument Serif',Georgia,serif;font-size:15px;line-height:1.95;color:var(--text2);white-space:pre-wrap}
     .disclaimer{font-size:9px;color:var(--text3);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);line-height:1.7;font-style:italic}
-    /* CHAT */
-    .chat-msg{display:flex;gap:10px;align-items:flex-start}
-    .chat-msg.user{flex-direction:row-reverse}
-    .chat-bubble{padding:9px 13px;border-radius:10px;font-size:12px;line-height:1.6;max-width:85%}
-    .chat-msg.user .chat-bubble{background:var(--accent);color:#fff;border-radius:10px 10px 2px 10px}
-    .chat-msg.ai .chat-bubble{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:10px 10px 10px 2px}
-    .chat-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px}
-    .chat-msg.user .chat-avatar{background:var(--accent);color:#fff}
-    .chat-msg.ai .chat-avatar{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
-    .chat-typing{display:flex;gap:4px;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px 10px 10px 2px}
-    .chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:chatdot .9s infinite}
-    .chat-typing span:nth-child(2){animation-delay:.15s}
-    .chat-typing span:nth-child(3){animation-delay:.3s}
-    @keyframes chatdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
     /* ML INLINE BADGES */
     .ml-badge{display:inline-flex;align-items:center;gap:3px;font-size:7px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px;border:1px solid}
     .ml-badge.m1{color:#0066cc;border-color:rgba(0,102,204,.3);background:rgba(0,102,204,.07)}
@@ -285,16 +271,16 @@
 <header>
   <div class="logo">
     <span class="logo-dot"></span>
-    <span>EaR Engine</span>
-    <span class="logo-sub">CLIMATE TRANSITION RISK</span>
+    <span>Carbon Transition EaR Engine</span>
+    <span class="logo-sub">CLIMATE RISK ANALYSIS</span>
   </div>
   <div class="hpills">
     <span class="pill live">Live</span>
     <span class="pill">NGFS Phase V</span>
     <span class="pill">BoE CBES</span>
-    <span class="pill">Stirling Solvers 2026</span>
-    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"><span class="ti">☀</span><span id="theme-label">LIGHT</span></button>
-    <button class="theme-toggle" onclick="showPipeline()" style="margin-left:4px"><span class="ti">⬡</span><span>ML PIPELINE</span></button>
+    <span class="pill">TCFD / SFDR Aligned</span>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"><span class="ti" style="font-style:normal">&#9680;</span><span id="theme-label">LIGHT</span></button>
+    <button class="theme-toggle" onclick="showPipeline()" style="margin-left:4px"><span class="ti" style="font-style:normal">&#9636;</span><span>ML PIPELINE</span></button>
   </div>
 </header>
 
@@ -303,7 +289,16 @@
     <!-- LEFT -->
     <div>
       <div class="panel">
-        <div class="ptitle">Scenario <span class="ml-badge m3">M3 default</span></div>
+        <div class="ptitle">Scenario <span class="ml-badge m3">M3 Recommended</span></div>
+        <div id="hmm-rec-wrap" style="display:none;margin-bottom:10px">
+          <button class="hmm-rec-btn" id="hmm-rec-btn" onclick="useHMMScenario()">
+            <span class="hmm-rec-icon" style="font-style:normal">&#9636;</span>
+            <span>
+              <span class="hmm-rec-label">Use ML Recommended Scenario</span>
+              <span class="hmm-rec-sub" id="hmm-rec-sub">Detecting regime...</span>
+            </span>
+          </button>
+        </div>
         <div class="scen-list">
           {% for id, s in scenarios.items() %}
           <button class="scen-btn {% if id == 'netzero' %}active{% endif %}" data-id="{{ id }}" onclick="selScen('{{ id }}',this)">
@@ -329,13 +324,20 @@
         <div class="upload-row">
           <input type="file" id="pf" accept=".csv">
           <button class="btnx" onclick="doUpload()">Upload</button>
-          <button class="btnx" onclick="doReset()">Reset</button>
+          <button class="btnx" onclick="doReset()">Default Portfolio</button>
         </div>
         <div id="ustatus"></div>
         <div style="margin-top:8px;font-size:9px;color:var(--text3);line-height:1.8">Required: ticker · name · sector · weight<br>emissions_intensity · ebitda_margin · pass_through</div>
       </div>
 
-      <button class="run-btn" id="run-btn" onclick="runAnalysis()">Run Analysis</button>
+      <button class="run-btn" id="run-btn" onclick="runAnalysis()">Run Risk Analysis</button>
+
+      <div class="panel" style="margin-top:12px;border-left:3px solid var(--accent)">
+        <div class="ptitle">Why This Tool Is Required</div>
+        <div style="font-size:10px;color:var(--text2);line-height:1.8">
+          Under <strong style="color:var(--text)">TCFD</strong> and <strong style="color:var(--text)">SFDR Article 8/9</strong>, fund managers must disclose climate transition risk exposure. The UK <strong style="color:var(--text)">FCA SDR</strong> regime and EU <strong style="color:var(--text)">CSRD</strong> mandate quantified earnings impact from carbon policy changes. This engine computes exactly that — Earnings-at-Risk per holding under each regulatory scenario.
+        </div>
+      </div>
 
       <div class="panel" style="margin-top:12px">
         <div class="ptitle">Formula Chain</div>
@@ -390,9 +392,9 @@
       <div class="loading" id="loading"><div class="spinner"></div><p>Running climate risk analysis...</p></div>
       <div class="err-box" id="err-box"></div>
       <div id="placeholder" class="panel placeholder">
-        <div class="ph-icon">◈</div>
-        <div class="ph-title">Select a scenario and run analysis</div>
-        <div class="ph-body">Generate portfolio-level <strong>Earnings-at-Risk</strong> figures, rebalancing recommendations, and an AI investment memo.</div>
+        <div class="ph-icon" style="font-size:36px;opacity:.25">&#9636;</div>
+        <div class="ph-title">Carbon Transition Risk Analysis</div>
+        <div class="ph-body">Quantify <strong>Earnings-at-Risk</strong> from carbon policy changes across your portfolio. Required for TCFD, SFDR, and FCA SDR climate disclosures.</div>
       </div>
 
       <div class="results" id="results">
@@ -441,12 +443,12 @@
                 <thead><tr>
                   <th>Ticker</th><th>Name</th><th>Sector</th>
                   <th style="text-align:right">Weight</th>
-                  <th style="text-align:right">Emis.Int <span class="ml-badge m2">M2</span></th>
-                  <th style="text-align:right">Pass-thru <span class="ml-badge m1">M1</span></th>
-                  <th style="text-align:right">Net Cost Δ</th>
-                  <th style="text-align:right">Margin Comp.</th>
+                  <th style="text-align:right">Scope 1+2 Intensity <span class="ml-badge m2">M2</span></th>
+                  <th style="text-align:right">Pass-Through <span class="ml-badge m1">M1</span></th>
+                  <th style="text-align:right">Net Cost Impact</th>
+                  <th style="text-align:right">Margin Compression</th>
                   <th style="text-align:right">EPS at Risk <span class="ml-badge m1">M1</span><span class="ml-badge m2">M2</span></th>
-                  <th style="text-align:right">EaR Contrib.</th>
+                  <th style="text-align:right">EaR Contribution</th>
                 </tr></thead>
                 <tbody id="htb"></tbody>
               </table>
@@ -474,11 +476,11 @@
               <table>
                 <thead><tr>
                   <th>Ticker</th><th>Name</th>
-                  <th style="text-align:right">Current Wt</th>
-                  <th style="text-align:right">Opt. Wt <span class="ml-badge m4">M4</span></th>
-                  <th style="text-align:right">Delta <span class="ml-badge m4">M4</span></th>
+                  <th style="text-align:right">Current Weight</th>
+                  <th style="text-align:right">Optimised Weight <span class="ml-badge m4">M4</span></th>
+                  <th style="text-align:right">Change <span class="ml-badge m4">M4</span></th>
                   <th style="text-align:right">Action</th>
-                  <th style="text-align:right">Emis.Int <span class="ml-badge m2">M2</span></th>
+                  <th style="text-align:right">Scope 1+2 Intensity <span class="ml-badge m2">M2</span></th>
                   <th style="text-align:right">EPS at Risk <span class="ml-badge m1">M1</span><span class="ml-badge m2">M2</span></th>
                 </tr></thead>
                 <tbody id="ttb"></tbody>
@@ -491,17 +493,6 @@
             <div class="ai-badge">AI-ASSISTED — NOT INVESTMENT ADVICE</div>
             <div class="memo-body" id="memo">—</div>
             <div class="disclaimer">Generated by Claude Sonnet (Anthropic) from deterministic model outputs only. No numerical values are produced or modified by AI. Not investment advice. Financial sector holdings may understate risk due to Scope 3 financed emissions exclusion.</div>
-
-            <!-- CHAT -->
-            <div id="chat-wrap" style="display:none;margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
-              <div class="ptitle">Ask the Analyst</div>
-              <div id="chat-messages" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;max-height:320px;overflow-y:auto"></div>
-              <div style="display:flex;gap:8px">
-                <input type="text" id="chat-input" placeholder="e.g. Why is Shell so high? What happens at £300/t?" style="flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:inherit;font-size:12px;padding:9px 12px" onkeydown="if(event.key==='Enter')sendChat()">
-                <button onclick="sendChat()" style="background:linear-gradient(135deg,#0066cc,#004499);border:none;border-radius:6px;color:white;font-family:inherit;font-size:11px;font-weight:600;padding:9px 16px;cursor:pointer;white-space:nowrap">Send</button>
-              </div>
-              <div style="font-size:8px;color:var(--text3);margin-top:6px">Claude has full context of your portfolio analysis. Not investment advice.</div>
-            </div>
           </div>
         </div>
       </div>
@@ -510,9 +501,9 @@
 </div>
 
 <footer>
-  Stirling Solvers · University of Stirling · CFA Institute AI Investment Challenge 2026<br>
-  NGFS Phase V Scenarios (Nov 2024) · BoE CBES 2021 Cross-Validated · Fabra &amp; Reguant (2014) Pass-Through Rates<br>
-  Not investment advice · MIT Licence · <a href="https://github.com/1yr1c/ear-engine" style="color:var(--accent);text-decoration:none">GitHub</a>
+  Carbon Transition EaR Engine · Stirling Solvers · University of Stirling · CFA Institute AI Investment Challenge 2026<br>
+  NGFS Phase V Scenarios (Nov 2024) · BoE CBES 2021 · TCFD Aligned · SFDR Article 8/9 · FCA SDR<br>
+  For climate disclosure support only · Not investment advice · MIT Licence · <a href="https://github.com/1yr1c/ear-engine" style="color:var(--accent);text-decoration:none">GitHub</a>
 </footer>
 
 <!-- ML PIPELINE MODAL -->
@@ -933,9 +924,9 @@ function render(data){
   // OPTIMISER
   const turn=(data.actual_turnover*100).toFixed(1);
   document.getElementById("diag-grid").innerHTML=`
-    <div class="diag-card"><div class="diag-k">ORIGINAL EaR</div><div class="diag-v" style="color:${rc(o)}">${fmt(o)}%</div></div>
-    <div class="diag-card"><div class="diag-k">OPTIMISED EaR <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">${fmt(p)}%</div></div>
-    <div class="diag-card"><div class="diag-k">REDUCTION <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">↓${fmt(data.ear_reduction_pct)}%</div></div>
+    <div class="diag-card"><div class="diag-k">PORTFOLIO EaR (BEFORE)</div><div class="diag-v" style="color:${rc(o)}">${fmt(o)}%</div></div>
+    <div class="diag-card"><div class="diag-k">PORTFOLIO EaR (AFTER) <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">${fmt(p)}%</div></div>
+    <div class="diag-card"><div class="diag-k">RISK REDUCTION <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">-${fmt(data.ear_reduction_pct)}%</div></div>
     <div class="diag-card"><div class="diag-k">ACTUAL TURNOVER</div><div class="diag-v">${turn}%</div></div>
   `;
   const tl=data.turnover_limit*100;
@@ -978,10 +969,8 @@ function render(data){
     </tr>`;
   }).join("");
 
-  // MEMO + CHAT
+  // MEMO
   document.getElementById("memo").textContent=data.memo||"Memo unavailable.";
-  document.getElementById("chat-wrap").style.display="block";
-  document.getElementById("chat-messages").innerHTML="";
 
   document.getElementById("results").classList.add("visible");
   document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
@@ -1002,89 +991,6 @@ function toggleRow(ticker,row){
     firstTd.textContent="▼ "+ticker;
     expandedRow=ticker;
   }else{expandedRow=null;}
-}
-
-let chatHistory = [];
-
-function sendChat(){
-  const input = document.getElementById("chat-input");
-  const msg = input.value.trim();
-  if(!msg || !lastData) return;
-  input.value = "";
-
-  const box = document.getElementById("chat-messages");
-
-  // Add user message
-  chatHistory.push({role:"user", content: msg});
-  box.innerHTML += `
-    <div class="chat-msg user">
-      <div class="chat-avatar">You</div>
-      <div class="chat-bubble">${msg}</div>
-    </div>`;
-
-  // Typing indicator
-  const typingId = "typing-" + Date.now();
-  box.innerHTML += `
-    <div class="chat-msg ai" id="${typingId}">
-      <div class="chat-avatar">◆</div>
-      <div class="chat-typing"><span></span><span></span><span></span></div>
-    </div>`;
-  box.scrollTop = box.scrollHeight;
-
-  // Build context from current analysis
-  const ctx = {
-    scenario: lastData.original.scenario,
-    carbon_price: lastData.original.carbon_price,
-    portfolio_ear: (lastData.original.portfolio_ear*100).toFixed(2),
-    optimised_ear: (lastData.optimised.portfolio_ear*100).toFixed(2),
-    ear_reduction: lastData.ear_reduction_pct,
-    holdings: lastData.original.holdings.map(h=>({
-      ticker: h.ticker,
-      sector: h.sector,
-      weight: (h.weight*100).toFixed(1),
-      eps_impact: (h.eps_impact*100).toFixed(1),
-      emissions_intensity: (h.emis_used??h.emissions_intensity)?.toFixed(3),
-      pass_through: (h.pass_through_used*100).toFixed(0),
-    })),
-    trades: lastData.trades.filter(t=>t.direction!=="HOLD").map(t=>({
-      ticker: t.ticker,
-      direction: t.direction,
-      from: (t.weight_from*100).toFixed(1),
-      to: (t.weight_to*100).toFixed(1),
-    })),
-    memo: document.getElementById("memo").textContent,
-  };
-
-  fetch("/chat", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      message: msg,
-      history: chatHistory.slice(0,-1), // exclude current message
-      context: ctx,
-    })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    document.getElementById(typingId)?.remove();
-    const reply = d.reply || "[No response]";
-    chatHistory.push({role:"assistant", content: reply});
-    box.innerHTML += `
-      <div class="chat-msg ai">
-        <div class="chat-avatar">◆</div>
-        <div class="chat-bubble">${reply.replace(/\n/g,"<br>")}</div>
-      </div>`;
-    box.scrollTop = box.scrollHeight;
-  })
-  .catch(()=>{
-    document.getElementById(typingId)?.remove();
-    box.innerHTML += `
-      <div class="chat-msg ai">
-        <div class="chat-avatar">◆</div>
-        <div class="chat-bubble" style="color:var(--red)">Chat unavailable — check API key.</div>
-      </div>`;
-    box.scrollTop = box.scrollHeight;
-  });
 }
 
 async function doUpload(){
