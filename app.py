@@ -106,6 +106,7 @@ def analyse():
     scenario_id    = data.get("scenario_id", _DEFAULT_SCENARIO_ID)
     turnover_limit = float(data.get("turnover_limit", 0.25))
     custom_portfolio = data.get("portfolio", None)
+    custom_carbon  = data.get("custom_carbon", None)
 
     # Silently fall back to netzero if scenario_id is invalid
     if scenario_id not in SCENARIOS:
@@ -114,7 +115,12 @@ def analyse():
         return jsonify({"error": "Turnover limit must be between 5% and 100%"}), 400
 
     portfolio = custom_portfolio if custom_portfolio else PORTFOLIO
-    scenario  = SCENARIOS[scenario_id]
+    scenario  = dict(SCENARIOS[scenario_id])  # copy so we don't mutate global
+
+    # Apply custom carbon price override if provided
+    if custom_carbon and isinstance(custom_carbon, (int, float)) and 1 <= custom_carbon <= 1000:
+        scenario["carbon_price"] = int(custom_carbon)
+        scenario["label"] = f"{scenario['label']} (custom £{int(custom_carbon)}/t)"
 
     try:
         result = optimise_portfolio(portfolio, scenario, turnover_limit=turnover_limit)
