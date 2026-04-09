@@ -1,650 +1,650 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EaR Engine — Climate Transition Risk</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#f0f4f8;--bg1:#ffffff;--bg2:#f5f7fa;--bg3:#e8edf2;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#1a2332;--text2:#4a5568;--text3:#8a9bb0;--accent:#0066cc;--green:#0a7c4c;--red:#c0392b;--amber:#b45309}
-    html.dark{--bg:#080c10;--bg1:#0c1118;--bg2:#111820;--bg3:#161e28;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--text:#f0f4f8;--text2:#8da0b3;--text3:#4a6070;--accent:#00d4ff;--green:#00e676;--red:#ff4757;--amber:#ffb300}
-    /* THEME TOGGLE */
-    .theme-toggle{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 10px;font-family:inherit;font-size:10px;font-weight:600;color:var(--text2);letter-spacing:.05em;transition:all .2s}
-    .theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
-    .theme-toggle .ti{font-size:12px}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
-    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,102,204,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,204,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-    /* HEADER */
-    header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between}
-    html.dark header{background:rgba(8,12,16,0.94)}
-    .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
-    .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 3s ease-in-out infinite}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
-    .logo-sub{color:var(--accent);font-size:10px;font-weight:400;letter-spacing:.08em;margin-left:3px}
-    .hpills{display:flex;gap:7px;align-items:center}
-    .pill{font-size:9px;font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);background:var(--bg2)}
-    .pill.live{border-color:rgba(10,124,76,.35);color:var(--green);background:rgba(10,124,76,.07)}
-    .pill.live::before{content:'●';margin-right:4px;font-size:7px;animation:pulse 2s infinite}
-    /* LAYOUT */
-    .page{max-width:1380px;margin:0 auto;padding:20px 20px;position:relative;z-index:1}
-    .layout{display:grid;grid-template-columns:268px 1fr;gap:14px;align-items:start}
-    @media(max-width:940px){.layout{grid-template-columns:1fr}}
-    /* PANEL */
-    .panel{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
-    .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,102,204,.2),transparent)}
-    .ptitle{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-    .ptitle::after{content:'';flex:1;height:1px;background:var(--border)}
-    /* SCENARIO */
-    .scen-list{display:flex;flex-direction:column;gap:5px}
-    .scen-btn{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;cursor:pointer;padding:9px 12px;font-family:inherit;font-size:12px;font-weight:500;color:var(--text2);text-align:left;transition:all .18s;display:flex;justify-content:space-between;align-items:center}
-    .scen-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
-    .scen-btn.active{background:rgba(0,102,204,.07);border-color:rgba(0,102,204,.38);color:var(--accent)}
-    .scen-right{text-align:right;flex-shrink:0;margin-left:8px}
-    .scen-price{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);display:block}
-    .scen-temp{font-size:9px;color:var(--text3)}
-    .scen-btn.active .scen-price,.scen-btn.active .scen-temp{color:rgba(0,102,204,.6)}
-    .scen-desc{margin-top:10px;padding:9px 11px;background:rgba(0,102,204,.04);border:1px solid rgba(0,102,204,.12);border-radius:5px;font-size:10px;color:var(--text2);line-height:1.7}
-    /* CONTROLS */
-    .sl-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .sl-hdr label{font-size:11px;color:var(--text2)}
-    .sl-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--accent)}
-    input[type=range]{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;background:var(--bg3);outline:none;margin-bottom:14px;cursor:pointer}
-    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 8px rgba(0,102,204,.3)}
-    .ilabel{font-size:10px;color:var(--text2);display:block;margin-bottom:5px}
-    input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 10px}
-    input[type=number]:focus{outline:1px solid var(--accent)}
-    /* UPLOAD */
-    .upload-row{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap}
-    .upload-row input[type=file]{display:none}
-    .btnx{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-family:inherit;font-size:11px;font-weight:500;padding:9px 16px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
-    .btnx:hover{border-color:var(--accent);color:var(--accent)}
-    .btnx.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-    html.dark .btnx.primary{color:#080c10}
-    .btnx.primary:hover{opacity:.85}
-    .uok{font-size:10px;color:var(--green);margin-top:5px}
-    .uerr{font-size:10px;color:var(--red);margin-top:5px}
-    /* RUN */
-    .run-btn{width:100%;margin-top:4px;background:linear-gradient(135deg,#0099dd,#005fb3);border:none;border-radius:7px;cursor:pointer;padding:12px;font-family:inherit;font-size:12px;font-weight:700;color:white;letter-spacing:.08em;text-transform:uppercase;transition:all .2s}
-    .run-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,130,220,.35)}
-    .run-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
-    /* HMM RECOMMENDED BUTTON */
-    .hmm-rec-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(10,124,76,.07);border:1px solid rgba(10,124,76,.35);border-radius:7px;cursor:pointer;font-family:inherit;text-align:left;transition:all .18s;margin-bottom:8px}
-    .hmm-rec-btn:hover{background:rgba(10,124,76,.13);border-color:rgba(10,124,76,.6)}
-    html.dark .hmm-rec-btn{background:rgba(0,230,118,.06);border-color:rgba(0,230,118,.3)}
-    html.dark .hmm-rec-btn:hover{background:rgba(0,230,118,.11);border-color:rgba(0,230,118,.55)}
-    .hmm-rec-icon{font-size:14px;flex-shrink:0;color:#0a7c4c;line-height:1}
-    html.dark .hmm-rec-icon{color:#00e676}
-    .hmm-rec-label{display:block;font-size:11px;font-weight:600;color:#0a7c4c}
-    html.dark .hmm-rec-label{color:#00e676}
-    .hmm-rec-sub{display:block;font-size:9px;color:var(--text3);margin-top:1px}
-    /* FORMULA */
-    .formula{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);line-height:2.1;margin-top:4px}
-    .formula .op{color:var(--accent);margin:0 3px}
-    .formula .hi{color:var(--text2)}
-    .formula .res{color:var(--accent);font-weight:600}
-    /* METRICS */
-    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
-    @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
-    .metric{background:var(--bg1);border:1px solid var(--border);border-radius:9px;padding:14px 16px;position:relative;overflow:hidden}
-    .metric::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,102,204,.18),transparent)}
-    .mlabel{font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
-    .mval{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:500;line-height:1;margin-bottom:3px}
-    .mval.red{color:var(--red)}.mval.grn{color:var(--green)}.mval.acc{color:var(--accent)}
-    .msub{font-size:9px;color:var(--text3)}
-    /* HIGH RISK KPI */
-    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
-    .kpi{background:var(--bg1);border:1px solid var(--border);border-radius:9px;padding:12px 16px}
-    .kpi .klbl{font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-    .kpi .kval{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500}
-    .kpi .ksub{font-size:9px;color:var(--text3);margin-top:3px}
-    /* GAUGE */
-    .gauge-row{display:grid;grid-template-columns:1fr 230px;gap:12px;margin-bottom:12px}
-    @media(max-width:800px){.gauge-row{grid-template-columns:1fr}}
-    /* TABS */
-    .tabs{display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)}
-    .tab-btn{background:none;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;padding:8px 18px;color:var(--text3);letter-spacing:.03em;transition:all .18s;white-space:nowrap;flex:1}
-    .tab-btn.active{background:var(--bg1);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.1);font-weight:600}
-    html.dark .tab-btn.active{box-shadow:0 1px 4px rgba(0,0,0,0.4)}
-    .tab-btn:hover:not(.active){color:var(--text2);background:var(--bg3)}
-    /* TABLE */
-    table{width:100%;border-collapse:collapse;font-size:12px}
-    th{text-align:left;padding:7px 10px;font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
-    td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
-    tr:hover td{background:rgba(0,0,0,.025)}
-    .expandable{cursor:pointer}
-    .exp-row td{background:rgba(0,102,204,.03);padding:12px 14px 14px 32px}
-    .ticker{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:500}
-    .co{color:var(--text);font-size:12px}
-    .scope3{font-size:8px;color:var(--amber);display:block;margin-top:1px}
-    .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)}
-    /* TAGS */
-    .tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:8px;font-weight:600;letter-spacing:.05em;border:1px solid}
-    .tag-Energy{color:#c92a2a;border-color:rgba(201,42,42,.28);background:rgba(201,42,42,.07)}
-    .tag-Materials{color:#d9480f;border-color:rgba(217,72,15,.28);background:rgba(217,72,15,.07)}
-    .tag-Industrials{color:#856404;border-color:rgba(133,100,4,.28);background:rgba(133,100,4,.07)}
-    .tag-Healthcare{color:#1864ab;border-color:rgba(24,100,171,.28);background:rgba(24,100,171,.07)}
-    .tag-Financials{color:#5f3dc4;border-color:rgba(95,61,196,.28);background:rgba(95,61,196,.07)}
-    .tag-Consumer{color:#2b8a3e;border-color:rgba(43,138,62,.28);background:rgba(43,138,62,.07)}
-    .tag-Utilities{color:#0b7285;border-color:rgba(11,114,133,.28);background:rgba(11,114,133,.07)}
-    /* BARS */
-    .bar-wrap{display:flex;align-items:center;gap:8px}
-    .bar-bg{flex:1;background:var(--bg3);border-radius:2px;height:5px;overflow:hidden}
-    .bar-fill{height:100%;border-radius:2px;transition:width .55s cubic-bezier(.4,0,.2,1)}
-    .bar-val{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;min-width:42px;text-align:right}
-    /* SECTOR BARS */
-    .sector-bar-wrap{margin-bottom:9px}
-    .sbr-hdr{display:flex;justify-content:space-between;margin-bottom:3px;font-size:10px}
-    .sbr-bg{background:var(--bg3);border-radius:2px;height:8px;overflow:hidden}
-    .sbr-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-    /* WEIGHT CHART */
-    .wc-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-    .wc-ticker{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);width:36px;text-align:right;flex-shrink:0}
-    .wc-track{flex:1;position:relative;height:14px;display:flex;align-items:center}
-    .wc-center{position:absolute;left:50%;width:1px;height:100%;background:var(--border2)}
-    .wc-bar-neg{position:absolute;right:50%;height:7px;border-radius:2px 0 0 2px;background:var(--red);opacity:.85}
-    .wc-bar-pos{position:absolute;left:50%;height:7px;border-radius:0 2px 2px 0;background:var(--green);opacity:.85}
-    .wc-dot{position:absolute;left:calc(50% - 2px);width:4px;height:4px;border-radius:50%}
-    .wc-val{font-family:'JetBrains Mono',monospace;font-size:10px;width:44px;text-align:left;flex-shrink:0}
-    .wc-legend{display:flex;justify-content:space-between;margin-top:6px;padding-top:7px;border-top:1px solid var(--border);font-size:8px}
-    /* ACTION BADGE */
-    .action-badge{font-size:9px;font-weight:600;padding:2px 8px;border-radius:3px;border:1px solid;letter-spacing:.05em}
-    .action-INC{color:var(--green);border-color:rgba(10,124,76,.3);background:rgba(10,124,76,.06)}
-    .action-RED{color:var(--red);border-color:rgba(192,57,43,.3);background:rgba(192,57,43,.06)}
-    .action-HLD{color:var(--text3);border-color:var(--border2);background:var(--bg2)}
-    /* DIAG CARDS */
-    .diag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-    .diag-card{background:var(--bg2);border-radius:5px;padding:7px 10px}
-    .diag-k{font-size:8px;color:var(--text3);letter-spacing:.05em;margin-bottom:3px}
-    .diag-v{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:500}
-    /* SCENARIO PARAMS */
-    .param-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-    .param-item{padding-left:14px;border-left:1px solid var(--border)}
-    .param-item:first-child{padding-left:0;border-left:none}
-    .param-lbl{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
-    .param-val{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--accent);font-weight:500}
-    .param-note{font-size:9px;color:var(--text3);margin-top:3px}
-    /* BREAKDOWN */
-    .breakdown-grid{display:flex;gap:18px;flex-wrap:wrap}
-    .bd-item{min-width:110px}
-    .bd-lbl{font-size:9px;color:var(--text3);margin-bottom:2px}
-    .bd-val{font-size:14px;font-weight:500}
-    /* RISK LEGEND */
-    .risk-legend{display:flex;justify-content:space-around;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
-    .rl-item{text-align:center}
-    .rl-lbl{font-size:8px;font-weight:600}
-    .rl-range{font-size:7px;color:var(--text3)}
-    /* DONUT LEGEND */
-    .donut-legend{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-    .dl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;font-size:9px}
-    .dl-dot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
-    /* AI MEMO */
-    .ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,102,204,.05);border:1px solid rgba(0,102,204,.18);border-radius:20px;padding:3px 11px;font-size:8px;font-weight:600;letter-spacing:.1em;color:var(--accent);margin-bottom:14px}
-    .ai-badge::before{content:'◆';font-size:6px}
-    .memo-body{font-family:'Instrument Serif',Georgia,serif;font-size:15px;line-height:1.95;color:var(--text2);white-space:pre-wrap}
-    .disclaimer{font-size:9px;color:var(--text3);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);line-height:1.7;font-style:italic}
-    /* CHAT */
-    .chat-msg{display:flex;gap:10px;align-items:flex-start}
-    .chat-msg.user{flex-direction:row-reverse}
-    .chat-bubble{padding:9px 13px;border-radius:10px;font-size:12px;line-height:1.6;max-width:85%}
-    .chat-msg.user .chat-bubble{background:var(--accent);color:#fff;border-radius:10px 10px 2px 10px}
-    html.dark .chat-msg.user .chat-bubble{color:#080c10}
-    .chat-msg.ai .chat-bubble{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:10px 10px 10px 2px}
-    .chat-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:2px;font-weight:700}
-    .chat-msg.user .chat-avatar{background:var(--accent);color:#fff}
-    html.dark .chat-msg.user .chat-avatar{color:#080c10}
-    .chat-msg.ai .chat-avatar{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
-    .chat-typing{display:flex;gap:4px;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px 10px 10px 2px}
-    .chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:chatdot .9s infinite}
-    .chat-typing span:nth-child(2){animation-delay:.15s}
-    .chat-typing span:nth-child(3){animation-delay:.3s}
-    @keyframes chatdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
-    /* ML INLINE BADGES */
-    .ml-badge{display:inline-flex;align-items:center;gap:3px;font-size:7px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px;border:1px solid}
-    .ml-badge.m1{color:#0066cc;border-color:rgba(0,102,204,.3);background:rgba(0,102,204,.07)}
-    .ml-badge.m2{color:#0a7c4c;border-color:rgba(10,124,76,.3);background:rgba(10,124,76,.07)}
-    .ml-badge.m3{color:#b45309;border-color:rgba(180,83,9,.3);background:rgba(180,83,9,.07)}
-    .ml-badge.m4{color:#6d28d9;border-color:rgba(109,40,217,.3);background:rgba(109,40,217,.07)}
-    /* ML STATUS */
-    .ml-panel{margin-top:12px}
-    .ml-module{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-    .ml-module:last-child{border-bottom:none}
-    .ml-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
-    .ml-dot.active{background:#0a7c4c;box-shadow:0 0 6px rgba(10,124,76,.5)}
-    html.dark .ml-dot.active{background:#00e676;box-shadow:0 0 6px rgba(0,230,118,.5)}
-    .ml-dot.fallback{background:var(--amber);box-shadow:0 0 6px rgba(180,83,9,.4)}
-    html.dark .ml-dot.fallback{box-shadow:0 0 6px rgba(255,179,0,.4)}
-    .ml-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
-    .ml-where{font-size:9px;color:var(--accent);margin-bottom:2px}
-    .ml-why{font-size:9px;color:var(--text3);line-height:1.5}
-    .gen-btn{background:linear-gradient(135deg,#0ea5e9,#6366f1);border:none;border-radius:6px;cursor:pointer;padding:10px 20px;font-family:inherit;font-size:12px;color:white;letter-spacing:.04em;font-weight:600;transition:opacity .2s;margin-bottom:16px}
-    .gen-btn:hover{opacity:.85}
-    .gen-btn:disabled{opacity:.4;cursor:not-allowed}
-    /* LOADING/ERROR */
-    .loading{display:none;text-align:center;padding:70px 20px}
-    .loading.visible{display:block}
-    .spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px}    @keyframes spin{to{transform:rotate(360deg)}}
-    .loading p{font-size:11px;color:var(--text3);letter-spacing:.05em}
-    .err-box{display:none;background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.28);border-radius:7px;padding:12px 14px;color:var(--red);font-size:12px;margin-bottom:12px}
-    .err-box.visible{display:block}
-    .results{display:none}
-    .results.visible{display:block;animation:fadeUp .28s ease}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;text-align:center;color:var(--text3)}
-    .ph-icon{font-size:36px;margin-bottom:14px;opacity:.25}
-    .ph-title{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:7px}
-    .ph-body{font-size:11px;line-height:1.7;max-width:280px}
-    .ph-body strong{color:var(--accent)}
-    footer{text-align:center;padding:28px 20px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);margin-top:36px;letter-spacing:.04em;line-height:2.2;position:relative;z-index:1}
-    .risk-dots{display:flex;gap:10px;font-size:9px}
-    /* PIPELINE MODAL */
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center}
-    .modal-overlay.open{display:flex}
-    .modal{background:var(--bg1);border:1px solid var(--border2);border-radius:14px;padding:28px;max-width:800px;width:94%;max-height:88vh;overflow-y:auto;position:relative}
-    .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);line-height:1}
-    .modal-close:hover{color:var(--text)}
-    .modal-title{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text);margin-bottom:4px}
-    .modal-sub{font-size:11px;color:var(--text3);margin-bottom:24px}
-    .pipe-row{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;gap:0;align-items:center;margin-bottom:8px}
-    .pipe-module{border:1px solid var(--border2);border-radius:8px;padding:11px 13px}
-    .pipe-module.m1{border-color:rgba(0,102,204,.4);background:rgba(0,102,204,.05)}
-    .pipe-module.m2{border-color:rgba(10,124,76,.4);background:rgba(10,124,76,.05)}
-    .pipe-module.m3{border-color:rgba(180,83,9,.4);background:rgba(180,83,9,.05)}
-    .pipe-module.m4{border-color:rgba(109,40,217,.4);background:rgba(109,40,217,.05)}
-    html.dark .pipe-module.m1{border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.05)}
-    html.dark .pipe-module.m2{border-color:rgba(0,230,118,.35);background:rgba(0,230,118,.05)}
-    html.dark .pipe-module.m3{border-color:rgba(255,179,0,.35);background:rgba(255,179,0,.05)}
-    html.dark .pipe-module.m4{border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.05)}
-    .pipe-tag{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
-    .pipe-tag.m1{color:#0066cc}.pipe-tag.m2{color:#0a7c4c}.pipe-tag.m3{color:#b45309}.pipe-tag.m4{color:#6d28d9}
-    html.dark .pipe-tag.m1{color:#00d4ff}html.dark .pipe-tag.m2{color:#00e676}html.dark .pipe-tag.m3{color:#ffb300}html.dark .pipe-tag.m4{color:#a78bfa}
-    .pipe-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
-    .pipe-method{font-size:8px;color:var(--text3);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
-    .pipe-input-lbl{font-size:8px;color:var(--text3);margin-bottom:2px;letter-spacing:.04em}
-    .pipe-input{font-size:9px;color:var(--text2);padding:3px 6px;background:var(--bg2);border-radius:3px;margin-bottom:5px;font-family:'JetBrains Mono',monospace}
-    .pipe-output-lbl{font-size:8px;color:var(--text3);margin-bottom:2px;letter-spacing:.04em}
-    .pipe-output{font-size:9px;font-weight:600;padding:3px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace}
-    .pipe-output.m1{color:#0066cc;background:rgba(0,102,204,.1)}html.dark .pipe-output.m1{color:#00d4ff;background:rgba(0,212,255,.1)}
-    .pipe-output.m2{color:#0a7c4c;background:rgba(10,124,76,.1)}html.dark .pipe-output.m2{color:#00e676;background:rgba(0,230,118,.1)}
-    .pipe-output.m3{color:#b45309;background:rgba(180,83,9,.1)}html.dark .pipe-output.m3{color:#ffb300;background:rgba(255,179,0,.1)}
-    .pipe-output.m4{color:#6d28d9;background:rgba(109,40,217,.1)}html.dark .pipe-output.m4{color:#a78bfa;background:rgba(167,139,250,.1)}
-    .pipe-arrow{display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px}
-    .pipe-down-row{display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 0;font-size:9px;color:var(--text3)}
-    .pipe-ear-box{border:1px solid var(--border2);border-radius:8px;padding:14px 18px;margin:4px 0 8px;background:var(--bg2)}
-    .pipe-ear-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
-    .pipe-formula{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);line-height:2.1}
-    .pipe-formula .hi1{color:#0066cc}html.dark .pipe-formula .hi1{color:#00d4ff}
-    .pipe-formula .hi2{color:#0a7c4c}html.dark .pipe-formula .hi2{color:#00e676}
-    .pipe-formula .hi4{color:#6d28d9}html.dark .pipe-formula .hi4{color:#a78bfa}
-    .pipe-formula .op{color:var(--accent);margin:0 2px}
-    .pipe-formula .res{font-weight:700;color:var(--text)}
-    .pipe-outputs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-    .pipe-out-card{border:1px solid var(--border);border-radius:6px;padding:9px 11px;background:var(--bg1)}
-    .pipe-out-col{font-size:8px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;text-transform:uppercase}
-    .pipe-out-val{font-size:10px;color:var(--text);font-weight:500;line-height:1.5}
-    html.dark body::before{background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px)}
-    html.dark .tag-Energy{color:#ff6b6b;border-color:rgba(255,107,107,.28);background:rgba(255,107,107,.07)}
-    html.dark .tag-Materials{color:#ffa94d;border-color:rgba(255,169,77,.28);background:rgba(255,169,77,.07)}
-    html.dark .tag-Industrials{color:#ffe066;border-color:rgba(255,224,102,.28);background:rgba(255,224,102,.07)}
-    html.dark .tag-Healthcare{color:#74c0fc;border-color:rgba(116,192,252,.28);background:rgba(116,192,252,.07)}
-    html.dark .tag-Financials{color:#b197fc;border-color:rgba(177,151,252,.28);background:rgba(177,151,252,.07)}
-    html.dark .tag-Consumer{color:#69db7c;border-color:rgba(105,219,124,.28);background:rgba(105,219,124,.07)}
-    html.dark .tag-Utilities{color:#38d9a9;border-color:rgba(56,217,169,.28);background:rgba(56,217,169,.07)}
-    html.dark .action-INC{color:#00e676;border-color:rgba(0,230,118,.3);background:transparent}
-    html.dark .action-RED{color:#ff4757;border-color:rgba(255,71,87,.3);background:transparent}
-    html.dark .ml-dot.active{box-shadow:0 0 6px var(--green)}
-    html.dark .ml-dot.fallback{box-shadow:0 0 6px var(--amber)}
-    html.dark .pill.live{border-color:rgba(0,230,118,.35);color:#00e676;background:rgba(0,230,118,.07)}
-  </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>EaR Engine — Climate Transition Risk</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+ <style>
+ :root{--bg:#f0f4f8;--bg1:#ffffff;--bg2:#f5f7fa;--bg3:#e8edf2;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.15);--text:#1a2332;--text2:#4a5568;--text3:#8a9bb0;--accent:#0066cc;--green:#0a7c4c;--red:#c0392b;--amber:#b45309}
+ html.dark{--bg:#080c10;--bg1:#0c1118;--bg2:#111820;--bg3:#161e28;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--text:#f0f4f8;--text2:#8da0b3;--text3:#4a6070;--accent:#00d4ff;--green:#00e676;--red:#ff4757;--amber:#ffb300}
+ /* THEME TOGGLE */
+ .theme-toggle{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 10px;font-family:inherit;font-size:10px;font-weight:600;color:var(--text2);letter-spacing:.05em;transition:all .2s}
+ .theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+ .theme-toggle .ti{font-size:12px}
+ *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,102,204,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,204,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+ /* HEADER */
+ header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between}
+ html.dark header{background:rgba(8,12,16,0.94)}
+ .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+ .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 3s ease-in-out infinite}
+ @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.75)}}
+ .logo-sub{color:var(--accent);font-size:10px;font-weight:400;letter-spacing:.08em;margin-left:3px}
+ .hpills{display:flex;gap:7px;align-items:center}
+ .pill{font-size:9px;font-weight:600;letter-spacing:.08em;padding:3px 9px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);background:var(--bg2)}
+ .pill.live{border-color:rgba(10,124,76,.35);color:var(--green);background:rgba(10,124,76,.07)}
+ .pill.live::before{content:'●';margin-right:4px;font-size:7px;animation:pulse 2s infinite}
+ /* LAYOUT */
+ .page{max-width:1380px;margin:0 auto;padding:20px 20px;position:relative;z-index:1}
+ .layout{display:grid;grid-template-columns:268px 1fr;gap:14px;align-items:start}
+ @media(max-width:940px){.layout{grid-template-columns:1fr}}
+ /* PANEL */
+ .panel{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+ .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,102,204,.2),transparent)}
+ .ptitle{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+ .ptitle::after{content:'';flex:1;height:1px;background:var(--border)}
+ /* SCENARIO */
+ .scen-list{display:flex;flex-direction:column;gap:5px}
+ .scen-btn{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;cursor:pointer;padding:9px 12px;font-family:inherit;font-size:12px;font-weight:500;color:var(--text2);text-align:left;transition:all .18s;display:flex;justify-content:space-between;align-items:center}
+ .scen-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+ .scen-btn.active{background:rgba(0,102,204,.07);border-color:rgba(0,102,204,.38);color:var(--accent)}
+ .scen-right{text-align:right;flex-shrink:0;margin-left:8px}
+ .scen-price{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);display:block}
+ .scen-temp{font-size:9px;color:var(--text3)}
+ .scen-btn.active .scen-price,.scen-btn.active .scen-temp{color:rgba(0,102,204,.6)}
+ .scen-desc{margin-top:10px;padding:9px 11px;background:rgba(0,102,204,.04);border:1px solid rgba(0,102,204,.12);border-radius:5px;font-size:10px;color:var(--text2);line-height:1.7}
+ /* CONTROLS */
+ .sl-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+ .sl-hdr label{font-size:11px;color:var(--text2)}
+ .sl-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--accent)}
+ input[type=range]{width:100%;-webkit-appearance:none;height:3px;border-radius:2px;background:var(--bg3);outline:none;margin-bottom:14px;cursor:pointer}
+ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 8px rgba(0,102,204,.3)}
+ .ilabel{font-size:10px;color:var(--text2);display:block;margin-bottom:5px}
+ input[type=number]{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 10px}
+ input[type=number]:focus{outline:1px solid var(--accent)}
+ /* UPLOAD */
+ .upload-row{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap}
+ .upload-row input[type=file]{display:none}
+ .btnx{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-family:inherit;font-size:11px;font-weight:500;padding:9px 16px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+ .btnx:hover{border-color:var(--accent);color:var(--accent)}
+ .btnx.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+ html.dark .btnx.primary{color:#080c10}
+ .btnx.primary:hover{opacity:.85}
+ .uok{font-size:10px;color:var(--green);margin-top:5px}
+ .uerr{font-size:10px;color:var(--red);margin-top:5px}
+ /* RUN */
+ .run-btn{width:100%;margin-top:4px;background:linear-gradient(135deg,#0099dd,#005fb3);border:none;border-radius:7px;cursor:pointer;padding:12px;font-family:inherit;font-size:12px;font-weight:700;color:white;letter-spacing:.08em;text-transform:uppercase;transition:all .2s}
+ .run-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,130,220,.35)}
+ .run-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+ /* HMM RECOMMENDED BUTTON */
+ .hmm-rec-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(10,124,76,.07);border:1px solid rgba(10,124,76,.35);border-radius:7px;cursor:pointer;font-family:inherit;text-align:left;transition:all .18s;margin-bottom:8px}
+ .hmm-rec-btn:hover{background:rgba(10,124,76,.13);border-color:rgba(10,124,76,.6)}
+ html.dark .hmm-rec-btn{background:rgba(0,230,118,.06);border-color:rgba(0,230,118,.3)}
+ html.dark .hmm-rec-btn:hover{background:rgba(0,230,118,.11);border-color:rgba(0,230,118,.55)}
+ .hmm-rec-icon{font-size:14px;flex-shrink:0;color:#0a7c4c;line-height:1}
+ html.dark .hmm-rec-icon{color:#00e676}
+ .hmm-rec-label{display:block;font-size:11px;font-weight:600;color:#0a7c4c}
+ html.dark .hmm-rec-label{color:#00e676}
+ .hmm-rec-sub{display:block;font-size:9px;color:var(--text3);margin-top:1px}
+ /* FORMULA */
+ .formula{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);line-height:2.1;margin-top:4px}
+ .formula .op{color:var(--accent);margin:0 3px}
+ .formula .hi{color:var(--text2)}
+ .formula .res{color:var(--accent);font-weight:600}
+ /* METRICS */
+ .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+ @media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
+ .metric{background:var(--bg1);border:1px solid var(--border);border-radius:9px;padding:14px 16px;position:relative;overflow:hidden}
+ .metric::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,102,204,.18),transparent)}
+ .mlabel{font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+ .mval{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:500;line-height:1;margin-bottom:3px}
+ .mval.red{color:var(--red)}.mval.grn{color:var(--green)}.mval.acc{color:var(--accent)}
+ .msub{font-size:9px;color:var(--text3)}
+ /* HIGH RISK KPI */
+ .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+ .kpi{background:var(--bg1);border:1px solid var(--border);border-radius:9px;padding:12px 16px}
+ .kpi .klbl{font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+ .kpi .kval{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500}
+ .kpi .ksub{font-size:9px;color:var(--text3);margin-top:3px}
+ /* GAUGE */
+ .gauge-row{display:grid;grid-template-columns:1fr 230px;gap:12px;margin-bottom:12px}
+ @media(max-width:800px){.gauge-row{grid-template-columns:1fr}}
+ /* TABS */
+ .tabs{display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)}
+ .tab-btn{background:none;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;padding:8px 18px;color:var(--text3);letter-spacing:.03em;transition:all .18s;white-space:nowrap;flex:1}
+ .tab-btn.active{background:var(--bg1);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.1);font-weight:600}
+ html.dark .tab-btn.active{box-shadow:0 1px 4px rgba(0,0,0,0.4)}
+ .tab-btn:hover:not(.active){color:var(--text2);background:var(--bg3)}
+ /* TABLE */
+ table{width:100%;border-collapse:collapse;font-size:12px}
+ th{text-align:left;padding:7px 10px;font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
+ td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+ tr:hover td{background:rgba(0,0,0,.025)}
+ .expandable{cursor:pointer}
+ .exp-row td{background:rgba(0,102,204,.03);padding:12px 14px 14px 32px}
+ .ticker{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);font-weight:500}
+ .co{color:var(--text);font-size:12px}
+ .scope3{font-size:8px;color:var(--amber);display:block;margin-top:1px}
+ .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2)}
+ /* TAGS */
+ .tag{display:inline-block;padding:2px 7px;border-radius:3px;font-size:8px;font-weight:600;letter-spacing:.05em;border:1px solid}
+ .tag-Energy{color:#c92a2a;border-color:rgba(201,42,42,.28);background:rgba(201,42,42,.07)}
+ .tag-Materials{color:#d9480f;border-color:rgba(217,72,15,.28);background:rgba(217,72,15,.07)}
+ .tag-Industrials{color:#856404;border-color:rgba(133,100,4,.28);background:rgba(133,100,4,.07)}
+ .tag-Healthcare{color:#1864ab;border-color:rgba(24,100,171,.28);background:rgba(24,100,171,.07)}
+ .tag-Financials{color:#5f3dc4;border-color:rgba(95,61,196,.28);background:rgba(95,61,196,.07)}
+ .tag-Consumer{color:#2b8a3e;border-color:rgba(43,138,62,.28);background:rgba(43,138,62,.07)}
+ .tag-Utilities{color:#0b7285;border-color:rgba(11,114,133,.28);background:rgba(11,114,133,.07)}
+ /* BARS */
+ .bar-wrap{display:flex;align-items:center;gap:8px}
+ .bar-bg{flex:1;background:var(--bg3);border-radius:2px;height:5px;overflow:hidden}
+ .bar-fill{height:100%;border-radius:2px;transition:width .55s cubic-bezier(.4,0,.2,1)}
+ .bar-val{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;min-width:42px;text-align:right}
+ /* SECTOR BARS */
+ .sector-bar-wrap{margin-bottom:9px}
+ .sbr-hdr{display:flex;justify-content:space-between;margin-bottom:3px;font-size:10px}
+ .sbr-bg{background:var(--bg3);border-radius:2px;height:8px;overflow:hidden}
+ .sbr-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+ /* WEIGHT CHART */
+ .wc-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+ .wc-ticker{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);width:36px;text-align:right;flex-shrink:0}
+ .wc-track{flex:1;position:relative;height:14px;display:flex;align-items:center}
+ .wc-center{position:absolute;left:50%;width:1px;height:100%;background:var(--border2)}
+ .wc-bar-neg{position:absolute;right:50%;height:7px;border-radius:2px 0 0 2px;background:var(--red);opacity:.85}
+ .wc-bar-pos{position:absolute;left:50%;height:7px;border-radius:0 2px 2px 0;background:var(--green);opacity:.85}
+ .wc-dot{position:absolute;left:calc(50% - 2px);width:4px;height:4px;border-radius:50%}
+ .wc-val{font-family:'JetBrains Mono',monospace;font-size:10px;width:44px;text-align:left;flex-shrink:0}
+ .wc-legend{display:flex;justify-content:space-between;margin-top:6px;padding-top:7px;border-top:1px solid var(--border);font-size:8px}
+ /* ACTION BADGE */
+ .action-badge{font-size:9px;font-weight:600;padding:2px 8px;border-radius:3px;border:1px solid;letter-spacing:.05em}
+ .action-INC{color:var(--green);border-color:rgba(10,124,76,.3);background:rgba(10,124,76,.06)}
+ .action-RED{color:var(--red);border-color:rgba(192,57,43,.3);background:rgba(192,57,43,.06)}
+ .action-HLD{color:var(--text3);border-color:var(--border2);background:var(--bg2)}
+ /* DIAG CARDS */
+ .diag-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+ .diag-card{background:var(--bg2);border-radius:5px;padding:7px 10px}
+ .diag-k{font-size:8px;color:var(--text3);letter-spacing:.05em;margin-bottom:3px}
+ .diag-v{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:500}
+ /* SCENARIO PARAMS */
+ .param-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+ .param-item{padding-left:14px;border-left:1px solid var(--border)}
+ .param-item:first-child{padding-left:0;border-left:none}
+ .param-lbl{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+ .param-val{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--accent);font-weight:500}
+ .param-note{font-size:9px;color:var(--text3);margin-top:3px}
+ /* BREAKDOWN */
+ .breakdown-grid{display:flex;gap:18px;flex-wrap:wrap}
+ .bd-item{min-width:110px}
+ .bd-lbl{font-size:9px;color:var(--text3);margin-bottom:2px}
+ .bd-val{font-size:14px;font-weight:500}
+ /* RISK LEGEND */
+ .risk-legend{display:flex;justify-content:space-around;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+ .rl-item{text-align:center}
+ .rl-lbl{font-size:8px;font-weight:600}
+ .rl-range{font-size:7px;color:var(--text3)}
+ /* DONUT LEGEND */
+ .donut-legend{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+ .dl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;font-size:9px}
+ .dl-dot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;flex-shrink:0}
+ /* AI MEMO */
+ .ai-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,102,204,.05);border:1px solid rgba(0,102,204,.18);border-radius:20px;padding:3px 11px;font-size:8px;font-weight:600;letter-spacing:.1em;color:var(--accent);margin-bottom:14px}
+ .ai-badge::before{content:'◆';font-size:6px}
+ .memo-body{font-family:'Instrument Serif',Georgia,serif;font-size:15px;line-height:1.95;color:var(--text2);white-space:pre-wrap}
+ .disclaimer{font-size:9px;color:var(--text3);margin-top:14px;padding-top:12px;border-top:1px solid var(--border);line-height:1.7;font-style:italic}
+ /* CHAT */
+ .chat-msg{display:flex;gap:10px;align-items:flex-start}
+ .chat-msg.user{flex-direction:row-reverse}
+ .chat-bubble{padding:9px 13px;border-radius:10px;font-size:12px;line-height:1.6;max-width:85%}
+ .chat-msg.user .chat-bubble{background:var(--accent);color:#fff;border-radius:10px 10px 2px 10px}
+ html.dark .chat-msg.user .chat-bubble{color:#080c10}
+ .chat-msg.ai .chat-bubble{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:10px 10px 10px 2px}
+ .chat-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:2px;font-weight:700}
+ .chat-msg.user .chat-avatar{background:var(--accent);color:#fff}
+ html.dark .chat-msg.user .chat-avatar{color:#080c10}
+ .chat-msg.ai .chat-avatar{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+ .chat-typing{display:flex;gap:4px;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px 10px 10px 2px}
+ .chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:chatdot .9s infinite}
+ .chat-typing span:nth-child(2){animation-delay:.15s}
+ .chat-typing span:nth-child(3){animation-delay:.3s}
+ @keyframes chatdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+ /* ML INLINE BADGES */
+ .ml-badge{display:inline-flex;align-items:center;gap:3px;font-size:7px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:3px;vertical-align:middle;margin-left:4px;border:1px solid}
+ .ml-badge.m1{color:#0066cc;border-color:rgba(0,102,204,.3);background:rgba(0,102,204,.07)}
+ .ml-badge.m2{color:#0a7c4c;border-color:rgba(10,124,76,.3);background:rgba(10,124,76,.07)}
+ .ml-badge.m3{color:#b45309;border-color:rgba(180,83,9,.3);background:rgba(180,83,9,.07)}
+ .ml-badge.m4{color:#6d28d9;border-color:rgba(109,40,217,.3);background:rgba(109,40,217,.07)}
+ /* ML STATUS */
+ .ml-panel{margin-top:12px}
+ .ml-module{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+ .ml-module:last-child{border-bottom:none}
+ .ml-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
+ .ml-dot.active{background:#0a7c4c;box-shadow:0 0 6px rgba(10,124,76,.5)}
+ html.dark .ml-dot.active{background:#00e676;box-shadow:0 0 6px rgba(0,230,118,.5)}
+ .ml-dot.fallback{background:var(--amber);box-shadow:0 0 6px rgba(180,83,9,.4)}
+ html.dark .ml-dot.fallback{box-shadow:0 0 6px rgba(255,179,0,.4)}
+ .ml-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
+ .ml-where{font-size:9px;color:var(--accent);margin-bottom:2px}
+ .ml-why{font-size:9px;color:var(--text3);line-height:1.5}
+ .gen-btn{background:linear-gradient(135deg,#0ea5e9,#6366f1);border:none;border-radius:6px;cursor:pointer;padding:10px 20px;font-family:inherit;font-size:12px;color:white;letter-spacing:.04em;font-weight:600;transition:opacity .2s;margin-bottom:16px}
+ .gen-btn:hover{opacity:.85}
+ .gen-btn:disabled{opacity:.4;cursor:not-allowed}
+ /* LOADING/ERROR */
+ .loading{display:none;text-align:center;padding:70px 20px}
+ .loading.visible{display:block}
+ .spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 14px} @keyframes spin{to{transform:rotate(360deg)}}
+ .loading p{font-size:11px;color:var(--text3);letter-spacing:.05em}
+ .err-box{display:none;background:rgba(192,57,43,.07);border:1px solid rgba(192,57,43,.28);border-radius:7px;padding:12px 14px;color:var(--red);font-size:12px;margin-bottom:12px}
+ .err-box.visible{display:block}
+ .results{display:none}
+ .results.visible{display:block;animation:fadeUp .28s ease}
+ @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+ .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;text-align:center;color:var(--text3)}
+ .ph-icon{font-size:36px;margin-bottom:14px;opacity:.25}
+ .ph-title{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:7px}
+ .ph-body{font-size:11px;line-height:1.7;max-width:280px}
+ .ph-body strong{color:var(--accent)}
+ footer{text-align:center;padding:28px 20px;font-size:9px;color:var(--text3);border-top:1px solid var(--border);margin-top:36px;letter-spacing:.04em;line-height:2.2;position:relative;z-index:1}
+ .risk-dots{display:flex;gap:10px;font-size:9px}
+ /* PIPELINE MODAL */
+ .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center}
+ .modal-overlay.open{display:flex}
+ .modal{background:var(--bg1);border:1px solid var(--border2);border-radius:14px;padding:28px;max-width:800px;width:94%;max-height:88vh;overflow-y:auto;position:relative}
+ .modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);line-height:1}
+ .modal-close:hover{color:var(--text)}
+ .modal-title{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text);margin-bottom:4px}
+ .modal-sub{font-size:11px;color:var(--text3);margin-bottom:24px}
+ .pipe-row{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr 28px 1fr;gap:0;align-items:center;margin-bottom:8px}
+ .pipe-module{border:1px solid var(--border2);border-radius:8px;padding:11px 13px}
+ .pipe-module.m1{border-color:rgba(0,102,204,.4);background:rgba(0,102,204,.05)}
+ .pipe-module.m2{border-color:rgba(10,124,76,.4);background:rgba(10,124,76,.05)}
+ .pipe-module.m3{border-color:rgba(180,83,9,.4);background:rgba(180,83,9,.05)}
+ .pipe-module.m4{border-color:rgba(109,40,217,.4);background:rgba(109,40,217,.05)}
+ html.dark .pipe-module.m1{border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.05)}
+ html.dark .pipe-module.m2{border-color:rgba(0,230,118,.35);background:rgba(0,230,118,.05)}
+ html.dark .pipe-module.m3{border-color:rgba(255,179,0,.35);background:rgba(255,179,0,.05)}
+ html.dark .pipe-module.m4{border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.05)}
+ .pipe-tag{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+ .pipe-tag.m1{color:#0066cc}.pipe-tag.m2{color:#0a7c4c}.pipe-tag.m3{color:#b45309}.pipe-tag.m4{color:#6d28d9}
+ html.dark .pipe-tag.m1{color:#00d4ff}html.dark .pipe-tag.m2{color:#00e676}html.dark .pipe-tag.m3{color:#ffb300}html.dark .pipe-tag.m4{color:#a78bfa}
+ .pipe-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
+ .pipe-method{font-size:8px;color:var(--text3);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+ .pipe-input-lbl{font-size:8px;color:var(--text3);margin-bottom:2px;letter-spacing:.04em}
+ .pipe-input{font-size:9px;color:var(--text2);padding:3px 6px;background:var(--bg2);border-radius:3px;margin-bottom:5px;font-family:'JetBrains Mono',monospace}
+ .pipe-output-lbl{font-size:8px;color:var(--text3);margin-bottom:2px;letter-spacing:.04em}
+ .pipe-output{font-size:9px;font-weight:600;padding:3px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+ .pipe-output.m1{color:#0066cc;background:rgba(0,102,204,.1)}html.dark .pipe-output.m1{color:#00d4ff;background:rgba(0,212,255,.1)}
+ .pipe-output.m2{color:#0a7c4c;background:rgba(10,124,76,.1)}html.dark .pipe-output.m2{color:#00e676;background:rgba(0,230,118,.1)}
+ .pipe-output.m3{color:#b45309;background:rgba(180,83,9,.1)}html.dark .pipe-output.m3{color:#ffb300;background:rgba(255,179,0,.1)}
+ .pipe-output.m4{color:#6d28d9;background:rgba(109,40,217,.1)}html.dark .pipe-output.m4{color:#a78bfa;background:rgba(167,139,250,.1)}
+ .pipe-arrow{display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:14px}
+ .pipe-down-row{display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 0;font-size:9px;color:var(--text3)}
+ .pipe-ear-box{border:1px solid var(--border2);border-radius:8px;padding:14px 18px;margin:4px 0 8px;background:var(--bg2)}
+ .pipe-ear-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+ .pipe-formula{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);line-height:2.1}
+ .pipe-formula .hi1{color:#0066cc}html.dark .pipe-formula .hi1{color:#00d4ff}
+ .pipe-formula .hi2{color:#0a7c4c}html.dark .pipe-formula .hi2{color:#00e676}
+ .pipe-formula .hi4{color:#6d28d9}html.dark .pipe-formula .hi4{color:#a78bfa}
+ .pipe-formula .op{color:var(--accent);margin:0 2px}
+ .pipe-formula .res{font-weight:700;color:var(--text)}
+ .pipe-outputs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+ .pipe-out-card{border:1px solid var(--border);border-radius:6px;padding:9px 11px;background:var(--bg1)}
+ .pipe-out-col{font-size:8px;font-weight:700;letter-spacing:.08em;color:var(--text3);margin-bottom:3px;text-transform:uppercase}
+ .pipe-out-val{font-size:10px;color:var(--text);font-weight:500;line-height:1.5}
+ html.dark body::before{background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px)}
+ html.dark .tag-Energy{color:#ff6b6b;border-color:rgba(255,107,107,.28);background:rgba(255,107,107,.07)}
+ html.dark .tag-Materials{color:#ffa94d;border-color:rgba(255,169,77,.28);background:rgba(255,169,77,.07)}
+ html.dark .tag-Industrials{color:#ffe066;border-color:rgba(255,224,102,.28);background:rgba(255,224,102,.07)}
+ html.dark .tag-Healthcare{color:#74c0fc;border-color:rgba(116,192,252,.28);background:rgba(116,192,252,.07)}
+ html.dark .tag-Financials{color:#b197fc;border-color:rgba(177,151,252,.28);background:rgba(177,151,252,.07)}
+ html.dark .tag-Consumer{color:#69db7c;border-color:rgba(105,219,124,.28);background:rgba(105,219,124,.07)}
+ html.dark .tag-Utilities{color:#38d9a9;border-color:rgba(56,217,169,.28);background:rgba(56,217,169,.07)}
+ html.dark .action-INC{color:#00e676;border-color:rgba(0,230,118,.3);background:transparent}
+ html.dark .action-RED{color:#ff4757;border-color:rgba(255,71,87,.3);background:transparent}
+ html.dark .ml-dot.active{box-shadow:0 0 6px var(--green)}
+ html.dark .ml-dot.fallback{box-shadow:0 0 6px var(--amber)}
+ html.dark .pill.live{border-color:rgba(0,230,118,.35);color:#00e676;background:rgba(0,230,118,.07)}
+ </style>
 </head>
 <body>
 <header>
-  <div class="logo">
-    <span class="logo-dot"></span>
-    <span>Carbon Transition EaR Engine</span>
-    <span class="logo-sub">CLIMATE RISK ANALYSIS</span>
-  </div>
-  <div class="hpills">
-    <span class="pill live">Live</span>
-    <span class="pill">NGFS Phase V</span>
-    <span class="pill">BoE CBES</span>
-    <span class="pill">TCFD / SFDR Aligned</span>
-    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"><span class="ti" style="font-style:normal">&#9680;</span><span id="theme-label">LIGHT</span></button>
-    <button class="theme-toggle" onclick="showPipeline()" style="margin-left:4px"><span class="ti" style="font-style:normal">&#9636;</span><span>ML PIPELINE</span></button>
-  </div>
+ <div class="logo">
+ <span class="logo-dot"></span>
+ <span>Carbon Transition EaR Engine</span>
+ <span class="logo-sub">CLIMATE RISK ANALYSIS</span>
+ </div>
+ <div class="hpills">
+ <span class="pill live">Live</span>
+ <span class="pill">NGFS Phase V</span>
+ <span class="pill">BoE CBES</span>
+ <span class="pill">TCFD / SFDR Aligned</span>
+ <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn"><span class="ti" style="font-style:normal">&#9680;</span><span id="theme-label">LIGHT</span></button>
+ <button class="theme-toggle" onclick="showPipeline()" style="margin-left:4px"><span class="ti" style="font-style:normal">&#9636;</span><span>ML PIPELINE</span></button>
+ </div>
 </header>
 
 <div class="page">
-  <div class="layout">
-    <!-- LEFT -->
-    <div>
-      <div class="panel">
-        <div class="ptitle">Scenario <span class="ml-badge m3">M3 Recommended</span></div>
-        <div id="hmm-rec-wrap" style="display:none;margin-bottom:10px">
-          <button class="hmm-rec-btn" id="hmm-rec-btn" onclick="useHMMScenario()">
-            <span class="hmm-rec-icon" style="font-style:normal">&#9636;</span>
-            <span>
-              <span class="hmm-rec-label">Use ML Recommended Scenario</span>
-              <span class="hmm-rec-sub" id="hmm-rec-sub">Detecting regime...</span>
-            </span>
-          </button>
-        </div>
-        <div class="scen-list">
-          {% for id, s in scenarios.items() %}
-          <button class="scen-btn {% if id == 'netzero' %}active{% endif %}" data-id="{{ id }}" onclick="selScen('{{ id }}',this)">
-            <span>{{ s.label }}</span>
-            <span class="scen-right"><span class="scen-price">£{{ s.carbon_price }}/t</span><span class="scen-temp">{{ s.temp }}</span></span>
-          </button>
-          {% endfor %}
-        </div>
-        <div class="scen-desc" id="scen-desc">{{ scenarios.netzero.description }}</div>
-      </div>
+ <div class="layout">
+ <!-- LEFT -->
+ <div>
+ <div class="panel">
+ <div class="ptitle">Scenario</div>
+ <div id="hmm-rec-wrap" style="display:none;margin-bottom:10px">
+ <button class="hmm-rec-btn" id="hmm-rec-btn" onclick="useHMMScenario()">
+ <span class="hmm-rec-icon" style="font-style:normal">&#9636;</span>
+ <span>
+ <span class="hmm-rec-label">Use ML Recommended Scenario</span>
+ <span class="hmm-rec-sub" id="hmm-rec-sub">Detecting regime...</span>
+ </span>
+ </button>
+ </div>
+ <div class="scen-list">
+ {% for id, s in scenarios.items() %}
+ <button class="scen-btn {% if id == 'netzero' %}active{% endif %}" data-id="{{ id }}" onclick="selScen('{{ id }}',this)">
+ <span>{{ s.label }}</span>
+ <span class="scen-right"><span class="scen-price">£{{ s.carbon_price }}/t</span><span class="scen-temp">{{ s.temp }}</span></span>
+ </button>
+ {% endfor %}
+ </div>
+ <div class="scen-desc" id="scen-desc">{{ scenarios.netzero.description }}</div>
+ </div>
 
-      <div class="panel">
-        <div class="ptitle">Controls</div>
-        <div class="sl-hdr"><label>Turnover Limit</label><span class="sl-val" id="tv">25%</span></div>
-        <input type="range" id="tslider" min="5" max="100" step="5" value="25" oninput="document.getElementById('tv').textContent=this.value+'%'">
-        <label class="ilabel">Custom Carbon Price (£/t)</label>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input type="number" id="cc" placeholder="Leave blank for scenario default" min="1" max="1000" style="flex:1">
-          <button class="btnx" onclick="applyCarbonOverride()" title="Apply custom carbon price">Apply</button>
-          <button class="btnx" onclick="clearCarbonOverride()" title="Clear override">Clear</button>
-        </div>
-        <div id="cc-status" style="font-size:9px;color:var(--text3);margin-top:4px"></div>
-      </div>
+ <div class="panel">
+ <div class="ptitle">Controls</div>
+ <div class="sl-hdr"><label>Turnover Limit</label><span class="sl-val" id="tv">25%</span></div>
+ <input type="range" id="tslider" min="5" max="100" step="5" value="25" oninput="document.getElementById('tv').textContent=this.value+'%'">
+ <label class="ilabel">Custom Carbon Price (£/t)</label>
+ <div style="display:flex;gap:8px;align-items:center">
+ <input type="number" id="cc" placeholder="Leave blank for scenario default" min="1" max="1000" style="flex:1">
+ <button class="btnx" onclick="applyCarbonOverride()" title="Apply custom carbon price">Apply</button>
+ <button class="btnx" onclick="clearCarbonOverride()" title="Clear override">Clear</button>
+ </div>
+ <div id="cc-status" style="font-size:9px;color:var(--text3);margin-top:4px"></div>
+ </div>
 
-      <div class="panel">
-        <div class="ptitle">Portfolio</div>
-        <label class="ilabel">Upload CSV or use default 15 FTSE 100 holdings</label>
-        <div class="upload-row">
-          <input type="file" id="pf" accept=".csv">
-          <button class="btnx" onclick="document.getElementById('pf').click()">Choose File</button>
-          <button class="btnx primary" onclick="doUpload()">Upload</button>
-          <button class="btnx" onclick="doReset()">Default</button>
-        </div>
-        <div id="ustatus"></div>
-        <div id="file-chosen" style="font-size:10px;color:var(--text3);margin-top:4px"></div>
-        <div style="margin-top:8px;font-size:9px;color:var(--text3);line-height:1.8">Required: ticker · name · sector · weight<br>emissions_intensity · ebitda_margin · pass_through</div>
-      </div>
+ <div class="panel">
+ <div class="ptitle">Portfolio</div>
+ <label class="ilabel">Upload CSV or use default 15 FTSE 100 holdings</label>
+ <div class="upload-row">
+ <input type="file" id="pf" accept=".csv">
+ <button class="btnx" onclick="document.getElementById('pf').click()">Choose File</button>
+ <button class="btnx primary" onclick="doUpload()">Upload</button>
+ <button class="btnx" onclick="doReset()">Default</button>
+ </div>
+ <div id="ustatus"></div>
+ <div id="file-chosen" style="font-size:10px;color:var(--text3);margin-top:4px"></div>
+ <div style="margin-top:8px;font-size:9px;color:var(--text3);line-height:1.8">Required: ticker · name · sector · weight<br>emissions_intensity · ebitda_margin · pass_through</div>
+ </div>
 
-      <button class="run-btn" id="run-btn" onclick="runAnalysis()">Run Risk Analysis</button>
+ <button class="run-btn" id="run-btn" onclick="runAnalysis()">Run Risk Analysis</button>
 
-      <div class="panel" style="margin-top:12px;border-left:3px solid var(--accent)">
-        <div class="ptitle">Why This Tool Is Required</div>
-        <div style="font-size:10px;color:var(--text2);line-height:1.8">
-          Under <strong style="color:var(--text)">TCFD</strong> and <strong style="color:var(--text)">SFDR Article 8/9</strong>, fund managers must disclose climate transition risk exposure. The UK <strong style="color:var(--text)">FCA SDR</strong> regime and EU <strong style="color:var(--text)">CSRD</strong> mandate quantified earnings impact from carbon policy changes. This engine computes exactly that — Earnings-at-Risk per holding under each regulatory scenario.
-        </div>
-      </div>
+ <div class="panel" style="margin-top:12px;border-left:3px solid var(--accent)">
+ <div class="ptitle">Why This Tool Is Required</div>
+ <div style="font-size:10px;color:var(--text2);line-height:1.8">
+ Under <strong style="color:var(--text)">TCFD</strong> and <strong style="color:var(--text)">SFDR Article 8/9</strong>, fund managers must disclose climate transition risk exposure. The UK <strong style="color:var(--text)">FCA SDR</strong> regime and EU <strong style="color:var(--text)">CSRD</strong> mandate quantified earnings impact from carbon policy changes. This engine computes exactly that — Earnings-at-Risk per holding under each regulatory scenario.
+ </div>
+ </div>
 
-      <div class="panel" style="margin-top:12px">
-        <div class="ptitle">Formula Chain</div>
-        <div class="formula">
-          <span class="hi">emissions_intensity</span><span class="op">×</span>Δcarbon/1000<br>
-          <span class="op">+</span>subsidy<span class="op">+</span>energy<span class="op">+</span>BCA<br>
-          <span class="op">×</span>(1<span class="op">−</span>pass_through)<br>
-          <span class="op">÷</span>EBITDA margin<br>
-          <span class="op">×</span>0.75 tax/leverage<br>
-          <span class="op">=</span><span class="res">EPS at Risk</span> (cap 95%)
-        </div>
-      </div>
-      <div class="panel ml-panel">
-        <div class="ptitle">ML Modules</div>
-        <div class="ml-module">
-          <div class="ml-dot active"></div>
-          <div>
-            <div class="ml-name">Module 1 — OLS Regression</div>
-            <div class="ml-where">→ Pass-through rates in EaR formula</div>
-            <div class="ml-why">Replaces static Fabra & Reguant (2014) sector rates with rates estimated from EU ETS price history vs actual gross margins. Higher R² = more empirically grounded EPS impact.</div>
-          </div>
-        </div>
-        <div class="ml-module">
-          <div class="ml-dot active"></div>
-          <div>
-            <div class="ml-name">Module 2 — ARIMA Forecasting</div>
-            <div class="ml-where">→ Emissions intensity per holding</div>
-            <div class="ml-why">Projects each holding's Scope 1+2 emissions intensity forward 3 years using ARIMA(1,1,0) rather than using static 2023 figures. Captures decarbonisation trajectories already underway.</div>
-          </div>
-        </div>
-        <div class="ml-module">
-          <div class="ml-dot fallback" id="hmm-dot"></div>
-          <div>
-            <div class="ml-name">Module 3 — Gaussian HMM</div>
-            <div class="ml-where">→ Default scenario selection</div>
-            <div class="ml-why">Detects current EUA carbon market regime (low volatility / shock / spike) from monthly log returns. Maps detected regime to the most appropriate NGFS scenario on load.</div>
-          </div>
-        </div>
-        <div class="ml-module">
-          <div class="ml-dot active"></div>
-          <div>
-            <div class="ml-name">Module 4 — scipy SLSQP</div>
-            <div class="ml-where">→ Portfolio optimiser weights</div>
-            <div class="ml-why">Mean-variance optimisation minimising λ·EaR + (1-λ)·w'Σw subject to turnover constraint. Uses single-factor covariance matrix (beta + EaR-scaled idiosyncratic risk) to prevent concentration.</div>
-          </div>
-        </div>
-      </div>
-    </div>
+ <div class="panel" style="margin-top:12px">
+ <div class="ptitle">Formula Chain</div>
+ <div class="formula">
+ <span class="hi">emissions_intensity</span><span class="op">×</span>Δcarbon/1000<br>
+ <span class="op">+</span>subsidy<span class="op">+</span>energy<span class="op">+</span>BCA<br>
+ <span class="op">×</span>(1<span class="op">−</span>pass_through)<br>
+ <span class="op">÷</span>EBITDA margin<br>
+ <span class="op">×</span>0.75 tax/leverage<br>
+ <span class="op">=</span><span class="res">EPS at Risk</span> (cap 95%)
+ </div>
+ </div>
+ <div class="panel ml-panel">
+ <div class="ptitle">ML Modules</div>
+ <div class="ml-module">
+ <div class="ml-dot active"></div>
+ <div>
+ <div class="ml-name">OLS Regression</div>
+ <div class="ml-where">→ Pass-through rates in EaR formula</div>
+ <div class="ml-why">Replaces static Fabra & Reguant (2014) sector rates with rates estimated from EU ETS price history vs actual gross margins. Higher R² = more empirically grounded EPS impact.</div>
+ </div>
+ </div>
+ <div class="ml-module">
+ <div class="ml-dot active"></div>
+ <div>
+ <div class="ml-name">ARIMA Forecasting</div>
+ <div class="ml-where">→ Emissions intensity per holding</div>
+ <div class="ml-why">Projects each holding's Scope 1+2 emissions intensity forward 3 years using ARIMA(1,1,0) rather than using static 2023 figures. Captures decarbonisation trajectories already underway.</div>
+ </div>
+ </div>
+ <div class="ml-module">
+ <div class="ml-dot fallback" id="hmm-dot"></div>
+ <div>
+ <div class="ml-name">Gaussian HMM</div>
+ <div class="ml-where">→ Default scenario selection</div>
+ <div class="ml-why">Detects current EUA carbon market regime (low volatility / shock / spike) from monthly log returns. Maps detected regime to the most appropriate NGFS scenario on load.</div>
+ </div>
+ </div>
+ <div class="ml-module">
+ <div class="ml-dot active"></div>
+ <div>
+ <div class="ml-name">scipy SLSQP</div>
+ <div class="ml-where">→ Portfolio optimiser weights</div>
+ <div class="ml-why">Mean-variance optimisation minimising λ·EaR + (1-λ)·w'Σw subject to turnover constraint. Uses single-factor covariance matrix (beta + EaR-scaled idiosyncratic risk) to prevent concentration.</div>
+ </div>
+ </div>
+ </div>
+ </div>
 
-    <!-- RIGHT -->
-    <div>
-      <div class="loading" id="loading"><div class="spinner"></div><p>Running climate risk analysis...</p></div>
-      <div class="err-box" id="err-box"></div>
-      <div id="placeholder" class="panel placeholder">
-        <div class="ph-icon" style="font-size:36px;opacity:.25">&#9636;</div>
-        <div class="ph-title">Carbon Transition Risk Analysis</div>
-        <div class="ph-body">Quantify <strong>Earnings-at-Risk</strong> from carbon policy changes across your portfolio. Required for TCFD, SFDR, and FCA SDR climate disclosures.</div>
-      </div>
+ <!-- RIGHT -->
+ <div>
+ <div class="loading" id="loading"><div class="spinner"></div><p>Running climate risk analysis...</p></div>
+ <div class="err-box" id="err-box"></div>
+ <div id="placeholder" class="panel placeholder">
+ <div class="ph-icon" style="font-size:36px;opacity:.25">&#9636;</div>
+ <div class="ph-title">Carbon Transition Risk Analysis</div>
+ <div class="ph-body">Quantify <strong>Earnings-at-Risk</strong> from carbon policy changes across your portfolio. Required for TCFD, SFDR, and FCA SDR climate disclosures.</div>
+ </div>
 
-      <div class="results" id="results">
-        <!-- KPI ROW -->
-        <div class="kpi-row" id="kpi-row"></div>
+ <div class="results" id="results">
+ <!-- KPI ROW -->
+ <div class="kpi-row" id="kpi-row"></div>
 
-        <!-- GAUGE + SECTOR BARS -->
-        <div class="gauge-row">
-          <div class="panel" style="margin-bottom:0">
-            <div class="ptitle">Sector EaR Contribution</div>
-            <div id="sector-bars"></div>
-          </div>
-          <div>
-            <div class="panel" style="margin-bottom:10px;padding:14px 12px 12px">
-              <div class="ptitle" style="justify-content:center;margin-bottom:10px">Portfolio EaR Gauge</div>
-              <svg id="gauge" width="100%" viewBox="0 0 168 112" style="display:block;max-width:210px;margin:0 auto"></svg>
-                <div class="risk-legend" id="risk-legend"></div>
-            </div>
-            <div class="panel" style="margin-bottom:0;padding:14px 12px 12px">
-              <div class="ptitle" style="justify-content:center;margin-bottom:10px">Sector Allocation</div>
-              <svg id="donut" width="100%" viewBox="0 0 128 128" style="display:block;max-width:130px;margin:0 auto"></svg>
-              <div class="donut-legend" id="donut-legend"></div>
-            </div>
-          </div>
-        </div>
+ <!-- GAUGE + SECTOR BARS -->
+ <div class="gauge-row">
+ <div class="panel" style="margin-bottom:0">
+ <div class="ptitle">Sector EaR Contribution</div>
+ <div id="sector-bars"></div>
+ </div>
+ <div>
+ <div class="panel" style="margin-bottom:10px;padding:14px 12px 12px">
+ <div class="ptitle" style="justify-content:center;margin-bottom:10px">Portfolio EaR Gauge</div>
+ <svg id="gauge" width="100%" viewBox="0 0 168 112" style="display:block;max-width:210px;margin:0 auto"></svg>
+ <div class="risk-legend" id="risk-legend"></div>
+ </div>
+ <div class="panel" style="margin-bottom:0;padding:14px 12px 12px">
+ <div class="ptitle" style="justify-content:center;margin-bottom:10px">Sector Allocation</div>
+ <svg id="donut" width="100%" viewBox="0 0 128 128" style="display:block;max-width:130px;margin:0 auto"></svg>
+ <div class="donut-legend" id="donut-legend"></div>
+ </div>
+ </div>
+ </div>
 
-        <!-- SCENARIO PARAMS -->
-        <div class="panel" id="scenario-params" style="margin-bottom:12px"></div>
+ <!-- SCENARIO PARAMS -->
+ <div class="panel" id="scenario-params" style="margin-bottom:12px"></div>
 
-        <!-- MAIN TABS -->
-        <div class="panel">
-          <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('h',this)">Holdings EaR</button>
-            <button class="tab-btn" onclick="showTab('o',this)">Optimiser</button>
-            <button class="tab-btn" onclick="showTab('m',this)">AI Memo</button>
-          </div>
+ <!-- MAIN TABS -->
+ <div class="panel">
+ <div class="tabs">
+ <button class="tab-btn active" onclick="showTab('h',this)">Holdings EaR</button>
+ <button class="tab-btn" onclick="showTab('o',this)">Optimiser</button>
+ <button class="tab-btn" onclick="showTab('m',this)">AI Memo</button>
+ </div>
 
-          <!-- HOLDINGS TAB -->
-          <div id="tab-h">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-              <div style="font-size:9px;color:var(--text3);letter-spacing:.05em">CLICK A ROW TO EXPAND COST BREAKDOWN</div>
-              <div class="risk-dots" id="risk-dots"></div>
-            </div>
-            <div style="overflow-x:auto">
-              <table>
-                <thead><tr>
-                  <th>Ticker</th><th>Name</th><th>Sector</th>
-                  <th style="text-align:right">Weight</th>
-                  <th style="text-align:right">Scope 1+2 Intensity <span class="ml-badge m2">M2</span></th>
-                  <th style="text-align:right">Pass-Through <span class="ml-badge m1">M1</span></th>
-                  <th style="text-align:right">Net Cost Impact</th>
-                  <th style="text-align:right">Margin Compression</th>
-                  <th style="text-align:right">EPS at Risk <span class="ml-badge m1">M1</span><span class="ml-badge m2">M2</span></th>
-                  <th style="text-align:right">EaR Contribution</th>
-                </tr></thead>
-                <tbody id="htb"></tbody>
-              </table>
-            </div>
-          </div>
+ <!-- HOLDINGS TAB -->
+ <div id="tab-h">
+ <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+ <div style="font-size:9px;color:var(--text3);letter-spacing:.05em">CLICK A ROW TO EXPAND COST BREAKDOWN</div>
+ <div class="risk-dots" id="risk-dots"></div>
+ </div>
+ <div style="overflow-x:auto">
+ <table>
+ <thead><tr>
+ <th>Ticker</th><th>Name</th><th>Sector</th>
+ <th style="text-align:right">Weight</th>
+ <th style="text-align:right">Scope 1+2 Intensity </th>
+ <th style="text-align:right">Pass-Through </th>
+ <th style="text-align:right">Net Cost Impact</th>
+ <th style="text-align:right">Margin Compression</th>
+ <th style="text-align:right">EPS at Risk </th>
+ <th style="text-align:right">EaR Contribution</th>
+ </tr></thead>
+ <tbody id="htb"></tbody>
+ </table>
+ </div>
+ </div>
 
-          <!-- OPTIMISER TAB -->
-          <div id="tab-o" style="display:none">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-              <!-- OPT STATS -->
-              <div>
-                <div class="ptitle">Optimisation Results</div>
-                <div class="diag-grid" id="diag-grid"></div>
-                <div style="margin-top:14px;padding:10px 12px;background:var(--bg2);border-radius:6px;font-size:10px;color:var(--text2);line-height:1.7;border-left:2px solid rgba(0,102,204,.3)" id="turnover-note"></div>
-              </div>
-              <!-- WEIGHT CHART -->
-              <div>
-                <div class="ptitle">Weight Shift Recommendations</div>
-                <div id="weight-chart"></div>
-              </div>
-            </div>
-            <!-- TRADE TABLE -->
-            <div class="ptitle" style="margin-bottom:10px">Trade-Level Recommendations</div>
-            <div style="overflow-x:auto">
-              <table>
-                <thead><tr>
-                  <th>Ticker</th><th>Name</th>
-                  <th style="text-align:right">Current Weight</th>
-                  <th style="text-align:right">Optimised Weight <span class="ml-badge m4">M4</span></th>
-                  <th style="text-align:right">Change <span class="ml-badge m4">M4</span></th>
-                  <th style="text-align:right">Action</th>
-                  <th style="text-align:right">Scope 1+2 Intensity <span class="ml-badge m2">M2</span></th>
-                  <th style="text-align:right">EPS at Risk <span class="ml-badge m1">M1</span><span class="ml-badge m2">M2</span></th>
-                </tr></thead>
-                <tbody id="ttb"></tbody>
-              </table>
-            </div>
-          </div>
+ <!-- OPTIMISER TAB -->
+ <div id="tab-o" style="display:none">
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+ <!-- OPT STATS -->
+ <div>
+ <div class="ptitle">Optimisation Results</div>
+ <div class="diag-grid" id="diag-grid"></div>
+ <div style="margin-top:14px;padding:10px 12px;background:var(--bg2);border-radius:6px;font-size:10px;color:var(--text2);line-height:1.7;border-left:2px solid rgba(0,102,204,.3)" id="turnover-note"></div>
+ </div>
+ <!-- WEIGHT CHART -->
+ <div>
+ <div class="ptitle">Weight Shift Recommendations</div>
+ <div id="weight-chart"></div>
+ </div>
+ </div>
+ <!-- TRADE TABLE -->
+ <div class="ptitle" style="margin-bottom:10px">Trade-Level Recommendations</div>
+ <div style="overflow-x:auto">
+ <table>
+ <thead><tr>
+ <th>Ticker</th><th>Name</th>
+ <th style="text-align:right">Current Weight</th>
+ <th style="text-align:right">Optimised Weight </th>
+ <th style="text-align:right">Change </th>
+ <th style="text-align:right">Action</th>
+ <th style="text-align:right">Scope 1+2 Intensity </th>
+ <th style="text-align:right">EPS at Risk </th>
+ </tr></thead>
+ <tbody id="ttb"></tbody>
+ </table>
+ </div>
+ </div>
 
-          <!-- MEMO TAB -->
-          <div id="tab-m" style="display:none">
-            <div class="ai-badge">AI-ASSISTED — NOT INVESTMENT ADVICE</div>
-            <div class="memo-body" id="memo">—</div>
-            <div class="disclaimer">Generated by Claude Sonnet (Anthropic) from deterministic model outputs only. No numerical values are produced or modified by AI. Not investment advice. Financial sector holdings may understate risk due to Scope 3 financed emissions exclusion.</div>
+ <!-- MEMO TAB -->
+ <div id="tab-m" style="display:none">
+ <div class="ai-badge">AI-ASSISTED — NOT INVESTMENT ADVICE</div>
+ <div class="memo-body" id="memo">—</div>
+ <div class="disclaimer">Generated by Claude Sonnet (Anthropic) from deterministic model outputs only. No numerical values are produced or modified by AI. Not investment advice. Financial sector holdings may understate risk due to Scope 3 financed emissions exclusion.</div>
 
-            <!-- CHAT -->
-            <div id="chat-wrap" style="display:none;margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
-              <div class="ptitle">Ask the Analyst</div>
-              <div id="chat-messages" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;max-height:320px;overflow-y:auto"></div>
-              <div style="display:flex;gap:8px">
-                <input type="text" id="chat-input" placeholder="e.g. Why is Shell so high? What happens at £300/t?" style="flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:inherit;font-size:12px;padding:9px 12px" onkeydown="if(event.key==='Enter')sendChat()">
-                <button onclick="sendChat()" class="btnx primary" style="padding:9px 18px;font-weight:600">Send</button>
-              </div>
-              <div style="font-size:8px;color:var(--text3);margin-top:6px">Claude has full context of your portfolio analysis. Not investment advice.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+ <!-- CHAT -->
+ <div id="chat-wrap" style="display:none;margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+ <div class="ptitle">Ask the Analyst</div>
+ <div id="chat-messages" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;max-height:320px;overflow-y:auto"></div>
+ <div style="display:flex;gap:8px">
+ <input type="text" id="chat-input" placeholder="e.g. Why is Shell so high? What happens at £300/t?" style="flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:inherit;font-size:12px;padding:9px 12px" onkeydown="if(event.key==='Enter')sendChat()">
+ <button onclick="sendChat()" class="btnx primary" style="padding:9px 18px;font-weight:600">Send</button>
+ </div>
+ <div style="font-size:8px;color:var(--text3);margin-top:6px">Claude has full context of your portfolio analysis. Not investment advice.</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
 </div>
 
 <footer>
-  Carbon Transition EaR Engine · Stirling Solvers · University of Stirling · CFA Institute AI Investment Challenge 2026<br>
-  NGFS Phase V Scenarios (Nov 2024) · BoE CBES 2021 · TCFD Aligned · SFDR Article 8/9 · FCA SDR<br>
-  For climate disclosure support only · Not investment advice · MIT Licence · <a href="https://github.com/1yr1c/ear-engine" style="color:var(--accent);text-decoration:none">GitHub</a>
+ Carbon Transition EaR Engine · Stirling Solvers · University of Stirling · CFA Institute AI Investment Challenge 2026<br>
+ NGFS Phase V Scenarios (Nov 2024) · BoE CBES 2021 · TCFD Aligned · SFDR Article 8/9 · FCA SDR<br>
+ For climate disclosure support only · Not investment advice · MIT Licence · <a href="https://github.com/1yr1c/ear-engine" style="color:var(--accent);text-decoration:none">GitHub</a>
 </footer>
 
 <!-- ML PIPELINE MODAL -->
 <div class="modal-overlay" id="pipeline-modal" onclick="if(event.target===this)closePipeline()">
-  <div class="modal">
-    <button class="modal-close" onclick="closePipeline()">✕</button>
-    <div class="modal-title">ML Pipeline</div>
-    <div class="modal-sub">How each module feeds into the EaR engine and optimiser</div>
+ <div class="modal">
+ <button class="modal-close" onclick="closePipeline()">✕</button>
+ <div class="modal-title">ML Pipeline</div>
+ <div class="modal-sub">How each module feeds into the EaR engine and optimiser</div>
 
-    <!-- ROW 1: 4 modules -->
-    <div class="pipe-row">
-      <div class="pipe-module m3">
-        <div class="pipe-tag m3">Module 3</div>
-        <div class="pipe-name">Gaussian HMM</div>
-        <div class="pipe-method">hmmlearn · 3 regimes</div>
-        <div class="pipe-input-lbl">INPUT</div>
-        <div class="pipe-input">EUA monthly log returns</div>
-        <div class="pipe-output-lbl">OUTPUT</div>
-        <div class="pipe-output m3">default scenario_id</div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-module m2">
-        <div class="pipe-tag m2">Module 2</div>
-        <div class="pipe-name">ARIMA Forecasting</div>
-        <div class="pipe-method">statsmodels · (1,1,0)</div>
-        <div class="pipe-input-lbl">INPUT</div>
-        <div class="pipe-input">Scope 1+2 history per holding</div>
-        <div class="pipe-output-lbl">OUTPUT</div>
-        <div class="pipe-output m2">emissions_intensity ×15</div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-module m1">
-        <div class="pipe-tag m1">Module 1</div>
-        <div class="pipe-name">OLS Regression</div>
-        <div class="pipe-method">sklearn · per sector</div>
-        <div class="pipe-input-lbl">INPUT</div>
-        <div class="pipe-input">EUA price × EBITDA margin</div>
-        <div class="pipe-output-lbl">OUTPUT</div>
-        <div class="pipe-output m1">pass_through rate ×7</div>
-      </div>
-      <div class="pipe-arrow">→</div>
-      <div class="pipe-module m4" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:100px">
-        <div class="pipe-tag m4" style="text-align:center">Module 4</div>
-        <div class="pipe-name">scipy SLSQP</div>
-        <div class="pipe-method">mean-variance opt.</div>
-        <div style="font-size:9px;color:var(--text3);margin-top:4px">takes EaR outputs below</div>
-      </div>
-    </div>
+ <!-- ROW 1: 4 modules -->
+ <div class="pipe-row">
+ <div class="pipe-module m3">
+ <div class="pipe-tag m3">HMM</div>
+ <div class="pipe-name">Gaussian HMM</div>
+ <div class="pipe-method">hmmlearn · 3 regimes</div>
+ <div class="pipe-input-lbl">INPUT</div>
+ <div class="pipe-input">EUA monthly log returns</div>
+ <div class="pipe-output-lbl">OUTPUT</div>
+ <div class="pipe-output m3">default scenario_id</div>
+ </div>
+ <div class="pipe-arrow">→</div>
+ <div class="pipe-module m2">
+ <div class="pipe-tag m2">ARIMA</div>
+ <div class="pipe-name">ARIMA Forecasting</div>
+ <div class="pipe-method">statsmodels · (1,1,0)</div>
+ <div class="pipe-input-lbl">INPUT</div>
+ <div class="pipe-input">Scope 1+2 history per holding</div>
+ <div class="pipe-output-lbl">OUTPUT</div>
+ <div class="pipe-output m2">emissions_intensity ×15</div>
+ </div>
+ <div class="pipe-arrow">→</div>
+ <div class="pipe-module m1">
+ <div class="pipe-tag m1">OLS</div>
+ <div class="pipe-name">OLS Regression</div>
+ <div class="pipe-method">sklearn · per sector</div>
+ <div class="pipe-input-lbl">INPUT</div>
+ <div class="pipe-input">EUA price × EBITDA margin</div>
+ <div class="pipe-output-lbl">OUTPUT</div>
+ <div class="pipe-output m1">pass_through rate ×7</div>
+ </div>
+ <div class="pipe-arrow">→</div>
+ <div class="pipe-module m4" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:100px">
+ <div class="pipe-tag m4" style="text-align:center">SLSQP</div>
+ <div class="pipe-name">scipy SLSQP</div>
+ <div class="pipe-method">mean-variance opt.</div>
+ <div style="font-size:9px;color:var(--text3);margin-top:4px">takes EaR outputs below</div>
+ </div>
+ </div>
 
-    <!-- DOWN ARROWS -->
-    <div class="pipe-down-row">
-      <span style="opacity:.3">M3 sets carbon price →</span>
-      <span style="opacity:.3">M2 + M1 feed formula ↓</span>
-      <span style="opacity:.3">→ EaR feeds M4 ↓</span>
-    </div>
+ <!-- DOWN ARROWS -->
+ <div class="pipe-down-row">
+ <span style="opacity:.3">HMM sets carbon price →</span>
+ <span style="opacity:.3">ARIMA + OLS feed formula ↓</span>
+ <span style="opacity:.3">→ EaR feeds SLSQP ↓</span>
+ </div>
 
-    <!-- EaR FORMULA BOX -->
-    <div class="pipe-ear-box">
-      <div class="pipe-ear-title">EaR Formula Chain — per holding</div>
-      <div class="pipe-formula">
-        <span class="hi2">emissions_intensity</span><span class="op">×</span>Δcarbon<span class="op">/</span>1000 <span style="color:var(--text3);font-size:9px">← M2</span><br>
-        <span class="op">+</span> subsidy_impact <span class="op">+</span> energy_impact <span class="op">+</span> BCA_impact<br>
-        <span class="op">=</span> total_cost_increase<br>
-        <span class="op">×</span> (1 <span class="op">−</span> <span class="hi1">pass_through</span>) <span style="color:var(--text3);font-size:9px">← M1</span><br>
-        <span class="op">÷</span> EBITDA_margin<br>
-        <span class="op">×</span> 0.75 <span style="color:var(--text3);font-size:8px">(tax/leverage adj.)</span><br>
-        <span class="op">=</span> <span class="res">EPS at Risk</span> <span style="color:var(--text3);font-size:9px">(capped 95%)</span>
-      </div>
-    </div>
+ <!-- EaR FORMULA BOX -->
+ <div class="pipe-ear-box">
+ <div class="pipe-ear-title">EaR Formula Chain — per holding</div>
+ <div class="pipe-formula">
+ <span class="hi2">emissions_intensity</span><span class="op">×</span>Δcarbon<span class="op">/</span>1000 <span style="color:var(--text3);font-size:9px">← M2</span><br>
+ <span class="op">+</span> subsidy_impact <span class="op">+</span> energy_impact <span class="op">+</span> BCA_impact<br>
+ <span class="op">=</span> total_cost_increase<br>
+ <span class="op">×</span> (1 <span class="op">−</span> <span class="hi1">pass_through</span>) <span style="color:var(--text3);font-size:9px">← M1</span><br>
+ <span class="op">÷</span> EBITDA_margin<br>
+ <span class="op">×</span> 0.75 <span style="color:var(--text3);font-size:8px">(tax/leverage adj.)</span><br>
+ <span class="op">=</span> <span class="res">EPS at Risk</span> <span style="color:var(--text3);font-size:9px">(capped 95%)</span>
+ </div>
+ </div>
 
-    <!-- OUTPUT CARDS -->
-    <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Where each module's output appears in the UI</div>
-    <div class="pipe-outputs-row">
-      <div class="pipe-out-card">
-        <div class="pipe-out-col" style="color:#b45309">M3 — HMM</div>
-        <div class="pipe-out-val">Default scenario selected on page load<br><span style="color:var(--text3);font-size:9px">→ sets carbon price for everything</span></div>
-      </div>
-      <div class="pipe-out-card">
-        <div class="pipe-out-col" style="color:#0a7c4c">M2 — ARIMA</div>
-        <div class="pipe-out-val">Emis.Int column in Holdings table<br><span style="color:var(--text3);font-size:9px">→ affects Net Cost Δ, EPS at Risk</span></div>
-      </div>
-      <div class="pipe-out-card">
-        <div class="pipe-out-col" style="color:#0066cc">M1 — OLS</div>
-        <div class="pipe-out-val">Pass-thru column in Holdings table<br><span style="color:var(--text3);font-size:9px">→ affects Net Cost Δ, EPS at Risk</span></div>
-      </div>
-      <div class="pipe-out-card" style="grid-column:1/-1">
-        <div class="pipe-out-col" style="color:#6d28d9">M4 — scipy SLSQP</div>
-        <div class="pipe-out-val">Optimiser tab — Opt. Weight, Delta columns, EaR Reduction %<br><span style="color:var(--text3);font-size:9px">→ minimises λ·EaR + (1−λ)·w'Σw subject to turnover constraint · uses M1+M2 EaR values as input</span></div>
-      </div>
-    </div>
+ <!-- OUTPUT CARDS -->
+ <div style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Where each module's output appears in the UI</div>
+ <div class="pipe-outputs-row">
+ <div class="pipe-out-card">
+ <div class="pipe-out-col" style="color:#b45309">HMM Regime</div>
+ <div class="pipe-out-val">Default scenario selected on page load<br><span style="color:var(--text3);font-size:9px">→ sets carbon price for everything</span></div>
+ </div>
+ <div class="pipe-out-card">
+ <div class="pipe-out-col" style="color:#0a7c4c">ARIMA</div>
+ <div class="pipe-out-val">Emis.Int column in Holdings table<br><span style="color:var(--text3);font-size:9px">→ affects Net Cost Δ, EPS at Risk</span></div>
+ </div>
+ <div class="pipe-out-card">
+ <div class="pipe-out-col" style="color:#0066cc">OLS</div>
+ <div class="pipe-out-val">Pass-thru column in Holdings table<br><span style="color:var(--text3);font-size:9px">→ affects Net Cost Δ, EPS at Risk</span></div>
+ </div>
+ <div class="pipe-out-card" style="grid-column:1/-1">
+ <div class="pipe-out-col" style="color:#6d28d9">scipy SLSQP</div>
+ <div class="pipe-out-val">Optimiser tab — Opt. Weight, Delta columns, EaR Reduction %<br><span style="color:var(--text3);font-size:9px">→ minimises λ·EaR + (1−λ)·w'Σw subject to turnover constraint · uses M1+M2 EaR values as input</span></div>
+ </div>
+ </div>
 
-  </div>
+ </div>
 </div>
 
 <script>
@@ -657,43 +657,43 @@ function sectorColor(s){return isDark()?(SC[s]||"#64748b"):(SC_LIGHT[s]||"#64748
 function rc(v){return isDark()?(v>25?"#ff4757":v>12?"#ffa94d":v>5?"#ffe066":"#00e676"):(v>25?"#c0392b":v>12?"#d9480f":v>5?"#856404":"#0a7c4c")}
 
 function toggleTheme(){
-  const html=document.documentElement;
-  const dark=html.classList.toggle("dark");
-  const btn=document.getElementById("theme-btn");
-  btn.querySelector(".ti").textContent=dark?"◑":"◑";
-  btn.querySelector("#theme-label").textContent=dark?"DARK":"LIGHT";
-  localStorage.setItem("theme",dark?"dark":"light");
-  // Redraw SVGs with correct colours
-  drawRiskLegend();
-  if(lastData){
-    const o=lastData.original.portfolio_ear*100;
-    drawGauge(o,Math.max(15,Math.ceil(o/5)*5+5));
-    const portfolio=custPort||lastData.original.holdings;
-    drawDonut(portfolio);
-    const sectorEaR={};
-    lastData.original.holdings.forEach(h=>{sectorEaR[h.sector]=(sectorEaR[h.sector]||0)+h.ear;});
-    const sEntries=Object.entries(sectorEaR).sort((a,b)=>b[1]-a[1]);
-    const maxSear=Math.max(...sEntries.map(([,v])=>v));
-    document.getElementById("sector-bars").innerHTML=sEntries.map(([s,ear])=>`
-      <div class="sector-bar-wrap">
-        <div class="sbr-hdr"><span style="color:${sectorColor(s)};font-size:11px">${s}</span><span style="color:var(--text3);font-size:11px">${(ear*100).toFixed(2)}% of NAV</span></div>
-        <div class="sbr-bg"><div class="sbr-fill" style="width:${maxSear>0?Math.min(100,ear/maxSear*100):0}%;background:${sectorColor(s)}"></div></div>
-      </div>
-    `).join("");
-  }
+ const html=document.documentElement;
+ const dark=html.classList.toggle("dark");
+ const btn=document.getElementById("theme-btn");
+ btn.querySelector(".ti").textContent=dark?"◑":"◑";
+ btn.querySelector("#theme-label").textContent=dark?"DARK":"LIGHT";
+ localStorage.setItem("theme",dark?"dark":"light");
+ // Redraw SVGs with correct colours
+ drawRiskLegend();
+ if(lastData){
+ const o=lastData.original.portfolio_ear*100;
+ drawGauge(o,Math.max(15,Math.ceil(o/5)*5+5));
+ const portfolio=custPort||lastData.original.holdings;
+ drawDonut(portfolio);
+ const sectorEaR={};
+ lastData.original.holdings.forEach(h=>{sectorEaR[h.sector]=(sectorEaR[h.sector]||0)+h.ear;});
+ const sEntries=Object.entries(sectorEaR).sort((a,b)=>b[1]-a[1]);
+ const maxSear=Math.max(...sEntries.map(([,v])=>v));
+ document.getElementById("sector-bars").innerHTML=sEntries.map(([s,ear])=>`
+ <div class="sector-bar-wrap">
+ <div class="sbr-hdr"><span style="color:${sectorColor(s)};font-size:11px">${s}</span><span style="color:var(--text3);font-size:11px">${(ear*100).toFixed(2)}% of NAV</span></div>
+ <div class="sbr-bg"><div class="sbr-fill" style="width:${maxSear>0?Math.min(100,ear/maxSear*100):0}%;background:${sectorColor(s)}"></div></div>
+ </div>
+ `).join("");
+ }
 }
 
 // Apply saved theme on load — default is DARK
 (function(){
-  const saved=localStorage.getItem("theme");
-  const preferDark = saved === null || saved === "dark";
-  if(preferDark){
-    document.documentElement.classList.add("dark");
-    window.addEventListener("DOMContentLoaded",()=>{
-      const btn=document.getElementById("theme-btn");
-      if(btn){btn.querySelector(".ti").textContent="◑";btn.querySelector("#theme-label").textContent="DARK";}
-    });
-  }
+ const saved=localStorage.getItem("theme");
+ const preferDark = saved === null || saved === "dark";
+ if(preferDark){
+ document.documentElement.classList.add("dark");
+ window.addEventListener("DOMContentLoaded",()=>{
+ const btn=document.getElementById("theme-btn");
+ if(btn){btn.querySelector(".ti").textContent="◑";btn.querySelector("#theme-label").textContent="DARK";}
+ });
+ }
 })();
 const fmt=(v,d=1)=>v==null?"—":v.toFixed(d);
 let sel="netzero",custPort=null,lastData=null,expandedRow=null,hmmScenarioId=null;
@@ -702,62 +702,62 @@ let chatHistory=[];
 
 // Poll /ml/status until ml_ready — updates dot, button, and scenario as soon as ML completes
 function applyMLStatus(d){
-  if(!d.ml_active) return;
-  const hmm=d.detected_scenario;
-  const dot=document.getElementById("hmm-dot");
-  if(d.ml_ready||( hmm&&hmm.source!=="fallback")){
-    dot.classList.remove("fallback");dot.classList.add("active");
-  }
-  if(hmm&&hmm.id){
-    hmmScenarioId=hmm.id;
-    const wrap=document.getElementById("hmm-rec-wrap");
-    const sub=document.getElementById("hmm-rec-sub");
-    if(wrap) wrap.style.display="block";
-    if(sub){
-      const label=hmm.label||hmm.id;
-      const price=hmm.carbon_price?`£${hmm.carbon_price}/t`:"";
-      const conf=hmm.confidence?` · ${Math.round(hmm.confidence*100)}% confidence`:"";
-      sub.textContent=`${label} ${price}${conf}`;
-    }
-    if(document.querySelector(`.scen-btn[data-id="${hmm.id}"]`)){
-      document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
-      const btn=document.querySelector(`.scen-btn[data-id="${hmm.id}"]`);
-      if(btn){btn.classList.add("active");sel=hmm.id;document.getElementById("scen-desc").textContent=SCENARIOS[hmm.id]?.description||"";}
-    }
-  }
+ if(!d.ml_active) return;
+ const hmm=d.detected_scenario;
+ const dot=document.getElementById("hmm-dot");
+ if(d.ml_ready||( hmm&&hmm.source!=="fallback")){
+ dot.classList.remove("fallback");dot.classList.add("active");
+ }
+ if(hmm&&hmm.id){
+ hmmScenarioId=hmm.id;
+ const wrap=document.getElementById("hmm-rec-wrap");
+ const sub=document.getElementById("hmm-rec-sub");
+ if(wrap) wrap.style.display="block";
+ if(sub){
+ const label=hmm.label||hmm.id;
+ const price=hmm.carbon_price?`£${hmm.carbon_price}/t`:"";
+ const conf=hmm.confidence?` · ${Math.round(hmm.confidence*100)}% confidence`:"";
+ sub.textContent=`${label} ${price}${conf}`;
+ }
+ if(document.querySelector(`.scen-btn[data-id="${hmm.id}"]`)){
+ document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
+ const btn=document.querySelector(`.scen-btn[data-id="${hmm.id}"]`);
+ if(btn){btn.classList.add("active");sel=hmm.id;document.getElementById("scen-desc").textContent=SCENARIOS[hmm.id]?.description||"";}
+ }
+ }
 }
 
 function pollMLStatus(attempts){
-  if(attempts<=0) return;
-  fetch("/ml/status").then(r=>{
-    if(!r.ok||!r.headers.get("content-type")?.includes("application/json")) throw new Error("not json");
-    return r.json();
-  }).then(d=>{
-    applyMLStatus(d);
-    if(!d.ml_ready){
-      setTimeout(()=>pollMLStatus(attempts-1), 3000);
-    }
-  }).catch(()=>{
-    // Retry silently — backend may still be starting
-    setTimeout(()=>pollMLStatus(attempts-1), 3000);
-  });
+ if(attempts<=0) return;
+ fetch("/ml/status").then(r=>{
+ if(!r.ok||!r.headers.get("content-type")?.includes("application/json")) throw new Error("not json");
+ return r.json();
+ }).then(d=>{
+ applyMLStatus(d);
+ if(!d.ml_ready){
+ setTimeout(()=>pollMLStatus(attempts-1), 3000);
+ }
+ }).catch(()=>{
+ // Retry silently — backend may still be starting
+ setTimeout(()=>pollMLStatus(attempts-1), 3000);
+ });
 }
 // Start polling — up to 10 attempts × 3 seconds = 30 seconds max wait
 pollMLStatus(10);
 
 function drawRiskLegend(){
-  const rl=document.getElementById("risk-legend");
-  const rd=document.getElementById("risk-dots");
-  if(rl)rl.innerHTML=`
-    <div class="rl-item"><div class="rl-lbl" style="color:${rc(0)}">LOW</div><div class="rl-range">&lt;5%</div></div>
-    <div class="rl-item"><div class="rl-lbl" style="color:${rc(6)}">MED</div><div class="rl-range">5–12%</div></div>
-    <div class="rl-item"><div class="rl-lbl" style="color:${rc(13)}">HIGH</div><div class="rl-range">12–25%</div></div>
-    <div class="rl-item"><div class="rl-lbl" style="color:${rc(26)}">CRIT</div><div class="rl-range">&gt;25%</div></div>`;
-  if(rd)rd.innerHTML=`
-    <span style="color:${rc(0)}">● MINIMAL</span>
-    <span style="color:${rc(6)}">● LOW</span>
-    <span style="color:${rc(13)}">● MEDIUM</span>
-    <span style="color:${rc(26)}">● HIGH</span>`;
+ const rl=document.getElementById("risk-legend");
+ const rd=document.getElementById("risk-dots");
+ if(rl)rl.innerHTML=`
+ <div class="rl-item"><div class="rl-lbl" style="color:${rc(0)}">LOW</div><div class="rl-range">&lt;5%</div></div>
+ <div class="rl-item"><div class="rl-lbl" style="color:${rc(6)}">MED</div><div class="rl-range">5–12%</div></div>
+ <div class="rl-item"><div class="rl-lbl" style="color:${rc(13)}">HIGH</div><div class="rl-range">12–25%</div></div>
+ <div class="rl-item"><div class="rl-lbl" style="color:${rc(26)}">CRIT</div><div class="rl-range">&gt;25%</div></div>`;
+ if(rd)rd.innerHTML=`
+ <span style="color:${rc(0)}">● MINIMAL</span>
+ <span style="color:${rc(6)}">● LOW</span>
+ <span style="color:${rc(13)}">● MEDIUM</span>
+ <span style="color:${rc(26)}">● HIGH</span>`;
 }
 drawRiskLegend();
 
@@ -765,368 +765,368 @@ function showPipeline(){document.getElementById("pipeline-modal").classList.add(
 function closePipeline(){document.getElementById("pipeline-modal").classList.remove("open")}
 
 function useHMMScenario(){
-  if(!hmmScenarioId) return;
-  const btn=document.querySelector(`.scen-btn[data-id="${hmmScenarioId}"]`);
-  if(btn){
-    document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    sel=hmmScenarioId;
-    document.getElementById("scen-desc").textContent=SCENARIOS[hmmScenarioId]?.description||"";
-    btn.scrollIntoView({behavior:"smooth",block:"nearest"});
-  }
+ if(!hmmScenarioId) return;
+ const btn=document.querySelector(`.scen-btn[data-id="${hmmScenarioId}"]`);
+ if(btn){
+ document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
+ sel=hmmScenarioId;
+ document.getElementById("scen-desc").textContent=SCENARIOS[hmmScenarioId]?.description||"";
+ btn.scrollIntoView({behavior:"smooth",block:"nearest"});
+ }
 }
 
 // Show chosen filename when file selected
 document.getElementById("pf").addEventListener("change", function(){
-  const fc = document.getElementById("file-chosen");
-  if(fc) fc.textContent = this.files[0] ? "Selected: " + this.files[0].name : "";
+ const fc = document.getElementById("file-chosen");
+ if(fc) fc.textContent = this.files[0] ? "Selected: " + this.files[0].name : "";
 });
 
 function selScen(id,btn){
-  sel=id;
-  document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  document.getElementById("scen-desc").textContent=SCENARIOS[id]?.description||"";
+ sel=id;
+ document.querySelectorAll(".scen-btn").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
+ document.getElementById("scen-desc").textContent=SCENARIOS[id]?.description||"";
 }
 
 function showTab(name,btn){
-  ["h","o","m"].forEach(t=>document.getElementById("tab-"+t).style.display=t===name?"":"none");
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
+ ["h","o","m"].forEach(t=>document.getElementById("tab-"+t).style.display=t===name?"":"none");
+ document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
 }
 
 /* ── GAUGE (v6 strokeDasharray approach) ── */
 function drawGauge(val,max){
-  const svg=document.getElementById("gauge");
-  const cx=84,cy=78,r=56,sw=14;
-  const semi=Math.PI*r;
-  const pct=Math.min(1,Math.max(0,val/max));
-  const col=rc(val);
-  const arc=`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`;
-  const needleAngle=Math.PI*(1-pct);
-  const nLen=r-sw/2-6;
-  const nx=cx+nLen*Math.cos(needleAngle),ny=cy-nLen*Math.sin(needleAngle);
-  const gBands=isDark()?[{s:0,e:.33,c:"#00e676"},{s:.33,e:.60,c:"#ffe066"},{s:.60,e:.80,c:"#ffa94d"},{s:.80,e:1,c:"#ff4757"}]:[{s:0,e:.33,c:"#0a7c4c"},{s:.33,e:.60,c:"#856404"},{s:.60,e:.80,c:"#d9480f"},{s:.80,e:1,c:"#c0392b"}];
-  const needleStroke=isDark()?"rgba(255,255,255,0.9)":"rgba(0,0,0,0.7)";
-  const needleCenter=isDark()?"#080c10":"#f0f4f8";
-  const dimOpacity=isDark()?".2":".25";
-  const labelFill=isDark()?"rgba(255,255,255,0.2)":"rgba(0,0,0,0.25)";
-  const subFill=isDark()?"rgba(255,255,255,0.25)":"rgba(0,0,0,0.35)";
-  const trackFill=isDark()?"rgba(255,255,255,0.06)":"rgba(0,0,0,0.07)";
-  let h=`<path d="${arc}" fill="none" stroke="${trackFill}" stroke-width="${sw}" stroke-linecap="butt"/>`;
-  gBands.forEach(b=>{
-    const len=(b.e-b.s)*semi,offset=-(b.s*semi);
-    h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity="${dimOpacity}"/>`;
-  });
-  gBands.forEach(b=>{
-    const ae=Math.min(b.e,pct),as=b.s;
-    if(ae<=as)return;
-    const len=(ae-as)*semi,offset=-(as*semi);
-    h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity="1"/>`;
-  });
-  h+=`<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${needleStroke}" stroke-width="2.5" stroke-linecap="round"/>`;
-  h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="2.5" fill="${needleCenter}"/>`;
-  h+=`<text x="${cx}" y="${cy+22}" text-anchor="middle" fill="${col}" font-size="17" font-weight="700" font-family="'JetBrains Mono',monospace">${fmt(val)}%</text>`;
-  h+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="${subFill}" font-size="8" font-family="'Space Grotesk',sans-serif" letter-spacing="1.5">portfolio EaR</text>`;
-  h+=`<text x="${cx-r-5}" y="${cy+4}" text-anchor="end" fill="${labelFill}" font-size="8" font-family="'JetBrains Mono',monospace">0%</text>`;
-  h+=`<text x="${cx+r+5}" y="${cy+4}" text-anchor="start" fill="${labelFill}" font-size="8" font-family="'JetBrains Mono',monospace">${max}%</text>`;
-  h+=`<text x="${cx}" y="${cy-r-8}" text-anchor="middle" fill="${labelFill}" font-size="7" font-family="'JetBrains Mono',monospace">${(max/2).toFixed(0)}%</text>`;
-  svg.innerHTML=h;
+ const svg=document.getElementById("gauge");
+ const cx=84,cy=78,r=56,sw=14;
+ const semi=Math.PI*r;
+ const pct=Math.min(1,Math.max(0,val/max));
+ const col=rc(val);
+ const arc=`M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}`;
+ const needleAngle=Math.PI*(1-pct);
+ const nLen=r-sw/2-6;
+ const nx=cx+nLen*Math.cos(needleAngle),ny=cy-nLen*Math.sin(needleAngle);
+ const gBands=isDark()?[{s:0,e:.33,c:"#00e676"},{s:.33,e:.60,c:"#ffe066"},{s:.60,e:.80,c:"#ffa94d"},{s:.80,e:1,c:"#ff4757"}]:[{s:0,e:.33,c:"#0a7c4c"},{s:.33,e:.60,c:"#856404"},{s:.60,e:.80,c:"#d9480f"},{s:.80,e:1,c:"#c0392b"}];
+ const needleStroke=isDark()?"rgba(255,255,255,0.9)":"rgba(0,0,0,0.7)";
+ const needleCenter=isDark()?"#080c10":"#f0f4f8";
+ const dimOpacity=isDark()?".2":".25";
+ const labelFill=isDark()?"rgba(255,255,255,0.2)":"rgba(0,0,0,0.25)";
+ const subFill=isDark()?"rgba(255,255,255,0.25)":"rgba(0,0,0,0.35)";
+ const trackFill=isDark()?"rgba(255,255,255,0.06)":"rgba(0,0,0,0.07)";
+ let h=`<path d="${arc}" fill="none" stroke="${trackFill}" stroke-width="${sw}" stroke-linecap="butt"/>`;
+ gBands.forEach(b=>{
+ const len=(b.e-b.s)*semi,offset=-(b.s*semi);
+ h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity="${dimOpacity}"/>`;
+ });
+ gBands.forEach(b=>{
+ const ae=Math.min(b.e,pct),as=b.s;
+ if(ae<=as)return;
+ const len=(ae-as)*semi,offset=-(as*semi);
+ h+=`<path d="${arc}" fill="none" stroke="${b.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len} ${semi*2}" stroke-dashoffset="${offset}" opacity="1"/>`;
+ });
+ h+=`<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${needleStroke}" stroke-width="2.5" stroke-linecap="round"/>`;
+ h+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="2.5" fill="${needleCenter}"/>`;
+ h+=`<text x="${cx}" y="${cy+22}" text-anchor="middle" fill="${col}" font-size="17" font-weight="700" font-family="'JetBrains Mono',monospace">${fmt(val)}%</text>`;
+ h+=`<text x="${cx}" y="${cy+33}" text-anchor="middle" fill="${subFill}" font-size="8" font-family="'Space Grotesk',sans-serif" letter-spacing="1.5">portfolio EaR</text>`;
+ h+=`<text x="${cx-r-5}" y="${cy+4}" text-anchor="end" fill="${labelFill}" font-size="8" font-family="'JetBrains Mono',monospace">0%</text>`;
+ h+=`<text x="${cx+r+5}" y="${cy+4}" text-anchor="start" fill="${labelFill}" font-size="8" font-family="'JetBrains Mono',monospace">${max}%</text>`;
+ h+=`<text x="${cx}" y="${cy-r-8}" text-anchor="middle" fill="${labelFill}" font-size="7" font-family="'JetBrains Mono',monospace">${(max/2).toFixed(0)}%</text>`;
+ svg.innerHTML=h;
 }
 
 /* ── DONUT ── */
 function drawDonut(portfolio){
-  const sectors={};
-  portfolio.forEach(h=>{sectors[h.sector]=(sectors[h.sector]||0)+h.weight;});
-  const entries=Object.entries(sectors);
-  const total=entries.reduce((s,[,w])=>s+w,0);
-  const cx=64,cy=64,r=46,sw=16;
-  const circ=2*Math.PI*r,GAP=2.5;
-  let cum=0;
-  const slices=entries.map(([s,w])=>{
-    const frac=w/total,len=frac*circ;
-    const dash=Math.max(0,len-GAP),gap=circ-dash;
-    const offset=circ/4-cum;
-    cum+=len;
-    return{s,w,dash,gap,offset,color:sectorColor(s)};
-  });
-  let h=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="${sw}"/>`;
-  slices.forEach(sl=>{
-    h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${sl.color}" stroke-width="${sw}" stroke-dasharray="${sl.dash.toFixed(2)} ${sl.gap.toFixed(2)}" stroke-dashoffset="${sl.offset.toFixed(2)}" stroke-linecap="butt" opacity=".92"/>`;
-  });
-  const bgFill=isDark()?"#0c1118":"#ffffff";
-  const textFill=isDark()?"rgba(255,255,255,0.3)":"rgba(0,0,0,0.3)";
-  const countFill=isDark()?"#f0f4f8":"#1a2332";
-  h+=`<circle cx="${cx}" cy="${cy}" r="${r-sw/2-1}" fill="${bgFill}"/>`;
-  h+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" fill="${textFill}" font-size="8" font-family="'JetBrains Mono',monospace" letter-spacing="1">SECTOR</text>`;
-  h+=`<text x="${cx}" y="${cy+8}" text-anchor="middle" fill="${countFill}" font-size="14" font-weight="600" font-family="'JetBrains Mono',monospace">${entries.length}</text>`;
-  h+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" fill="${textFill}" font-size="8" font-family="'JetBrains Mono',monospace">sectors</text>`;
-  document.getElementById("donut").innerHTML=h;
-  const sorted=[...entries].sort((a,b)=>b[1]-a[1]);
-  document.getElementById("donut-legend").innerHTML=sorted.map(([s,w])=>`
-    <div class="dl-row"><span style="display:flex;align-items:center;color:${sectorColor(s)}"><span class="dl-dot" style="background:${sectorColor(s)}"></span>${s}</span><span style="color:var(--text3)">${(w*100).toFixed(1)}%</span></div>
-  `).join("");
+ const sectors={};
+ portfolio.forEach(h=>{sectors[h.sector]=(sectors[h.sector]||0)+h.weight;});
+ const entries=Object.entries(sectors);
+ const total=entries.reduce((s,[,w])=>s+w,0);
+ const cx=64,cy=64,r=46,sw=16;
+ const circ=2*Math.PI*r,GAP=2.5;
+ let cum=0;
+ const slices=entries.map(([s,w])=>{
+ const frac=w/total,len=frac*circ;
+ const dash=Math.max(0,len-GAP),gap=circ-dash;
+ const offset=circ/4-cum;
+ cum+=len;
+ return{s,w,dash,gap,offset,color:sectorColor(s)};
+ });
+ let h=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="${sw}"/>`;
+ slices.forEach(sl=>{
+ h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${sl.color}" stroke-width="${sw}" stroke-dasharray="${sl.dash.toFixed(2)} ${sl.gap.toFixed(2)}" stroke-dashoffset="${sl.offset.toFixed(2)}" stroke-linecap="butt" opacity=".92"/>`;
+ });
+ const bgFill=isDark()?"#0c1118":"#ffffff";
+ const textFill=isDark()?"rgba(255,255,255,0.3)":"rgba(0,0,0,0.3)";
+ const countFill=isDark()?"#f0f4f8":"#1a2332";
+ h+=`<circle cx="${cx}" cy="${cy}" r="${r-sw/2-1}" fill="${bgFill}"/>`;
+ h+=`<text x="${cx}" y="${cy-5}" text-anchor="middle" fill="${textFill}" font-size="8" font-family="'JetBrains Mono',monospace" letter-spacing="1">SECTOR</text>`;
+ h+=`<text x="${cx}" y="${cy+8}" text-anchor="middle" fill="${countFill}" font-size="14" font-weight="600" font-family="'JetBrains Mono',monospace">${entries.length}</text>`;
+ h+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" fill="${textFill}" font-size="8" font-family="'JetBrains Mono',monospace">sectors</text>`;
+ document.getElementById("donut").innerHTML=h;
+ const sorted=[...entries].sort((a,b)=>b[1]-a[1]);
+ document.getElementById("donut-legend").innerHTML=sorted.map(([s,w])=>`
+ <div class="dl-row"><span style="display:flex;align-items:center;color:${sectorColor(s)}"><span class="dl-dot" style="background:${sectorColor(s)}"></span>${s}</span><span style="color:var(--text3)">${(w*100).toFixed(1)}%</span></div>
+ `).join("");
 }
 
 async function runAnalysis(){
-  const btn=document.getElementById("run-btn");btn.disabled=true;
-  document.getElementById("loading").classList.add("visible");
-  document.getElementById("results").classList.remove("visible");
-  document.getElementById("placeholder").style.display="none";
-  document.getElementById("err-box").classList.remove("visible");
-  const turn=parseInt(document.getElementById("tslider").value)/100;
-  const body={scenario_id:sel,turnover_limit:turn};
-  if(custPort)body.portfolio=custPort;
-  if(carbonOverride)body.custom_carbon=carbonOverride;
-  try{
-    const r=await fetch("/analyse",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-    const d=await r.json();
-    if(d.error)throw new Error(d.error);
-    lastData=d;
-    render(d);
-  }catch(e){
-    const eb=document.getElementById("err-box");eb.textContent="Error: "+e.message;eb.classList.add("visible");
-    document.getElementById("placeholder").style.display="";
-  }finally{document.getElementById("loading").classList.remove("visible");btn.disabled=false;}
+ const btn=document.getElementById("run-btn");btn.disabled=true;
+ document.getElementById("loading").classList.add("visible");
+ document.getElementById("results").classList.remove("visible");
+ document.getElementById("placeholder").style.display="none";
+ document.getElementById("err-box").classList.remove("visible");
+ const turn=parseInt(document.getElementById("tslider").value)/100;
+ const body={scenario_id:sel,turnover_limit:turn};
+ if(custPort)body.portfolio=custPort;
+ if(carbonOverride)body.custom_carbon=carbonOverride;
+ try{
+ const r=await fetch("/analyse",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+ const d=await r.json();
+ if(d.error)throw new Error(d.error);
+ lastData=d;
+ render(d);
+ }catch(e){
+ const eb=document.getElementById("err-box");eb.textContent="Error: "+e.message;eb.classList.add("visible");
+ document.getElementById("placeholder").style.display="";
+ }finally{document.getElementById("loading").classList.remove("visible");btn.disabled=false;}
 }
 
 function render(data){
-  const sc=SCENARIOS[sel];
-  const o=data.original.portfolio_ear*100,p=data.optimised.portfolio_ear*100;
-  const highrisk=data.original.holdings.filter(h=>h.eps_impact*100>15).length;
+ const sc=SCENARIOS[sel];
+ const o=data.original.portfolio_ear*100,p=data.optimised.portfolio_ear*100;
+ const highrisk=data.original.holdings.filter(h=>h.eps_impact*100>15).length;
 
-  // KPI ROW
-  document.getElementById("kpi-row").innerHTML=`
-    <div class="kpi"><div class="klbl">Portfolio EaR</div><div class="kval" style="color:${rc(o)}">${fmt(o)}%</div><div class="ksub">of portfolio NAV at risk</div></div>
-    <div class="kpi"><div class="klbl">Carbon Price</div><div class="kval" style="color:var(--accent)">£${sc.carbon_price}/t</div><div class="ksub">Δ +£${sc.carbon_price-25}/t vs baseline</div></div>
-    <div class="kpi"><div class="klbl">High Risk Holdings</div><div class="kval" style="color:#ffa94d">${highrisk} / ${data.original.holdings.length}</div><div class="ksub">holdings with &gt;15% EPS exposure</div></div>
-    <div class="kpi"><div class="klbl">EaR Reduction (Opt)</div><div class="kval" style="color:var(--green)">${fmt(data.ear_reduction_pct)}%</div><div class="ksub">achievable via rebalancing</div></div>
-  `;
+ // KPI ROW
+ document.getElementById("kpi-row").innerHTML=`
+ <div class="kpi"><div class="klbl">Portfolio EaR</div><div class="kval" style="color:${rc(o)}">${fmt(o)}%</div><div class="ksub">of portfolio NAV at risk</div></div>
+ <div class="kpi"><div class="klbl">Carbon Price</div><div class="kval" style="color:var(--accent)">£${sc.carbon_price}/t</div><div class="ksub">Δ +£${sc.carbon_price-25}/t vs baseline</div></div>
+ <div class="kpi"><div class="klbl">High Risk Holdings</div><div class="kval" style="color:#ffa94d">${highrisk} / ${data.original.holdings.length}</div><div class="ksub">holdings with &gt;15% EPS exposure</div></div>
+ <div class="kpi"><div class="klbl">EaR Reduction (Opt)</div><div class="kval" style="color:var(--green)">${fmt(data.ear_reduction_pct)}%</div><div class="ksub">achievable via rebalancing</div></div>
+ `;
 
-  // GAUGE
-  drawGauge(o,Math.max(15,Math.ceil(o/5)*5+5));
-  drawRiskLegend();
+ // GAUGE
+ drawGauge(o,Math.max(15,Math.ceil(o/5)*5+5));
+ drawRiskLegend();
 
-  // SECTOR BARS
-  const portfolio=custPort||data.original.holdings;
-  drawDonut(portfolio);
-  const sectorEaR={};
-  data.original.holdings.forEach(h=>{sectorEaR[h.sector]=(sectorEaR[h.sector]||0)+h.ear;});
-  const sEntries=Object.entries(sectorEaR).sort((a,b)=>b[1]-a[1]);
-  const maxSear=Math.max(...sEntries.map(([,v])=>v));
-  document.getElementById("sector-bars").innerHTML=sEntries.map(([s,ear])=>`
-    <div class="sector-bar-wrap">
-      <div class="sbr-hdr"><span style="color:${sectorColor(s)};font-size:11px">${s}</span><span style="color:var(--text3);font-size:11px">${fmt(ear*100,2)}% of NAV</span></div>
-      <div class="sbr-bg"><div class="sbr-fill" style="width:${maxSear>0?Math.min(100,ear/maxSear*100):0}%;background:${sectorColor(s)}"></div></div>
-    </div>
-  `).join("");
+ // SECTOR BARS
+ const portfolio=custPort||data.original.holdings;
+ drawDonut(portfolio);
+ const sectorEaR={};
+ data.original.holdings.forEach(h=>{sectorEaR[h.sector]=(sectorEaR[h.sector]||0)+h.ear;});
+ const sEntries=Object.entries(sectorEaR).sort((a,b)=>b[1]-a[1]);
+ const maxSear=Math.max(...sEntries.map(([,v])=>v));
+ document.getElementById("sector-bars").innerHTML=sEntries.map(([s,ear])=>`
+ <div class="sector-bar-wrap">
+ <div class="sbr-hdr"><span style="color:${sectorColor(s)};font-size:11px">${s}</span><span style="color:var(--text3);font-size:11px">${fmt(ear*100,2)}% of NAV</span></div>
+ <div class="sbr-bg"><div class="sbr-fill" style="width:${maxSear>0?Math.min(100,ear/maxSear*100):0}%;background:${sectorColor(s)}"></div></div>
+ </div>
+ `).join("");
 
-  // SCENARIO PARAMS
-  document.getElementById("scenario-params").innerHTML=`
-    <div class="ptitle">Scenario Parameter Breakdown</div>
-    <div class="param-grid">
-      <div class="param-item" style="padding-left:0;border-left:none"><div class="param-lbl">Carbon Price</div><div class="param-val">£${sc.carbon_price}/t</div><div class="param-note">Cost per tonne CO₂e</div></div>
-      <div class="param-item"><div class="param-lbl">Subsidy Removal</div><div class="param-val">${((sc.subsidy_removal||0)*100).toFixed(0)}%</div><div class="param-note">Fossil fuel support withdrawn</div></div>
-      <div class="param-item"><div class="param-lbl">Border Carbon Adj.</div><div class="param-val">${((sc.bca||0)*100).toFixed(0)}%</div><div class="param-note">Import carbon tariff rate</div></div>
-      <div class="param-item"><div class="param-lbl">Energy Input Shock</div><div class="param-val">${((sc.energy_shock||0)*100).toFixed(0)}%</div><div class="param-note">Energy cost increase %</div></div>
-    </div>
-  `;
+ // SCENARIO PARAMS
+ document.getElementById("scenario-params").innerHTML=`
+ <div class="ptitle">ScenarioParameter Breakdown</div>
+ <div class="param-grid">
+ <div class="param-item" style="padding-left:0;border-left:none"><div class="param-lbl">Carbon Price</div><div class="param-val">£${sc.carbon_price}/t</div><div class="param-note">Cost per tonne CO₂e</div></div>
+ <div class="param-item"><div class="param-lbl">Subsidy Removal</div><div class="param-val">${((sc.subsidy_removal||0)*100).toFixed(0)}%</div><div class="param-note">Fossil fuel support withdrawn</div></div>
+ <div class="param-item"><div class="param-lbl">Border Carbon Adj.</div><div class="param-val">${((sc.bca||0)*100).toFixed(0)}%</div><div class="param-note">Import carbon tariff rate</div></div>
+ <div class="param-item"><div class="param-lbl">Energy Input Shock</div><div class="param-val">${((sc.energy_shock||0)*100).toFixed(0)}%</div><div class="param-note">Energy cost increase %</div></div>
+ </div>
+ `;
 
-  // HOLDINGS TABLE
-  const sorted=[...data.original.holdings].sort((a,b)=>b.eps_impact-a.eps_impact);
-  const mx=Math.max(...sorted.map(h=>h.eps_impact));
-  document.getElementById("htb").innerHTML=sorted.map(h=>{
-    const eps=(h.eps_impact*100).toFixed(1),ear=(h.ear*100).toFixed(2),col=rc(parseFloat(eps));
-    const pct=mx>0?h.eps_impact/mx*100:0;
-    const s3=h.scope3_flag?`<span class="scope3">⚠ Scope 3 excluded</span>`:"";
-    return `
-      <tr class="expandable" onclick="toggleRow('${h.ticker}',this)">
-        <td class="ticker">${expandedRow===h.ticker?"▼":"▶"} ${h.ticker}</td>
-        <td><span class="co">${h.name}</span>${s3}</td>
-        <td><span class="tag tag-${h.sector}">${h.sector}</span></td>
-        <td class="mono" style="text-align:right">${(h.weight*100).toFixed(1)}%</td>
-        <td class="mono" style="text-align:right">${(h.emis_used??h.emissions_intensity)?.toFixed(3)||"—"}</td>
-        <td class="mono" style="text-align:right">${h.pass_through_used?((h.pass_through_used*100).toFixed(0)+"%"):"—"}</td>
-        <td class="mono" style="text-align:right">${(h.net_cost_increase*100).toFixed(2)}%</td>
-        <td class="mono" style="text-align:right;color:${col}">${(h.margin_compression*100).toFixed(1)}%</td>
-        <td style="text-align:right"><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="bar-val" style="color:${col}">${eps}%</span></div></td>
-        <td class="mono" style="text-align:right;color:var(--text3)">${ear}%</td>
-      </tr>
-      <tr class="exp-row" id="exp-${h.ticker}" style="display:none">
-        <td colspan="10">
-          <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px">COST DECOMPOSITION</div>
-          <div class="breakdown-grid">
-            ${[
-              {l:"Carbon cost impact",v:h.carbon_cost_impact,bold:false},
-              {l:"Subsidy removal",v:h.subsidy_impact,bold:false},
-              {l:"Energy input shock",v:h.energy_input_impact,bold:false},
-              {l:"Border carbon adj.",v:h.bca_impact,bold:false},
-              {l:"→ Gross cost increase",v:h.total_cost_increase,bold:true},
-              {l:"→ Net cost (after pass-thru)",v:h.net_cost_increase,bold:true},
-              {l:"→ Margin compression",v:h.margin_compression,bold:true},
-              {l:"→ EPS at Risk",v:h.eps_impact,bold:true,color:rc(h.eps_impact*100)},
-            ].map(item=>`
-              <div class="bd-item">
-                <div class="bd-lbl">${item.l}</div>
-                <div class="bd-val" style="color:${item.color||(item.bold?"var(--text)":"var(--text2)")}">${fmt(item.v*100,2)}%</div>
-              </div>
-            `).join("")}
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join("");
+ // HOLDINGS TABLE
+ const sorted=[...data.original.holdings].sort((a,b)=>b.eps_impact-a.eps_impact);
+ const mx=Math.max(...sorted.map(h=>h.eps_impact));
+ document.getElementById("htb").innerHTML=sorted.map(h=>{
+ const eps=(h.eps_impact*100).toFixed(1),ear=(h.ear*100).toFixed(2),col=rc(parseFloat(eps));
+ const pct=mx>0?h.eps_impact/mx*100:0;
+ const s3=h.scope3_flag?`<span class="scope3">⚠ Scope 3 excluded</span>`:"";
+ return `
+ <tr class="expandable" onclick="toggleRow('${h.ticker}',this)">
+ <td class="ticker">${expandedRow===h.ticker?"▼":"▶"} ${h.ticker}</td>
+ <td><span class="co">${h.name}</span>${s3}</td>
+ <td><span class="tag tag-${h.sector}">${h.sector}</span></td>
+ <td class="mono" style="text-align:right">${(h.weight*100).toFixed(1)}%</td>
+ <td class="mono" style="text-align:right">${(h.emis_used??h.emissions_intensity)?.toFixed(3)||"—"}</td>
+ <td class="mono" style="text-align:right">${h.pass_through_used?((h.pass_through_used*100).toFixed(0)+"%"):"—"}</td>
+ <td class="mono" style="text-align:right">${(h.net_cost_increase*100).toFixed(2)}%</td>
+ <td class="mono" style="text-align:right;color:${col}">${(h.margin_compression*100).toFixed(1)}%</td>
+ <td style="text-align:right"><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span class="bar-val" style="color:${col}">${eps}%</span></div></td>
+ <td class="mono" style="text-align:right;color:var(--text3)">${ear}%</td>
+ </tr>
+ <tr class="exp-row" id="exp-${h.ticker}" style="display:none">
+ <td colspan="10">
+ <div style="font-size:9px;color:var(--text3);letter-spacing:.1em;margin-bottom:10px">COST DECOMPOSITION</div>
+ <div class="breakdown-grid">
+ ${[
+ {l:"Carbon cost impact",v:h.carbon_cost_impact,bold:false},
+ {l:"Subsidy removal",v:h.subsidy_impact,bold:false},
+ {l:"Energy input shock",v:h.energy_input_impact,bold:false},
+ {l:"Border carbon adj.",v:h.bca_impact,bold:false},
+ {l:"→ Gross cost increase",v:h.total_cost_increase,bold:true},
+ {l:"→ Net cost (after pass-thru)",v:h.net_cost_increase,bold:true},
+ {l:"→ Margin compression",v:h.margin_compression,bold:true},
+ {l:"→ EPS at Risk",v:h.eps_impact,bold:true,color:rc(h.eps_impact*100)},
+ ].map(item=>`
+ <div class="bd-item">
+ <div class="bd-lbl">${item.l}</div>
+ <div class="bd-val" style="color:${item.color||(item.bold?"var(--text)":"var(--text2)")}">${fmt(item.v*100,2)}%</div>
+ </div>
+ `).join("")}
+ </div>
+ </td>
+ </tr>
+ `;
+ }).join("");
 
-  // OPTIMISER
-  const turn=(data.actual_turnover*100).toFixed(1);
-  document.getElementById("diag-grid").innerHTML=`
-    <div class="diag-card"><div class="diag-k">PORTFOLIO EaR (BEFORE)</div><div class="diag-v" style="color:${rc(o)}">${fmt(o)}%</div></div>
-    <div class="diag-card"><div class="diag-k">PORTFOLIO EaR (AFTER) <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">${fmt(p)}%</div></div>
-    <div class="diag-card"><div class="diag-k">RISK REDUCTION <span class="ml-badge m4">M4</span></div><div class="diag-v" style="color:var(--green)">-${fmt(data.ear_reduction_pct)}%</div></div>
-    <div class="diag-card"><div class="diag-k">ACTUAL TURNOVER</div><div class="diag-v">${turn}%</div></div>
-  `;
-  const tl=data.turnover_limit*100;
-  const tNote=tl<=10?"Conservative: minimal position changes. Limits risk reduction but preserves portfolio structure and minimises transaction costs.":tl<=25?"Balanced: moderate rebalancing. Suitable for quarterly portfolio reviews. Balances risk reduction against implementation cost.":tl<=40?"Active: significant position shifts. Appropriate where risk reduction is a priority and transaction costs are manageable.":"Aggressive: near-unconstrained rebalancing. Maximum EaR reduction but high turnover may impact performance.";
-  document.getElementById("turnover-note").textContent=tNote;
+ // OPTIMISER
+ const turn=(data.actual_turnover*100).toFixed(1);
+ document.getElementById("diag-grid").innerHTML=`
+ <div class="diag-card"><div class="diag-k">PORTFOLIO EaR (BEFORE)</div><div class="diag-v" style="color:${rc(o)}">${fmt(o)}%</div></div>
+ <div class="diag-card"><div class="diag-k">PORTFOLIO EaR (AFTER)</div><div class="diag-v" style="color:var(--green)">${fmt(p)}%</div></div>
+ <div class="diag-card"><div class="diag-k">RISK REDUCTION</div><div class="diag-v" style="color:var(--green)">-${fmt(data.ear_reduction_pct)}%</div></div>
+ <div class="diag-card"><div class="diag-k">ACTUAL TURNOVER</div><div class="diag-v">${turn}%</div></div>
+ `;
+ const tl=data.turnover_limit*100;
+ const tNote=tl<=10?"Conservative: minimal position changes. Limits risk reduction but preserves portfolio structure and minimises transaction costs.":tl<=25?"Balanced: moderate rebalancing. Suitable for quarterly portfolio reviews. Balances risk reduction against implementation cost.":tl<=40?"Active: significant position shifts. Appropriate where risk reduction is a priority and transaction costs are manageable.":"Aggressive: near-unconstrained rebalancing. Maximum EaR reduction but high turnover may impact performance.";
+ document.getElementById("turnover-note").textContent=tNote;
 
-  // WEIGHT CHART
-  const trades=[...data.trades].sort((a,b)=>a.delta-b.delta);
-  const maxD=Math.max(...trades.map(t=>Math.abs(t.delta)));
-  document.getElementById("weight-chart").innerHTML=trades.map(t=>{
-    const pct=maxD>0?Math.abs(t.delta)/maxD*100:0;
-    const isNeg=t.delta<-0.001,isPos=t.delta>0.001;
-    const col=isNeg?"var(--red)":isPos?"var(--green)":"var(--text3)";
-    return `<div class="wc-row">
-      <div class="wc-ticker">${t.ticker}</div>
-      <div class="wc-track">
-        <div class="wc-center"></div>
-        ${isNeg?`<div class="wc-bar-neg" style="width:${pct/2}%"></div>`:""}
-        ${isPos?`<div class="wc-bar-pos" style="width:${pct/2}%"></div>`:""}
-        ${!isNeg&&!isPos?`<div class="wc-dot" style="background:var(--text3)"></div>`:""}
-      </div>
-      <div class="wc-val" style="color:${col}">${isPos?"+":""}${(t.delta*100).toFixed(1)}pp</div>
-    </div>`;
-  }).join("")+`<div class="wc-legend"><span style="color:var(--red)">◀ REDUCE</span><span style="color:var(--text3)">HOLD</span><span style="color:var(--green)">INCREASE ▶</span></div>`;
+ // WEIGHT CHART
+ const trades=[...data.trades].sort((a,b)=>a.delta-b.delta);
+ const maxD=Math.max(...trades.map(t=>Math.abs(t.delta)));
+ document.getElementById("weight-chart").innerHTML=trades.map(t=>{
+ const pct=maxD>0?Math.abs(t.delta)/maxD*100:0;
+ const isNeg=t.delta<-0.001,isPos=t.delta>0.001;
+ const col=isNeg?"var(--red)":isPos?"var(--green)":"var(--text3)";
+ return `<div class="wc-row">
+ <div class="wc-ticker">${t.ticker}</div>
+ <div class="wc-track">
+ <div class="wc-center"></div>
+ ${isNeg?`<div class="wc-bar-neg" style="width:${pct/2}%"></div>`:""}
+ ${isPos?`<div class="wc-bar-pos" style="width:${pct/2}%"></div>`:""}
+ ${!isNeg&&!isPos?`<div class="wc-dot" style="background:var(--text3)"></div>`:""}
+ </div>
+ <div class="wc-val" style="color:${col}">${isPos?"+":""}${(t.delta*100).toFixed(1)}pp</div>
+ </div>`;
+ }).join("")+`<div class="wc-legend"><span style="color:var(--red)">◀ REDUCE</span><span style="color:var(--text3)">HOLD</span><span style="color:var(--green)">INCREASE ▶</span></div>`;
 
-  // TRADE TABLE
-  document.getElementById("ttb").innerHTML=[...data.trades].sort((a,b)=>a.delta-b.delta).map(t=>{
-    const delta=(t.delta>0?"+":"")+(t.delta*100).toFixed(1)+"pp";
-    const dCol=t.delta>0.001?"var(--green)":t.delta<-0.001?"var(--red)":"var(--text3)";
-    const action=Math.abs(t.delta)<0.001?"HLD":t.delta<0?"RED":"INC";
-    const origH=data.original.holdings.find(h=>h.ticker===t.ticker);
-    return `<tr>
-      <td class="ticker">${t.ticker}</td><td class="co">${t.name}</td>
-      <td class="mono" style="text-align:right">${(t.weight_from*100).toFixed(1)}%</td>
-      <td class="mono" style="text-align:right">${(t.weight_to*100).toFixed(1)}%</td>
-      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:${dCol};font-weight:500">${delta}</td>
-      <td style="text-align:right"><span class="action-badge action-${action}">${action==="INC"?"INCREASE":action==="RED"?"REDUCE":"HOLD"}</span></td>
-      <td class="mono" style="text-align:right">${origH?(origH.emis_used??origH.emissions_intensity)?.toFixed(3):"—"}</td>
-      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:${rc(origH?origH.eps_impact*100:0)}">${origH?fmt(origH.eps_impact*100)+"%" :"—"}</td>
-    </tr>`;
-  }).join("");
+ // TRADE TABLE
+ document.getElementById("ttb").innerHTML=[...data.trades].sort((a,b)=>a.delta-b.delta).map(t=>{
+ const delta=(t.delta>0?"+":"")+(t.delta*100).toFixed(1)+"pp";
+ const dCol=t.delta>0.001?"var(--green)":t.delta<-0.001?"var(--red)":"var(--text3)";
+ const action=Math.abs(t.delta)<0.001?"HLD":t.delta<0?"RED":"INC";
+ const origH=data.original.holdings.find(h=>h.ticker===t.ticker);
+ return `<tr>
+ <td class="ticker">${t.ticker}</td><td class="co">${t.name}</td>
+ <td class="mono" style="text-align:right">${(t.weight_from*100).toFixed(1)}%</td>
+ <td class="mono" style="text-align:right">${(t.weight_to*100).toFixed(1)}%</td>
+ <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:${dCol};font-weight:500">${delta}</td>
+ <td style="text-align:right"><span class="action-badge action-${action}">${action==="INC"?"INCREASE":action==="RED"?"REDUCE":"HOLD"}</span></td>
+ <td class="mono" style="text-align:right">${origH?(origH.emis_used??origH.emissions_intensity)?.toFixed(3):"—"}</td>
+ <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:11px;color:${rc(origH?origH.eps_impact*100:0)}">${origH?fmt(origH.eps_impact*100)+"%" :"—"}</td>
+ </tr>`;
+ }).join("");
 
-  // MEMO + CHAT
-  document.getElementById("memo").textContent=data.memo||"Memo unavailable.";
-  document.getElementById("chat-wrap").style.display="block";
-  document.getElementById("chat-messages").innerHTML="";
-  chatHistory=[];
+ // MEMO + CHAT
+ document.getElementById("memo").textContent=data.memo||"Memo unavailable.";
+ document.getElementById("chat-wrap").style.display="block";
+ document.getElementById("chat-messages").innerHTML="";
+ chatHistory=[];
 
-  document.getElementById("results").classList.add("visible");
-  document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
+ document.getElementById("results").classList.add("visible");
+ document.getElementById("results").scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 function toggleRow(ticker,row){
-  const expRow=document.getElementById("exp-"+ticker);
-  const isOpen=expRow.style.display!=="none";
-  // close all
-  document.querySelectorAll("[id^='exp-']").forEach(r=>r.style.display="none");
-  document.querySelectorAll(".expandable td:first-child").forEach(td=>{
-    const t=td.textContent.trim();
-    td.textContent=(t.startsWith("▼")?"▶ "+t.slice(2):t);
-  });
-  if(!isOpen){
-    expRow.style.display="";
-    const firstTd=row.querySelector("td:first-child");
-    firstTd.textContent="▼ "+ticker;
-    expandedRow=ticker;
-  }else{expandedRow=null;}
+ const expRow=document.getElementById("exp-"+ticker);
+ const isOpen=expRow.style.display!=="none";
+ // close all
+ document.querySelectorAll("[id^='exp-']").forEach(r=>r.style.display="none");
+ document.querySelectorAll(".expandable td:first-child").forEach(td=>{
+ const t=td.textContent.trim();
+ td.textContent=(t.startsWith("▼")?"▶ "+t.slice(2):t);
+ });
+ if(!isOpen){
+ expRow.style.display="";
+ const firstTd=row.querySelector("td:first-child");
+ firstTd.textContent="▼ "+ticker;
+ expandedRow=ticker;
+ }else{expandedRow=null;}
 }
 
 function applyCarbonOverride(){
-  const val=parseInt(document.getElementById("cc").value);
-  const st=document.getElementById("cc-status");
-  if(!val||val<1||val>1000){st.textContent="Enter a value between 1 and 1000";return;}
-  carbonOverride=val;
-  st.textContent="Override active: £"+val+"/t — will apply on next Run";
-  st.style.color="var(--accent)";
+ const val=parseInt(document.getElementById("cc").value);
+ const st=document.getElementById("cc-status");
+ if(!val||val<1||val>1000){st.textContent="Enter a value between 1 and 1000";return;}
+ carbonOverride=val;
+ st.textContent="Override active: £"+val+"/t — will apply on next Run";
+ st.style.color="var(--accent)";
 }
 function clearCarbonOverride(){
-  carbonOverride=null;
-  document.getElementById("cc").value="";
-  const st=document.getElementById("cc-status");
-  st.textContent="Override cleared — scenario default will be used";
-  st.style.color="var(--text3)";
+ carbonOverride=null;
+ document.getElementById("cc").value="";
+ const st=document.getElementById("cc-status");
+ st.textContent="Override cleared — scenario default will be used";
+ st.style.color="var(--text3)";
 }
 
 function sendChat(){
-  const input=document.getElementById("chat-input");
-  const msg=input.value.trim();
-  if(!msg||!lastData) return;
-  input.value="";
-  const box=document.getElementById("chat-messages");
-  chatHistory.push({role:"user",content:msg});
-  box.innerHTML+=`<div class="chat-msg user"><div class="chat-avatar">You</div><div class="chat-bubble">${msg}</div></div>`;
-  const typingId="typing-"+Date.now();
-  box.innerHTML+=`<div class="chat-msg ai" id="${typingId}"><div class="chat-avatar">AI</div><div class="chat-typing"><span></span><span></span><span></span></div></div>`;
-  box.scrollTop=box.scrollHeight;
-  const ctx={
-    scenario:lastData.original.scenario,
-    carbon_price:lastData.original.carbon_price,
-    portfolio_ear:(lastData.original.portfolio_ear*100).toFixed(2),
-    optimised_ear:(lastData.optimised.portfolio_ear*100).toFixed(2),
-    ear_reduction:lastData.ear_reduction_pct,
-    holdings:lastData.original.holdings.map(h=>({
-      ticker:h.ticker,sector:h.sector,
-      weight:(h.weight*100).toFixed(1),
-      eps_impact:(h.eps_impact*100).toFixed(1),
-      emissions_intensity:(h.emis_used??h.emissions_intensity)?.toFixed(3),
-      pass_through:(h.pass_through_used*100).toFixed(0),
-    })),
-    trades:lastData.trades.filter(t=>t.direction!=="HOLD").map(t=>({ticker:t.ticker,direction:t.direction,from:(t.weight_from*100).toFixed(1),to:(t.weight_to*100).toFixed(1)})),
-    memo:document.getElementById("memo").textContent,
-  };
-  fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg,history:chatHistory.slice(0,-1),context:ctx})})
-  .then(r=>{if(!r.ok||!r.headers.get("content-type")?.includes("application/json"))throw new Error("no json");return r.json();})
-  .then(d=>{
-    document.getElementById(typingId)?.remove();
-    const reply=d.reply||"[No response]";
-    chatHistory.push({role:"assistant",content:reply});
-    if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
-    box.innerHTML+=`<div class="chat-msg ai"><div class="chat-avatar">AI</div><div class="chat-bubble">${reply.replace(/\n/g,"<br>")}</div></div>`;
-    box.scrollTop=box.scrollHeight;
-  })
-  .catch(()=>{
-    document.getElementById(typingId)?.remove();
-    box.innerHTML+=`<div class="chat-msg ai"><div class="chat-avatar">AI</div><div class="chat-bubble" style="color:var(--red)">Chat unavailable — check API key.</div></div>`;
-    box.scrollTop=box.scrollHeight;
-  });
+ const input=document.getElementById("chat-input");
+ const msg=input.value.trim();
+ if(!msg||!lastData) return;
+ input.value="";
+ const box=document.getElementById("chat-messages");
+ chatHistory.push({role:"user",content:msg});
+ box.innerHTML+=`<div class="chat-msg user"><div class="chat-avatar">You</div><div class="chat-bubble">${msg}</div></div>`;
+ const typingId="typing-"+Date.now();
+ box.innerHTML+=`<div class="chat-msg ai" id="${typingId}"><div class="chat-avatar">AI</div><div class="chat-typing"><span></span><span></span><span></span></div></div>`;
+ box.scrollTop=box.scrollHeight;
+ const ctx={
+ scenario:lastData.original.scenario,
+ carbon_price:lastData.original.carbon_price,
+ portfolio_ear:(lastData.original.portfolio_ear*100).toFixed(2),
+ optimised_ear:(lastData.optimised.portfolio_ear*100).toFixed(2),
+ ear_reduction:lastData.ear_reduction_pct,
+ holdings:lastData.original.holdings.map(h=>({
+ ticker:h.ticker,sector:h.sector,
+ weight:(h.weight*100).toFixed(1),
+ eps_impact:(h.eps_impact*100).toFixed(1),
+ emissions_intensity:(h.emis_used??h.emissions_intensity)?.toFixed(3),
+ pass_through:(h.pass_through_used*100).toFixed(0),
+ })),
+ trades:lastData.trades.filter(t=>t.direction!=="HOLD").map(t=>({ticker:t.ticker,direction:t.direction,from:(t.weight_from*100).toFixed(1),to:(t.weight_to*100).toFixed(1)})),
+ memo:document.getElementById("memo").textContent,
+ };
+ fetch("/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg,history:chatHistory.slice(0,-1),context:ctx})})
+ .then(r=>{if(!r.ok||!r.headers.get("content-type")?.includes("application/json"))throw new Error("no json");return r.json();})
+ .then(d=>{
+ document.getElementById(typingId)?.remove();
+ const reply=d.reply||"[No response]";
+ chatHistory.push({role:"assistant",content:reply});
+ if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
+ box.innerHTML+=`<div class="chat-msg ai"><div class="chat-avatar">AI</div><div class="chat-bubble">${reply.replace(/\n/g,"<br>")}</div></div>`;
+ box.scrollTop=box.scrollHeight;
+ })
+ .catch(()=>{
+ document.getElementById(typingId)?.remove();
+ box.innerHTML+=`<div class="chat-msg ai"><div class="chat-avatar">AI</div><div class="chat-bubble" style="color:var(--red)">Chat unavailable — check API key.</div></div>`;
+ box.scrollTop=box.scrollHeight;
+ });
 }
 
 async function doUpload(){
-  const file=document.getElementById("pf").files[0],st=document.getElementById("ustatus");
-  if(!file){st.textContent="No file selected.";st.className="uerr";return;}
-  const form=new FormData();form.append("file",file);
-  try{
-    const r=await fetch("/upload",{method:"POST",body:form});
-    const d=await r.json();
-    if(d.error)throw new Error(d.error);
-    custPort=d.portfolio;st.textContent="✓ Loaded "+d.count+" holdings";st.className="uok";
-  }catch(e){st.textContent="Error: "+e.message;st.className="uerr";}
+ const file=document.getElementById("pf").files[0],st=document.getElementById("ustatus");
+ if(!file){st.textContent="No file selected.";st.className="uerr";return;}
+ const form=new FormData();form.append("file",file);
+ try{
+ const r=await fetch("/upload",{method:"POST",body:form});
+ const d=await r.json();
+ if(d.error)throw new Error(d.error);
+ custPort=d.portfolio;st.textContent="✓ Loaded "+d.count+" holdings";st.className="uok";
+ }catch(e){st.textContent="Error: "+e.message;st.className="uerr";}
 }
 function doReset(){
-  custPort=null;document.getElementById("pf").value="";
-  const st=document.getElementById("ustatus");
-  st.textContent="✓ Reset to default 15 FTSE 100 holdings";st.className="uok";
+ custPort=null;document.getElementById("pf").value="";
+ const st=document.getElementById("ustatus");
+ st.textContent="✓ Reset to default 15 FTSE 100 holdings";st.className="uok";
 }
 </script>
 </body>
