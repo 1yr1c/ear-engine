@@ -57,17 +57,28 @@
     input[type=number]:focus{outline:1px solid var(--accent)}
     /* UPLOAD */
     .upload-row{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap}
-    .upload-row input[type=file]{flex:1;min-width:0;font-size:10px;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:5px 8px}
-    input[type=file]::file-selector-button{background:var(--bg3);border:1px solid var(--border2);border-radius:3px;color:var(--text2);font-family:inherit;font-size:10px;padding:2px 7px;cursor:pointer;margin-right:6px}
-    input[type=file]::file-selector-button:hover{border-color:var(--accent);color:var(--accent)}
-    .btnx{background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text2);font-family:inherit;font-size:11px;padding:5px 11px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+    .upload-row input[type=file]{display:none}
+    .btnx{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);font-family:inherit;font-size:11px;font-weight:500;padding:8px 14px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
     .btnx:hover{border-color:var(--accent);color:var(--accent)}
+    .btnx.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    html.dark .btnx.primary{color:#080c10}
+    .btnx.primary:hover{opacity:.85}
     .uok{font-size:10px;color:var(--green);margin-top:5px}
     .uerr{font-size:10px;color:var(--red);margin-top:5px}
     /* RUN */
     .run-btn{width:100%;margin-top:4px;background:linear-gradient(135deg,#0099dd,#005fb3);border:none;border-radius:7px;cursor:pointer;padding:12px;font-family:inherit;font-size:12px;font-weight:700;color:white;letter-spacing:.08em;text-transform:uppercase;transition:all .2s}
     .run-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,130,220,.35)}
     .run-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+    /* HMM RECOMMENDED BUTTON */
+    .hmm-rec-btn{width:100%;display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(10,124,76,.08);border:1.5px solid rgba(10,124,76,.4);border-radius:8px;cursor:pointer;font-family:inherit;text-align:left;transition:all .18s}
+    .hmm-rec-btn:hover{background:rgba(10,124,76,.14);border-color:rgba(10,124,76,.7)}
+    html.dark .hmm-rec-btn{background:rgba(0,230,118,.07);border-color:rgba(0,230,118,.35)}
+    html.dark .hmm-rec-btn:hover{background:rgba(0,230,118,.13);border-color:rgba(0,230,118,.6)}
+    .hmm-rec-icon{width:28px;height:28px;border-radius:50%;background:rgba(10,124,76,.15);border:1px solid rgba(10,124,76,.3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#0a7c4c}
+    html.dark .hmm-rec-icon{background:rgba(0,230,118,.12);border-color:rgba(0,230,118,.3);color:#00e676}
+    .hmm-rec-label{display:block;font-size:12px;font-weight:600;color:#0a7c4c;letter-spacing:.02em}
+    html.dark .hmm-rec-label{color:#00e676}
+    .hmm-rec-sub{display:block;font-size:10px;color:var(--text3);margin-top:2px}
     /* FORMULA */
     .formula{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);line-height:2.1;margin-top:4px}
     .formula .op{color:var(--accent);margin:0 3px}
@@ -92,9 +103,11 @@
     .gauge-row{display:grid;grid-template-columns:1fr 230px;gap:12px;margin-bottom:12px}
     @media(max-width:800px){.gauge-row{grid-template-columns:1fr}}
     /* TABS */
-    .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto}
-    .tab-btn{background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;padding:9px 16px;color:var(--text3);letter-spacing:.03em;transition:all .15s;white-space:nowrap}
-    .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}    .tab-btn:hover:not(.active){color:var(--text2)}
+    .tabs{display:flex;gap:6px;margin-bottom:16px;padding:4px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)}
+    .tab-btn{background:none;border:none;border-radius:6px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;padding:8px 18px;color:var(--text3);letter-spacing:.03em;transition:all .18s;white-space:nowrap;flex:1}
+    .tab-btn.active{background:var(--bg1);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.1);font-weight:600}
+    html.dark .tab-btn.active{box-shadow:0 1px 4px rgba(0,0,0,0.4)}
+    .tab-btn:hover:not(.active){color:var(--text2);background:var(--bg3)}
     /* TABLE */
     table{width:100%;border-collapse:collapse;font-size:12px}
     th{text-align:left;padding:7px 10px;font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
@@ -182,8 +195,10 @@
     .ml-module{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
     .ml-module:last-child{border-bottom:none}
     .ml-dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0}
-    .ml-dot.active{background:var(--green);box-shadow:0 0 6px rgba(10,124,76,.4)}
+    .ml-dot.active{background:#0a7c4c;box-shadow:0 0 6px rgba(10,124,76,.5)}
+    html.dark .ml-dot.active{background:#00e676;box-shadow:0 0 6px rgba(0,230,118,.5)}
     .ml-dot.fallback{background:var(--amber);box-shadow:0 0 6px rgba(180,83,9,.4)}
+    html.dark .ml-dot.fallback{box-shadow:0 0 6px rgba(255,179,0,.4)}
     .ml-name{font-size:10px;font-weight:600;color:var(--text);margin-bottom:2px}
     .ml-where{font-size:9px;color:var(--accent);margin-bottom:2px}
     .ml-why{font-size:9px;color:var(--text3);line-height:1.5}
@@ -323,10 +338,12 @@
         <label class="ilabel">Upload CSV or use default 15 FTSE 100 holdings</label>
         <div class="upload-row">
           <input type="file" id="pf" accept=".csv">
-          <button class="btnx" onclick="doUpload()">Upload</button>
+          <button class="btnx" onclick="document.getElementById('pf').click()">Choose File</button>
+          <button class="btnx primary" onclick="doUpload()">Upload</button>
           <button class="btnx" onclick="doReset()">Default Portfolio</button>
         </div>
         <div id="ustatus"></div>
+        <div id="file-chosen" style="font-size:10px;color:var(--text3);margin-top:4px"></div>
         <div style="margin-top:8px;font-size:9px;color:var(--text3);line-height:1.8">Required: ticker · name · sector · weight<br>emissions_intensity · ebitda_margin · pass_through</div>
       </div>
 
@@ -724,6 +741,12 @@ function useHMMScenario(){
     btn.scrollIntoView({behavior:"smooth",block:"nearest"});
   }
 }
+
+// Show chosen filename when file selected
+document.getElementById("pf").addEventListener("change", function(){
+  const fc = document.getElementById("file-chosen");
+  if(fc) fc.textContent = this.files[0] ? "Selected: " + this.files[0].name : "";
+});
 
 function selScen(id,btn){
   sel=id;
